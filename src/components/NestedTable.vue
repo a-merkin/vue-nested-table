@@ -11,7 +11,7 @@
       <tbody>
         <template v-for="well in wells" :key="well.id">
           <tr v-for="(event, eventIndex) in well.events" :key="event.id">
-            <td v-if="eventIndex === 0" :rowspan="getWellRowspan(well)">
+            <td v-if="eventIndex === 0" :rowspan="getWellRowspan(well)" :class="getWellStateClass(well.state)">
               {{ well.name }}
             </td>
             <td v-for="resource in event.resources" :key="resource.id">
@@ -21,7 +21,11 @@
               <div v-for="resource in event.resources" :key="resource.id" class="resource-operations">
                 <div v-if="hasOperationsOnDate(resource, date)" 
                      class="resource-name"
-                     :class="{ 'expanded': isResourceExpanded(resource.id, date) }"
+                     :class="[
+                       { 'expanded': isResourceExpanded(resource.id, date) },
+                       getEventKindClass(event.kind),
+                       getEventTypeClass(event.type)
+                     ]"
                      @click="toggleResource(resource.id, date)">
                   <span class="resource-icon">{{ isResourceExpanded(resource.id, date) ? '▼' : '▶' }}</span>
                   {{ resource.name }}
@@ -44,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { Well, Resource, Operation } from '../types/table';
+import type { Well, Resource, Operation, EventKind, OperatingState, EventType } from '../types/table';
 
 const props = defineProps<{
   wells: Well[];
@@ -102,6 +106,67 @@ const getOperationsForDate = (resource: Resource, date: string): Operation[] => 
     const operationDate = new Date(operation.startDate).toISOString().split('T')[0];
     return operationDate === date;
   });
+};
+
+const getEventTypeClass = (type: EventType): string => {
+  switch (type) {
+    // ГТМ
+    case 'event_type_grp':
+      return 'event-type-grp';
+    case 'event_type_opz':
+      return 'event-type-opz';
+    case 'event_type_zbs':
+      return 'event-type-zbs';
+    case 'event_type_vns':
+      return 'event-type-vns';
+    // ОТМ
+    case 'event_type_krs':
+      return 'event-type-krs';
+    case 'event_type_trs':
+      return 'event-type-trs';
+    case 'event_type_ppr':
+      return 'event-type-ppr';
+    // Запуски
+    case 'event_type_start':
+      return 'event-type-start';
+    // Отключения
+    case 'event_type_conservation':
+      return 'event-type-conservation';
+    case 'event_type_liquidation':
+      return 'event-type-liquidation';
+    default:
+      return '';
+  }
+};
+
+const getEventKindClass = (kind: EventKind): string => {
+  switch (kind) {
+    case 'event_kind_gtm':
+      return 'event-kind-gtm';
+    case 'event_kind_otm':
+      return 'event-kind-otm';
+    case 'event_kind_start':
+      return 'event-kind-start';
+    case 'event_kind_shut':
+      return 'event-kind-shut';
+    default:
+      return '';
+  }
+};
+
+const getWellStateClass = (state: OperatingState): string => {
+  switch (state) {
+    case 'operating_state_prod':
+      return 'well-state-prod';
+    case 'operating_state_inje':
+      return 'well-state-inje';
+    case 'operating_state_idle':
+      return 'well-state-idle';
+    case 'operating_state_intake':
+      return 'well-state-intake';
+    default:
+      return '';
+  }
 };
 </script>
 
@@ -181,5 +246,95 @@ tr:nth-child(even) {
 
 tr:hover {
   background-color: #f5f5f5;
+}
+
+/* Цвета для видов мероприятий (основной фон) */
+.event-kind-gtm {
+  background-color: #e3f2fd;
+  border-left-color: #1976d2;
+}
+.event-kind-otm {
+  background-color: #f3e5f5;
+  border-left-color: #7b1fa2;
+}
+.event-kind-start {
+  background-color: #e8f5e9;
+  border-left-color: #388e3c;
+}
+.event-kind-shut {
+  background-color: #ffebee;
+  border-left-color: #d32f2f;
+}
+
+/* Цвета для типов мероприятий (дополнительная индикация) */
+.event-type-grp {
+  border-right: 3px solid #1976d2;
+}
+.event-type-opz {
+  border-right: 3px solid #2196f3;
+}
+.event-type-zbs {
+  border-right: 3px solid #64b5f6;
+}
+.event-type-vns {
+  border-right: 3px solid #90caf9;
+}
+
+.event-type-krs {
+  border-right: 3px solid #7b1fa2;
+}
+.event-type-trs {
+  border-right: 3px solid #9c27b0;
+}
+.event-type-ppr {
+  border-right: 3px solid #ba68c8;
+}
+
+.event-type-start {
+  border-right: 3px solid #388e3c;
+}
+
+.event-type-conservation {
+  border-right: 3px solid #d32f2f;
+}
+.event-type-liquidation {
+  border-right: 3px solid #f44336;
+}
+
+/* Цвета для состояний скважин */
+.well-state-prod {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-weight: bold;
+}
+.well-state-prod:hover {
+  background-color: #c8e6c9;
+}
+
+.well-state-inje {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  font-weight: bold;
+}
+.well-state-inje:hover {
+  background-color: #bbdefb;
+}
+
+.well-state-idle {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  font-weight: bold;
+}
+.well-state-idle:hover {
+  background-color: #ffe0b2;
+}
+
+.well-state-intake {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  font-weight: bold;
+}
+.well-state-intake:hover {
+  background-color: #e1bee7;
 }
 </style> 
