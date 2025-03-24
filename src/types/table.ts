@@ -1,3 +1,31 @@
+export type EventKind = 
+  | 'event_kind_gtm'
+  | 'event_kind_otm'
+  | 'event_kind_start'
+  | 'event_kind_shut';
+
+export type EventType = 
+  // ГТМ
+  | 'event_type_grp'
+  | 'event_type_opz'
+  | 'event_type_zbs'
+  | 'event_type_vns'
+  // ОТМ
+  | 'event_type_krs'
+  | 'event_type_trs'
+  | 'event_type_ppr'
+  // Запуски
+  | 'event_type_start'
+  // Отключения
+  | 'event_type_conservation'
+  | 'event_type_liquidation';
+
+export type OperatingState = 
+  | 'operating_state_prod'
+  | 'operating_state_inje'
+  | 'operating_state_idle'
+  | 'operating_state_intake';
+
 export interface Operation {
   id: string;
   name: string;
@@ -14,7 +42,8 @@ export interface Resource {
 export interface Event {
   id: string;
   name: string;
-  type: string;
+  type: EventType;
+  kind: EventKind;
   startDate: string;
   endDate: string;
   resources: Resource[];
@@ -23,6 +52,6 @@ export interface Event {
 export interface Well {
   id: string;
   name: string;
-  state: string;
+  state: OperatingState;
   events: Event[];
 } 

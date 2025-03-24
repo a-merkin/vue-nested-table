@@ -6,12 +6,13 @@ const wells: Well[] = [
   {
     id: "well_1",
     name: "Скважина 1",
-    state: "добывающая",
+    state: "operating_state_prod",
     events: [
       {
         id: "event_1",
         name: "ГРП",
         type: "event_type_grp",
+        kind: "event_kind_gtm",
         startDate: "2025-04-01",
         endDate: "2025-04-10",
         resources: [
@@ -60,6 +61,7 @@ const wells: Well[] = [
         id: "event_2",
         name: "ППР",
         type: "event_type_ppr",
+        kind: "event_kind_otm",
         startDate: "2025-05-01",
         endDate: "2025-05-05",
         resources: [
