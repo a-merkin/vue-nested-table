@@ -14,7 +14,7 @@
       <thead>
         <tr>
           <th class="well-header">Скважина</th>
-          <th class="team-header">Бригада</th>
+          <th class="team-header">Мероприятие</th>
           <th v-for="date in groupedDates" :key="date.key" class="date-header">
             {{ formatDate(date.start, date.end) }}
           </th>
@@ -23,55 +23,78 @@
       <tbody>
         <template v-for="well in wells" :key="well.id">
           <template v-for="(event, eventIndex) in well.events" :key="event.id">
-            <template v-for="(resource, resourceIndex) in event.resources" :key="resource.id">
-              <!-- Строка ресурса -->
-              <tr :class="{ 'resource-row': true }">
-                <td v-if="eventIndex === 0 && resourceIndex === 0" 
-                    :rowspan="getWellTotalRowspan(well)" 
-                    :class="getWellStateClass(well.state)">
-                  {{ well.name }}
-                </td>
-                <td class="team-cell">
-                  <div class="team-name" @click="toggleResource(resource.id)">
-                    <span class="expand-icon">{{ isResourceExpanded(resource.id) ? '▼' : '▶' }}</span>
-                    {{ resource.name }}
+            <!-- Строка события -->
+            <tr :class="{ 'event-row': true }">
+              <td v-if="eventIndex === 0" 
+                  :rowspan="getWellTotalRowspan(well)" 
+                  :class="getWellStateClass(well.state)">
+                {{ well.name }}
+              </td>
+              <td class="team-cell">
+                <div class="event-name" @click="toggleEvent(event.id)">
+                  <span class="expand-icon">{{ isEventExpanded(event.id) ? '▼' : '▶' }}</span>
+                  {{ event.name }}
+                </div>
+              </td>
+              <td :colspan="groupedDates.length" class="gantt-timeline">
+                <div class="gantt-bar-container">
+                  <div class="gantt-bar"
+                       :class="[
+                         getEventKindClass(event.kind),
+                         getEventTypeClass(event.type)
+                       ]"
+                       :style="getEventBarStyle(event)">
+                    <div class="gantt-bar-label">{{ event.name }}</div>
                   </div>
-                </td>
-                <td :colspan="groupedDates.length" class="gantt-timeline">
-                  <div class="gantt-bar-container">
-                    <div v-if="hasOperationsInPeriod(resource)"
-                         class="gantt-bar"
-                         :class="[
-                           getEventKindClass(event.kind),
-                           getEventTypeClass(event.type)
-                         ]"
-                         :style="getGanttBarStyle(resource)">
-                      <div class="gantt-bar-label">{{ resource.name }}</div>
+                </div>
+              </td>
+            </tr>
+            <!-- Строки ресурсов и их операций -->
+            <template v-if="isEventExpanded(event.id)">
+              <template v-for="resource in event.resources" :key="resource.id">
+                <!-- Строка ресурса -->
+                <tr class="resource-row">
+                  <td class="team-cell resource-name">
+                    <div class="resource-title" @click="toggleResource(resource.id)">
+                      <span class="expand-icon resource-icon">{{ isResourceExpanded(resource.id) ? '▼' : '▶' }}</span>
+                      {{ resource.name }}
                     </div>
-                  </div>
-                </td>
-              </tr>
-              <!-- Строки операций -->
-              <template v-if="isResourceExpanded(resource.id)">
-                <tr v-for="operation in resource.operations" 
-                    :key="operation.id"
-                    class="operation-row">
-                  <td class="team-cell operation-name">
-                    {{ operation.name }}
                   </td>
                   <td :colspan="groupedDates.length" class="gantt-timeline">
                     <div class="gantt-bar-container">
-                      <div class="gantt-bar operation-bar"
+                      <div class="gantt-bar resource-bar"
                            :class="[
                              getEventKindClass(event.kind),
                              getEventTypeClass(event.type)
                            ]"
-                           :style="getOperationBarStyle(operation)">
-                        <div class="gantt-bar-label">{{ operation.name }}</div>
+                           :style="getGanttBarStyle(resource)">
+                        <div class="gantt-bar-label">{{ resource.name }}</div>
                       </div>
                     </div>
                   </td>
                 </tr>
+                <!-- Строки операций -->
+                <template v-if="isResourceExpanded(resource.id)">
+                  <tr v-for="operation in resource.operations" 
+                      :key="operation.id"
+                      class="operation-row">
+                    <td class="team-cell operation-name">
+                      {{ operation.name }}
+                    </td>
+                    <td :colspan="groupedDates.length" class="gantt-timeline">
+                      <div class="gantt-bar-container">
+                        <div class="gantt-bar operation-bar"
+                             :class="[
+                               getEventKindClass(event.kind),
+                               getEventTypeClass(event.type)
+                             ]"
+                             :style="getOperationBarStyle(operation)">
+                          <div class="gantt-bar-label">{{ operation.name }}</div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
               </template>
             </template>
           </template>
@@ -91,7 +114,22 @@ const props = defineProps<{
 
 const granularity = ref<DateGranularity>('month');
 
+const expandedEvents = ref<Set<string>>(new Set());
 const expandedResources = ref<Set<string>>(new Set());
+
+const toggleEvent = (eventId: string) => {
+  if (expandedEvents.value.has(eventId)) {
+    expandedEvents.value.delete(eventId);
+    // При сворачивании события сворачиваем все его ресурсы
+    expandedResources.value.clear();
+  } else {
+    expandedEvents.value.add(eventId);
+  }
+};
+
+const isEventExpanded = (eventId: string): boolean => {
+  return expandedEvents.value.has(eventId);
+};
 
 const toggleResource = (resourceId: string) => {
   if (expandedResources.value.has(resourceId)) {
@@ -190,24 +228,18 @@ const formatDate = (start: Date, end: Date) => {
 
 const getWellTotalRowspan = (well: Well) => {
   return well.events.reduce((total, event) => {
-    return total + event.resources.reduce((resourceTotal, resource) => {
-      return resourceTotal + (isResourceExpanded(resource.id) ? resource.operations.length + 1 : 1);
+    if (!isEventExpanded(event.id)) {
+      return total + 1; // Только строка события
+    }
+    return total + 1 + event.resources.reduce((resourceTotal, resource) => {
+      return resourceTotal + 1 + (isResourceExpanded(resource.id) ? resource.operations.length : 0);
     }, 0);
   }, 0);
 };
 
-const hasOperationsInPeriod = (resource: Resource): boolean => {
-  return resource.operations.length > 0;
-};
-
-const getGanttBarStyle = (resource: Resource) => {
-  if (resource.operations.length === 0) return {};
-
-  const firstOperation = resource.operations[0];
-  const lastOperation = resource.operations[resource.operations.length - 1];
-  
-  const startDate = new Date(firstOperation.startDate);
-  const endDate = new Date(lastOperation.endDate || lastOperation.startDate);
+const getEventBarStyle = (event: { startDate: string; endDate: string }) => {
+  const startDate = new Date(event.startDate);
+  const endDate = new Date(event.endDate);
   
   const timelineStart = groupedDates.value[0].start;
   const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
@@ -218,7 +250,7 @@ const getGanttBarStyle = (resource: Resource) => {
   
   return {
     left: `${Math.max(0, startOffset)}%`,
-    width: `${Math.min(100, Math.max(width, 5))}%`, // Минимальная ширина 5%
+    width: `${Math.min(100, Math.max(width, 5))}%`,
     minWidth: '20px'
   };
 };
@@ -282,6 +314,29 @@ const getWellStateClass = (state: OperatingState): string => {
     default:
       return '';
   }
+};
+
+const getGanttBarStyle = (resource: Resource) => {
+  if (resource.operations.length === 0) return {};
+
+  const firstOperation = resource.operations[0];
+  const lastOperation = resource.operations[resource.operations.length - 1];
+  
+  const startDate = new Date(firstOperation.startDate);
+  const endDate = new Date(lastOperation.endDate || lastOperation.startDate);
+  
+  const timelineStart = groupedDates.value[0].start;
+  const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
+  
+  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
+  const startOffset = ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100;
+  const width = ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100;
+  
+  return {
+    left: `${Math.max(0, startOffset)}%`,
+    width: `${Math.min(100, Math.max(width, 5))}%`, // Минимальная ширина 5%
+    minWidth: '20px'
+  };
 };
 
 const getOperationBarStyle = (operation: Operation) => {
@@ -656,5 +711,56 @@ tr:hover {
 .operations-dropdown,
 .operation-item {
   display: none;
+}
+
+.event-row {
+  background-color: #ffffff;
+}
+
+.event-name {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.resource-name {
+  padding-left: 24px;
+  background-color: #f8f9fa;
+}
+
+.resource-title {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: #666;
+}
+
+.resource-bar {
+  height: 22px;
+  opacity: 0.9;
+}
+
+.operation-row {
+  background-color: #f8f9fa;
+}
+
+.operation-name {
+  padding-left: 48px;
+  font-size: 11px;
+  color: #666;
+}
+
+.operation-bar {
+  height: 20px;
+  opacity: 0.8;
+}
+
+.operation-bar .gantt-bar-label {
+  font-size: 10px;
 }
 </style> 
