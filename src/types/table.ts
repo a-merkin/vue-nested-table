@@ -26,10 +26,16 @@ export type OperatingState =
   | 'operating_state_idle'
   | 'operating_state_intake';
 
+export type DateGranularity = 
+  | 'day'
+  | 'week'
+  | 'month';
+
 export interface Operation {
   id: string;
   name: string;
   startDate: string;
+  endDate?: string;
 }
 
 export interface Resource {

@@ -96,19 +96,19 @@ const wells: Well[] = [
 
 <template>
   <div class="app">
-    <h1>Планирование работ на скважинах</h1>
+    <!-- <h1>Планирование работ на скважинах</h1> -->
     <NestedTable :wells="wells" />
   </div>
 </template>
 
 <style>
 .app {
-  padding: 20px;
+  /* padding: 20px; */
   font-family: Arial, sans-serif;
 }
 
 h1 {
   color: #333;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 </style>

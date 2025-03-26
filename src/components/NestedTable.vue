@@ -1,11 +1,23 @@
 <template>
   <div class="nested-table">
+    <div class="controls">
+      <div class="granularity-selector">
+        <label>Детализация:</label>
+        <select v-model="granularity">
+          <option value="day">День</option>
+          <option value="week">Неделя</option>
+          <option value="month">Месяц</option>
+        </select>
+      </div>
+    </div>
     <table>
       <thead>
         <tr>
-          <th>Скважина</th>
-          <th>Бригада</th>
-          <th v-for="date in dates" :key="date">{{ formatDate(date) }}</th>
+          <th class="well-header">Скважина</th>
+          <th class="team-header">Бригада</th>
+          <th v-for="date in groupedDates" :key="date.key" class="date-header">
+            {{ formatDate(date.start, date.end) }}
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -14,28 +26,22 @@
             <td v-if="eventIndex === 0" :rowspan="getWellRowspan(well)" :class="getWellStateClass(well.state)">
               {{ well.name }}
             </td>
-            <td v-for="resource in event.resources" :key="resource.id">
-              {{ resource.name }}
+            <td class="team-cell">
+              <div v-for="resource in event.resources" :key="resource.id" class="team-name">
+                {{ resource.name }}
+              </div>
             </td>
-            <td v-for="date in dates" :key="date">
-              <div v-for="resource in event.resources" :key="resource.id" class="resource-operations">
-                <div v-if="hasOperationsOnDate(resource, date)" 
-                     class="resource-name"
+            <td v-for="date in groupedDates" :key="date.key" class="gantt-cell">
+              <div v-for="resource in event.resources" :key="resource.id" 
+                   class="gantt-bar-container">
+                <div v-if="hasOperationsInRange(resource, date.start, date.end)"
+                     class="gantt-bar"
                      :class="[
-                       { 'expanded': isResourceExpanded(resource.id, date) },
                        getEventKindClass(event.kind),
                        getEventTypeClass(event.type)
                      ]"
-                     @click="toggleResource(resource.id, date)">
-                  <span class="resource-icon">{{ isResourceExpanded(resource.id, date) ? '▼' : '▶' }}</span>
-                  {{ resource.name }}
-                </div>
-                <div v-if="isResourceExpanded(resource.id, date)" class="operations-list">
-                  <div v-for="operation in getOperationsForDate(resource, date)" 
-                       :key="operation.id"
-                       class="operation-cell">
-                    {{ operation.name }}
-                  </div>
+                     :style="getGanttBarStyle(resource, date.start, date.end)">
+                  <div class="gantt-bar-label">{{ resource.name }}</div>
                 </div>
               </div>
             </td>
@@ -48,11 +54,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { Well, Resource, Operation, EventKind, OperatingState, EventType } from '../types/table';
+import type { Well, Resource, Operation, EventKind, OperatingState, EventType, DateGranularity } from '../types/table';
 
 const props = defineProps<{
   wells: Well[];
 }>();
+
+const granularity = ref<DateGranularity>('month');
 
 const expandedResources = ref<Set<string>>(new Set());
 
@@ -69,43 +77,145 @@ const isResourceExpanded = (resourceId: string, date: string): boolean => {
   return expandedResources.value.has(`${resourceId}-${date}`);
 };
 
-const dates = computed(() => {
+const getDateRanges = (startDate: Date, endDate: Date, granularity: DateGranularity) => {
+  const ranges: { start: Date; end: Date; key: string }[] = [];
+  let currentDate = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    let rangeEnd: Date;
+    
+    switch (granularity) {
+      case 'day':
+        rangeEnd = new Date(currentDate);
+        rangeEnd.setHours(23, 59, 59, 999);
+        break;
+      case 'week':
+        rangeEnd = new Date(currentDate);
+        rangeEnd.setDate(currentDate.getDate() + (6 - currentDate.getDay()));
+        rangeEnd.setHours(23, 59, 59, 999);
+        break;
+      case 'month':
+        rangeEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
+        break;
+    }
+
+    ranges.push({
+      start: new Date(currentDate),
+      end: rangeEnd,
+      key: currentDate.toISOString()
+    });
+
+    // Переход к следующему периоду
+    switch (granularity) {
+      case 'day':
+        currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+        break;
+      case 'week':
+        currentDate = new Date(currentDate.setDate(currentDate.getDate() + 7));
+        break;
+      case 'month':
+        currentDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
+        break;
+    }
+  }
+
+  return ranges;
+};
+
+const groupedDates = computed(() => {
   const allDates = new Set<string>();
+  let minDate: Date | null = null;
+  let maxDate: Date | null = null;
+
+  // Находим минимальную и максимальную даты
   props.wells.forEach(well => {
     well.events.forEach(event => {
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
-      let currentDate = new Date(startDate);
-      
-      while (currentDate <= endDate) {
-        allDates.add(currentDate.toISOString().split('T')[0]);
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
+
+      if (!minDate || startDate < minDate) minDate = startDate;
+      if (!maxDate || endDate > maxDate) maxDate = endDate;
     });
   });
-  return Array.from(allDates).sort();
+
+  if (!minDate || !maxDate) return [];
+
+  return getDateRanges(minDate, maxDate, granularity.value);
 });
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('ru-RU');
+const formatDate = (start: Date, end: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  };
+
+  switch (granularity.value) {
+    case 'day':
+      return start.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+    case 'week':
+      return `${start.toLocaleDateString('ru-RU', { day: 'numeric' })} - ${end.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}`;
+    case 'month':
+      return start.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+  }
 };
 
 const getWellRowspan = (well: Well) => {
   return well.events.reduce((total, event) => total + event.resources.length, 0);
 };
 
-const hasOperationsOnDate = (resource: Resource, date: string): boolean => {
+const hasOperationsInRange = (resource: Resource, start: Date, end: Date): boolean => {
   return resource.operations.some(operation => {
-    const operationDate = new Date(operation.startDate).toISOString().split('T')[0];
-    return operationDate === date;
+    const operationDate = new Date(operation.startDate);
+    const operationEnd = operation.endDate ? new Date(operation.endDate) : operationDate;
+    return operationDate <= end && operationEnd >= start;
   });
 };
 
-const getOperationsForDate = (resource: Resource, date: string): Operation[] => {
-  return resource.operations.filter(operation => {
-    const operationDate = new Date(operation.startDate).toISOString().split('T')[0];
-    return operationDate === date;
+const getGanttBarStyle = (resource: Resource, rangeStart: Date, rangeEnd: Date) => {
+  const operationsInRange = resource.operations.filter(operation => {
+    const operationDate = new Date(operation.startDate);
+    const operationEnd = operation.endDate ? new Date(operation.endDate) : operationDate;
+    return operationDate <= rangeEnd && operationEnd >= rangeStart;
   });
+
+  if (operationsInRange.length === 0) return {};
+
+  // Находим самую раннюю и самую позднюю даты операций в диапазоне
+  const firstOperation = operationsInRange[0];
+  const lastOperation = operationsInRange[operationsInRange.length - 1];
+  
+  const start = new Date(Math.max(
+    new Date(firstOperation.startDate).getTime(),
+    rangeStart.getTime()
+  ));
+  
+  const end = new Date(Math.min(
+    new Date(lastOperation.endDate || lastOperation.startDate).getTime(),
+    rangeEnd.getTime()
+  ));
+
+  // Проверяем, является ли это однодневной операцией
+  const isSingleDayOperation = granularity.value === 'day' && 
+    start.toISOString().split('T')[0] === end.toISOString().split('T')[0];
+
+  if (isSingleDayOperation) {
+    // Для однодневной операции занимаем всю ячейку
+    return {
+      left: '0%',
+      width: '100%'
+    };
+  }
+  
+  const rangeDuration = rangeEnd.getTime() - rangeStart.getTime();
+  const startOffset = ((start.getTime() - rangeStart.getTime()) / rangeDuration) * 100;
+  const width = ((end.getTime() - start.getTime()) / rangeDuration) * 100;
+  
+  return {
+    left: `${startOffset}%`,
+    width: `${Math.max(width, 5)}%`, // Минимальная ширина 5% для коротких операций
+    minWidth: '20px'
+  };
 };
 
 const getEventTypeClass = (type: EventType): string => {
@@ -171,6 +281,134 @@ const getWellStateClass = (state: OperatingState): string => {
 </script>
 
 <style scoped>
+.nested-table {
+  overflow-x: auto;
+  margin: 20px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 800px;
+}
+
+th, td {
+  border: 1px solid #C0C0C0;
+  padding: 8px;
+  text-align: left;
+}
+
+.well-header, .team-header {
+  position: sticky;
+  left: 0;
+  background-color: #f5f5f5;
+  z-index: 2;
+}
+
+.team-header {
+  left: 120px;
+}
+
+.date-header {
+  background-color: #f5f5f5;
+  font-weight: 700;
+  font-size: 12px;
+  color: #333333;
+  text-align: center;
+  min-width: 150px;
+}
+
+.gantt-cell {
+  padding: 0;
+  position: relative;
+  vertical-align: top;
+  min-width: 100px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.03) 0px,
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 20px
+  );
+}
+
+.gantt-bar-container {
+  height: 30px;
+  position: relative;
+  margin: 2px 0;
+  width: 100%;
+  padding: 0 2px;
+  box-sizing: border-box;
+}
+
+.gantt-bar {
+  position: absolute;
+  height: 24px;
+  top: 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+.gantt-bar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.gantt-bar-label {
+  font-size: 11px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333333;
+  position: sticky;
+  left: 4px;
+  max-width: calc(100% - 8px);
+}
+
+.team-cell {
+  position: sticky;
+  left: 120px;
+  background-color: #fff;
+  z-index: 1;
+  min-width: 120px;
+}
+
+.team-name {
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+/* Обновленные стили для видов мероприятий */
+.event-kind-gtm {
+  background-color: rgba(227, 242, 253, 0.7);
+  border: 2px solid #1976d2;
+}
+
+.event-kind-otm {
+  background-color: rgba(243, 229, 245, 0.7);
+  border: 2px solid #7b1fa2;
+}
+
+.event-kind-start {
+  background-color: rgba(232, 245, 233, 0.7);
+  border: 2px solid #388e3c;
+}
+
+.event-kind-shut {
+  background-color: rgba(255, 235, 238, 0.7);
+  border: 2px solid #d32f2f;
+}
+
+/* Остальные стили остаются без изменений */
 .nested-table {
   overflow-x: auto;
   margin: 20px;
@@ -336,5 +574,31 @@ tr:hover {
 }
 .well-state-intake:hover {
   background-color: #e1bee7;
+}
+
+.controls {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.granularity-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.granularity-selector select {
+  padding: 0.5rem;
+  border: 1px solid #C0C0C0;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+}
+
+.granularity-selector label {
+  font-size: 12px;
+  color: #333333;
 }
 </style> 
