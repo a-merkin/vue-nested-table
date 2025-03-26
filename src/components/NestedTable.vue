@@ -40,8 +40,16 @@
                        getEventKindClass(event.kind),
                        getEventTypeClass(event.type)
                      ]"
+                     @click="toggleResource(resource.id)"
                      :style="getGanttBarStyle(resource, date.start, date.end)">
                   <div class="gantt-bar-label">{{ resource.name }}</div>
+                  <div v-if="isResourceExpanded(resource.id)" class="operations-dropdown">
+                    <div v-for="operation in resource.operations" 
+                         :key="operation.id"
+                         class="operation-item">
+                      {{ operation.name }} ({{ formatOperationDate(operation.startDate) }})
+                    </div>
+                  </div>
                 </div>
               </div>
             </td>
@@ -64,17 +72,16 @@ const granularity = ref<DateGranularity>('month');
 
 const expandedResources = ref<Set<string>>(new Set());
 
-const toggleResource = (resourceId: string, date: string) => {
-  const key = `${resourceId}-${date}`;
-  if (expandedResources.value.has(key)) {
-    expandedResources.value.delete(key);
+const toggleResource = (resourceId: string) => {
+  if (expandedResources.value.has(resourceId)) {
+    expandedResources.value.delete(resourceId);
   } else {
-    expandedResources.value.add(key);
+    expandedResources.value.add(resourceId);
   }
 };
 
-const isResourceExpanded = (resourceId: string, date: string): boolean => {
-  return expandedResources.value.has(`${resourceId}-${date}`);
+const isResourceExpanded = (resourceId: string): boolean => {
+  return expandedResources.value.has(resourceId);
 };
 
 const getDateRanges = (startDate: Date, endDate: Date, granularity: DateGranularity) => {
@@ -278,6 +285,16 @@ const getWellStateClass = (state: OperatingState): string => {
       return '';
   }
 };
+
+const formatOperationDate = (startDate: string): string => {
+  const date = new Date(startDate);
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  };
+  return date.toLocaleDateString('ru-RU', options);
+};
 </script>
 
 <style scoped>
@@ -300,7 +317,7 @@ th, td {
 }
 
 .well-header, .team-header {
-  position: sticky;
+  /* position: sticky; */
   left: 0;
   background-color: #f5f5f5;
   z-index: 2;
@@ -354,12 +371,13 @@ th, td {
   align-items: center;
   justify-content: flex-start;
   box-sizing: border-box;
+  z-index: 1;
 }
 
 .gantt-bar:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  z-index: 2;
 }
 
 .gantt-bar-label {
@@ -369,13 +387,13 @@ th, td {
   overflow: hidden;
   text-overflow: ellipsis;
   color: #333333;
-  position: sticky;
+  /* position: sticky; */
   left: 4px;
   max-width: calc(100% - 8px);
 }
 
 .team-cell {
-  position: sticky;
+  /* position: sticky; */
   left: 120px;
   background-color: #fff;
   z-index: 1;
@@ -428,7 +446,7 @@ th, td {
 
 th {
   background-color: #f5f5f5;
-  position: sticky;
+  /* position: sticky; */
   top: 0;
   z-index: 1;
 }
@@ -600,5 +618,31 @@ tr:hover {
 .granularity-selector label {
   font-size: 12px;
   color: #333333;
+}
+
+.operations-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 200px;
+  margin-top: 4px;
+  padding: 4px 0;
+}
+
+.operation-item {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #333;
+  cursor: default;
+  transition: background-color 0.2s;
+}
+
+.operation-item:hover {
+  background-color: #f5f5f5;
 }
 </style> 
