@@ -25,16 +25,19 @@ const wells: Well[] = [
                 id: "operation_1",
                 name: "Мобилизация",
                 startDate: "2025-04-01",
+                endDate: "2025-04-02"
               },
               {
                 id: "operation_2",
                 name: "Выполнение работ",
                 startDate: "2025-04-02",
+                endDate: "2025-04-09"
               },
               {
                 id: "operation_3",
                 name: "Демобилизация",
                 startDate: "2025-04-09",
+                endDate: "2025-04-10"
               }
             ]
           },
@@ -47,11 +50,13 @@ const wells: Well[] = [
                 id: "operation_4",
                 name: "Доставка",
                 startDate: "2025-04-01",
+                endDate: "2025-04-03"
               },
               {
                 id: "operation_5",
                 name: "Использование в работе",
                 startDate: "2025-04-03",
+                endDate: "2025-04-09"
               }
             ]
           }
@@ -74,16 +79,19 @@ const wells: Well[] = [
                 id: "operation_6",
                 name: "Осмотр оборудования",
                 startDate: "2025-05-01",
+                endDate: "2025-05-03"
               },
               {
                 id: "operation_7",
                 name: "Ремонт",
                 startDate: "2025-05-03",
+                endDate: "2025-05-05"
               },
               {
                 id: "operation_8",
                 name: "Проверка работы",
                 startDate: "2025-05-05",
+                endDate: "2025-05-05"
               }
             ]
           }
@@ -105,6 +113,7 @@ const wells: Well[] = [
 .app {
   /* padding: 20px; */
   font-family: Arial, sans-serif;
+  /* width: 2000px; */
 }
 
 h1 {

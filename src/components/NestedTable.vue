@@ -240,6 +240,8 @@ const getWellTotalRowspan = (well: Well) => {
 const getEventBarStyle = (event: { startDate: string; endDate: string }) => {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
+  // Устанавливаем конец дня для конечной даты
+  endDate.setHours(23, 59, 59, 999);
   
   const timelineStart = groupedDates.value[0].start;
   const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
@@ -324,6 +326,8 @@ const getGanttBarStyle = (resource: Resource) => {
   
   const startDate = new Date(firstOperation.startDate);
   const endDate = new Date(lastOperation.endDate || lastOperation.startDate);
+  // Устанавливаем конец дня для конечной даты
+  endDate.setHours(23, 59, 59, 999);
   
   const timelineStart = groupedDates.value[0].start;
   const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
@@ -334,14 +338,16 @@ const getGanttBarStyle = (resource: Resource) => {
   
   return {
     left: `${Math.max(0, startOffset)}%`,
-    width: `${Math.min(100, Math.max(width, 5))}%`, // Минимальная ширина 5%
+    width: `${Math.min(100, Math.max(width, 5))}%`,
     minWidth: '20px'
   };
 };
 
 const getOperationBarStyle = (operation: Operation) => {
   const operationDate = new Date(operation.startDate);
-  const operationEndDate = operation.endDate ? new Date(operation.endDate) : operationDate;
+  const operationEndDate = new Date(operation.endDate || operation.startDate);
+  // Устанавливаем конец дня для конечной даты
+  operationEndDate.setHours(23, 59, 59, 999);
   
   const timelineStart = groupedDates.value[0].start;
   const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
