@@ -31,17 +31,17 @@
                 {{ resource.name }}
               </div>
             </td>
-            <td v-for="date in groupedDates" :key="date.key" class="gantt-cell">
+            <td :colspan="groupedDates.length" class="gantt-timeline">
               <div v-for="resource in event.resources" :key="resource.id" 
                    class="gantt-bar-container">
-                <div v-if="hasOperationsInRange(resource, date.start, date.end)"
+                <div v-if="hasOperationsInPeriod(resource)"
                      class="gantt-bar"
                      :class="[
                        getEventKindClass(event.kind),
                        getEventTypeClass(event.type)
                      ]"
                      @click="toggleResource(resource.id)"
-                     :style="getGanttBarStyle(resource, date.start, date.end)">
+                     :style="getGanttBarStyle(resource)">
                   <div class="gantt-bar-label">{{ resource.name }}</div>
                   <div v-if="isResourceExpanded(resource.id)" class="operations-dropdown">
                     <div v-for="operation in resource.operations" 
@@ -171,56 +171,29 @@ const getWellRowspan = (well: Well) => {
   return well.events.reduce((total, event) => total + event.resources.length, 0);
 };
 
-const hasOperationsInRange = (resource: Resource, start: Date, end: Date): boolean => {
-  return resource.operations.some(operation => {
-    const operationDate = new Date(operation.startDate);
-    const operationEnd = operation.endDate ? new Date(operation.endDate) : operationDate;
-    return operationDate <= end && operationEnd >= start;
-  });
+const hasOperationsInPeriod = (resource: Resource): boolean => {
+  return resource.operations.length > 0;
 };
 
-const getGanttBarStyle = (resource: Resource, rangeStart: Date, rangeEnd: Date) => {
-  const operationsInRange = resource.operations.filter(operation => {
-    const operationDate = new Date(operation.startDate);
-    const operationEnd = operation.endDate ? new Date(operation.endDate) : operationDate;
-    return operationDate <= rangeEnd && operationEnd >= rangeStart;
-  });
+const getGanttBarStyle = (resource: Resource) => {
+  if (resource.operations.length === 0) return {};
 
-  if (operationsInRange.length === 0) return {};
-
-  // Находим самую раннюю и самую позднюю даты операций в диапазоне
-  const firstOperation = operationsInRange[0];
-  const lastOperation = operationsInRange[operationsInRange.length - 1];
+  const firstOperation = resource.operations[0];
+  const lastOperation = resource.operations[resource.operations.length - 1];
   
-  const start = new Date(Math.max(
-    new Date(firstOperation.startDate).getTime(),
-    rangeStart.getTime()
-  ));
+  const startDate = new Date(firstOperation.startDate);
+  const endDate = new Date(lastOperation.endDate || lastOperation.startDate);
   
-  const end = new Date(Math.min(
-    new Date(lastOperation.endDate || lastOperation.startDate).getTime(),
-    rangeEnd.getTime()
-  ));
-
-  // Проверяем, является ли это однодневной операцией
-  const isSingleDayOperation = granularity.value === 'day' && 
-    start.toISOString().split('T')[0] === end.toISOString().split('T')[0];
-
-  if (isSingleDayOperation) {
-    // Для однодневной операции занимаем всю ячейку
-    return {
-      left: '0%',
-      width: '100%'
-    };
-  }
+  const timelineStart = groupedDates.value[0].start;
+  const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
   
-  const rangeDuration = rangeEnd.getTime() - rangeStart.getTime();
-  const startOffset = ((start.getTime() - rangeStart.getTime()) / rangeDuration) * 100;
-  const width = ((end.getTime() - start.getTime()) / rangeDuration) * 100;
+  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
+  const startOffset = ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100;
+  const width = ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100;
   
   return {
-    left: `${startOffset}%`,
-    width: `${Math.max(width, 5)}%`, // Минимальная ширина 5% для коротких операций
+    left: `${Math.max(0, startOffset)}%`,
+    width: `${Math.min(100, Math.max(width, 5))}%`, // Минимальная ширина 5%
     minWidth: '20px'
   };
 };
@@ -336,11 +309,10 @@ th, td {
   min-width: 150px;
 }
 
-.gantt-cell {
+.gantt-timeline {
   padding: 0;
   position: relative;
   vertical-align: top;
-  min-width: 100px;
   background: repeating-linear-gradient(
     90deg,
     rgba(0, 0, 0, 0.03) 0px,
