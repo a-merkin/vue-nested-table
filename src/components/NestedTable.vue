@@ -240,19 +240,22 @@ const getWellTotalRowspan = (well: Well) => {
 const getEventBarStyle = (event: { startDate: string; endDate: string }) => {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
-  // Устанавливаем конец дня для конечной даты
+  
+  startDate.setHours(0, 0, 0, 0);
   endDate.setHours(23, 59, 59, 999);
   
-  const timelineStart = groupedDates.value[0].start;
-  const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
+  const timelineStart = new Date(groupedDates.value[0].start);
+  const timelineEnd = new Date(groupedDates.value[groupedDates.value.length - 1].end);
+  
+  timelineStart.setHours(0, 0, 0, 0);
   
   const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
-  const startOffset = ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100;
-  const width = ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100;
+  const startOffset = Math.max(0, ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
+  const width = Math.min(100 - startOffset, ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100);
   
   return {
-    left: `${Math.max(0, startOffset)}%`,
-    width: `${Math.min(100, Math.max(width, 5))}%`,
+    left: `${startOffset}%`,
+    width: `${Math.max(width, 5)}%`,
     minWidth: '20px'
   };
 };
@@ -326,39 +329,45 @@ const getGanttBarStyle = (resource: Resource) => {
   
   const startDate = new Date(firstOperation.startDate);
   const endDate = new Date(lastOperation.endDate || lastOperation.startDate);
-  // Устанавливаем конец дня для конечной даты
+  
+  startDate.setHours(0, 0, 0, 0);
   endDate.setHours(23, 59, 59, 999);
   
-  const timelineStart = groupedDates.value[0].start;
-  const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
+  const timelineStart = new Date(groupedDates.value[0].start);
+  const timelineEnd = new Date(groupedDates.value[groupedDates.value.length - 1].end);
+  
+  timelineStart.setHours(0, 0, 0, 0);
   
   const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
-  const startOffset = ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100;
-  const width = ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100;
+  const startOffset = Math.max(0, ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
+  const width = Math.min(100 - startOffset, ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100);
   
   return {
-    left: `${Math.max(0, startOffset)}%`,
-    width: `${Math.min(100, Math.max(width, 5))}%`,
+    left: `${startOffset}%`,
+    width: `${Math.max(width, 5)}%`,
     minWidth: '20px'
   };
 };
 
 const getOperationBarStyle = (operation: Operation) => {
-  const operationDate = new Date(operation.startDate);
-  const operationEndDate = new Date(operation.endDate || operation.startDate);
-  // Устанавливаем конец дня для конечной даты
-  operationEndDate.setHours(23, 59, 59, 999);
+  const startDate = new Date(operation.startDate);
+  const endDate = new Date(operation.endDate || operation.startDate);
   
-  const timelineStart = groupedDates.value[0].start;
-  const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
+  startDate.setHours(0, 0, 0, 0);
+  endDate.setHours(23, 59, 59, 999);
+  
+  const timelineStart = new Date(groupedDates.value[0].start);
+  const timelineEnd = new Date(groupedDates.value[groupedDates.value.length - 1].end);
+  
+  timelineStart.setHours(0, 0, 0, 0);
   
   const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
-  const startOffset = ((operationDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100;
-  const width = ((operationEndDate.getTime() - operationDate.getTime()) / timelineDuration) * 100;
+  const startOffset = Math.max(0, ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
+  const width = Math.min(100 - startOffset, ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100);
   
   return {
-    left: `${Math.max(0, startOffset)}%`,
-    width: `${Math.min(100, Math.max(width, 5))}%`,
+    left: `${startOffset}%`,
+    width: `${Math.max(width, 5)}%`,
     minWidth: '20px'
   };
 };
@@ -367,7 +376,7 @@ const getOperationBarStyle = (operation: Operation) => {
 <style scoped>
 .nested-table {
   overflow-x: auto;
-  margin: 20px;
+  /* margin: 20px; */
   font-family: 'IBM Plex Mono', monospace;
 }
 
