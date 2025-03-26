@@ -22,38 +22,59 @@
       </thead>
       <tbody>
         <template v-for="well in wells" :key="well.id">
-          <tr v-for="(event, eventIndex) in well.events" :key="event.id">
-            <td v-if="eventIndex === 0" :rowspan="getWellRowspan(well)" :class="getWellStateClass(well.state)">
-              {{ well.name }}
-            </td>
-            <td class="team-cell">
-              <div v-for="resource in event.resources" :key="resource.id" class="team-name">
-                {{ resource.name }}
-              </div>
-            </td>
-            <td :colspan="groupedDates.length" class="gantt-timeline">
-              <div v-for="resource in event.resources" :key="resource.id" 
-                   class="gantt-bar-container">
-                <div v-if="hasOperationsInPeriod(resource)"
-                     class="gantt-bar"
-                     :class="[
-                       getEventKindClass(event.kind),
-                       getEventTypeClass(event.type)
-                     ]"
-                     @click="toggleResource(resource.id)"
-                     :style="getGanttBarStyle(resource)">
-                  <div class="gantt-bar-label">{{ resource.name }}</div>
-                  <div v-if="isResourceExpanded(resource.id)" class="operations-dropdown">
-                    <div v-for="operation in resource.operations" 
-                         :key="operation.id"
-                         class="operation-item">
-                      {{ operation.name }} ({{ formatOperationDate(operation.startDate) }})
+          <template v-for="(event, eventIndex) in well.events" :key="event.id">
+            <template v-for="(resource, resourceIndex) in event.resources" :key="resource.id">
+              <!-- Строка ресурса -->
+              <tr :class="{ 'resource-row': true }">
+                <td v-if="eventIndex === 0 && resourceIndex === 0" 
+                    :rowspan="getWellTotalRowspan(well)" 
+                    :class="getWellStateClass(well.state)">
+                  {{ well.name }}
+                </td>
+                <td class="team-cell">
+                  <div class="team-name" @click="toggleResource(resource.id)">
+                    <span class="expand-icon">{{ isResourceExpanded(resource.id) ? '▼' : '▶' }}</span>
+                    {{ resource.name }}
+                  </div>
+                </td>
+                <td :colspan="groupedDates.length" class="gantt-timeline">
+                  <div class="gantt-bar-container">
+                    <div v-if="hasOperationsInPeriod(resource)"
+                         class="gantt-bar"
+                         :class="[
+                           getEventKindClass(event.kind),
+                           getEventTypeClass(event.type)
+                         ]"
+                         :style="getGanttBarStyle(resource)">
+                      <div class="gantt-bar-label">{{ resource.name }}</div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </td>
-          </tr>
+                </td>
+              </tr>
+              <!-- Строки операций -->
+              <template v-if="isResourceExpanded(resource.id)">
+                <tr v-for="operation in resource.operations" 
+                    :key="operation.id"
+                    class="operation-row">
+                  <td class="team-cell operation-name">
+                    {{ operation.name }}
+                  </td>
+                  <td :colspan="groupedDates.length" class="gantt-timeline">
+                    <div class="gantt-bar-container">
+                      <div class="gantt-bar operation-bar"
+                           :class="[
+                             getEventKindClass(event.kind),
+                             getEventTypeClass(event.type)
+                           ]"
+                           :style="getOperationBarStyle(operation)">
+                        <div class="gantt-bar-label">{{ operation.name }}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </template>
+          </template>
         </template>
       </tbody>
     </table>
@@ -167,8 +188,12 @@ const formatDate = (start: Date, end: Date) => {
   }
 };
 
-const getWellRowspan = (well: Well) => {
-  return well.events.reduce((total, event) => total + event.resources.length, 0);
+const getWellTotalRowspan = (well: Well) => {
+  return well.events.reduce((total, event) => {
+    return total + event.resources.reduce((resourceTotal, resource) => {
+      return resourceTotal + (isResourceExpanded(resource.id) ? resource.operations.length + 1 : 1);
+    }, 0);
+  }, 0);
 };
 
 const hasOperationsInPeriod = (resource: Resource): boolean => {
@@ -259,14 +284,22 @@ const getWellStateClass = (state: OperatingState): string => {
   }
 };
 
-const formatOperationDate = (startDate: string): string => {
-  const date = new Date(startDate);
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
+const getOperationBarStyle = (operation: Operation) => {
+  const operationDate = new Date(operation.startDate);
+  const operationEndDate = operation.endDate ? new Date(operation.endDate) : operationDate;
+  
+  const timelineStart = groupedDates.value[0].start;
+  const timelineEnd = groupedDates.value[groupedDates.value.length - 1].end;
+  
+  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
+  const startOffset = ((operationDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100;
+  const width = ((operationEndDate.getTime() - operationDate.getTime()) / timelineDuration) * 100;
+  
+  return {
+    left: `${Math.max(0, startOffset)}%`,
+    width: `${Math.min(100, Math.max(width, 5))}%`,
+    minWidth: '20px'
   };
-  return date.toLocaleDateString('ru-RU', options);
 };
 </script>
 
@@ -373,8 +406,36 @@ th, td {
 }
 
 .team-name {
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
   padding: 4px 0;
+  font-size: 12px;
+}
+
+.expand-icon {
+  margin-right: 8px;
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+.operation-row {
+  background-color: #f8f9fa;
+}
+
+.operation-name {
+  padding-left: 24px;
+  font-size: 11px;
+  color: #666;
+}
+
+.operation-bar {
+  height: 20px;
+  opacity: 0.8;
+}
+
+.operation-bar .gantt-bar-label {
+  font-size: 10px;
 }
 
 /* Обновленные стили для видов мероприятий */
@@ -592,29 +653,8 @@ tr:hover {
   color: #333333;
 }
 
-.operations-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  min-width: 200px;
-  margin-top: 4px;
-  padding: 4px 0;
-}
-
+.operations-dropdown,
 .operation-item {
-  padding: 8px 12px;
-  font-size: 12px;
-  color: #333;
-  cursor: default;
-  transition: background-color 0.2s;
-}
-
-.operation-item:hover {
-  background-color: #f5f5f5;
+  display: none;
 }
 </style> 
