@@ -781,4 +781,161 @@ tr:hover {
 .operation-bar .gantt-bar-label {
   font-size: 10px;
 }
+
+/* События - самый высокий уровень */
+.event-row .gantt-bar {
+  height: 28px;
+  top: 1px;
+  border-width: 2px;
+  border-style: solid;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  font-weight: 600;
+}
+
+.event-row .gantt-bar-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Ресурсы - средний уровень */
+.resource-row .gantt-bar {
+  height: 24px;
+  top: 3px;
+  border-width: 1px;
+  border-style: solid;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
+}
+
+.resource-row .gantt-bar-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #333333;
+}
+
+/* Операции - нижний уровень */
+.operation-row .gantt-bar {
+  height: 20px;
+  top: 5px;
+  border-width: 1px;
+  border-style: dashed;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3));
+}
+
+.operation-row .gantt-bar-label {
+  font-size: 10px;
+  font-weight: 400;
+  color: #666666;
+}
+
+/* Обновленные стили для видов мероприятий с учетом иерархии */
+.event-kind-gtm {
+  background: linear-gradient(to right, rgba(227, 242, 253, 0.9), rgba(227, 242, 253, 0.7));
+  border-color: #1976d2;
+}
+
+.event-kind-otm {
+  background: linear-gradient(to right, rgba(243, 229, 245, 0.9), rgba(243, 229, 245, 0.7));
+  border-color: #7b1fa2;
+}
+
+.event-kind-start {
+  background: linear-gradient(to right, rgba(232, 245, 233, 0.9), rgba(232, 245, 233, 0.7));
+  border-color: #388e3c;
+}
+
+.event-kind-shut {
+  background: linear-gradient(to right, rgba(255, 235, 238, 0.9), rgba(255, 235, 238, 0.7));
+  border-color: #d32f2f;
+}
+
+/* Стили для названий в левой колонке */
+.event-name {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.03);
+  transition: background-color 0.2s;
+}
+
+.event-name:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.resource-title {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333333;
+  padding: 4px 8px 4px 32px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: background-color 0.2s;
+}
+
+.resource-title:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.operation-name {
+  padding: 3px 8px 3px 48px;
+  font-size: 11px;
+  color: #666666;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.operation-row:hover .operation-name {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Обновленные стили для иконок разворачивания */
+.expand-icon {
+  margin-right: 8px;
+  font-size: 10px;
+  transition: transform 0.2s;
+  opacity: 0.7;
+}
+
+.event-name .expand-icon {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.resource-title .expand-icon {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* Стили для строк */
+.event-row {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.resource-row {
+  background-color: rgba(249, 250, 251, 0.7);
+}
+
+.operation-row {
+  background-color: rgba(250, 250, 250, 0.5);
+}
+
+/* Hover эффекты для строк */
+.event-row:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.resource-row:hover {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.operation-row:hover {
+  background-color: rgba(0, 0, 0, 0.005);
+}
 </style> 
