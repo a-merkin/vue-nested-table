@@ -31,7 +31,7 @@
                 {{ well.name }}
               </td>
               <td class="team-cell">
-                <div class="event-name" @click="toggleEvent(event.id)">
+                <div class="event-name" @click="toggleEvent(event.id)" :title="event.name">
                   <span class="expand-icon">{{ isEventExpanded(event.id) ? '▼' : '▶' }}</span>
                   {{ event.name }}
                 </div>
@@ -43,7 +43,8 @@
                          getEventKindClass(event.kind),
                          getEventTypeClass(event.type)
                        ]"
-                       :style="getEventBarStyle(event)">
+                       :style="getEventBarStyle(event)"
+                       :title="event.name">
                     <div class="gantt-bar-label">{{ event.name }}</div>
                   </div>
                 </div>
@@ -55,7 +56,7 @@
                 <!-- Строка ресурса -->
                 <tr class="resource-row">
                   <td class="team-cell resource-name">
-                    <div class="resource-title" @click="toggleResource(resource.id)">
+                    <div class="resource-title" @click="toggleResource(resource.id)" :title="resource.name">
                       <span class="expand-icon resource-icon">{{ isResourceExpanded(resource.id) ? '▼' : '▶' }}</span>
                       {{ resource.name }}
                     </div>
@@ -67,7 +68,8 @@
                              getEventKindClass(event.kind),
                              getEventTypeClass(event.type)
                            ]"
-                           :style="getGanttBarStyle(resource)">
+                           :style="getGanttBarStyle(resource)"
+                           :title="resource.name">
                         <div class="gantt-bar-label">{{ resource.name }}</div>
                       </div>
                     </div>
@@ -78,7 +80,7 @@
                   <tr v-for="operation in resource.operations" 
                       :key="operation.id"
                       class="operation-row">
-                    <td class="team-cell operation-name">
+                    <td class="team-cell operation-name" :title="operation.name">
                       {{ operation.name }}
                     </td>
                     <td :colspan="groupedDates.length" class="gantt-timeline">
@@ -88,7 +90,8 @@
                                getEventKindClass(event.kind),
                                getEventTypeClass(event.type)
                              ]"
-                             :style="getOperationBarStyle(operation)">
+                             :style="getOperationBarStyle(operation)"
+                             :title="operation.name">
                           <div class="gantt-bar-label">{{ operation.name }}</div>
                         </div>
                       </div>
