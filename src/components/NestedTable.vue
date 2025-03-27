@@ -15,6 +15,7 @@
         <tr>
           <th class="well-header">Скважина</th>
           <th class="team-header">Мероприятие</th>
+          <th class="dates-header">Период</th>
           <th v-for="date in groupedDates" :key="date.key" class="date-header">
             {{ formatDate(date.start, date.end) }}
           </th>
@@ -36,6 +37,7 @@
                   {{ event.name }}
                 </div>
               </td>
+              <td class="dates-cell">{{ formatDateRange(event.startDate, event.endDate) }}</td>
               <td :colspan="groupedDates.length" class="gantt-timeline">
                 <div class="gantt-bar-container">
                   <div class="gantt-bar"
@@ -61,6 +63,7 @@
                       {{ resource.name }}
                     </div>
                   </td>
+                  <td class="dates-cell">{{ formatDateRange(resource.operations[0]?.startDate, resource.operations[resource.operations.length - 1]?.endDate) }}</td>
                   <td :colspan="groupedDates.length" class="gantt-timeline">
                     <div class="gantt-bar-container">
                       <div class="gantt-bar resource-bar"
@@ -83,6 +86,7 @@
                     <td class="team-cell operation-name" :title="operation.name">
                       {{ operation.name }}
                     </td>
+                    <td class="dates-cell">{{ formatDateRange(operation.startDate, operation.endDate || operation.startDate) }}</td>
                     <td :colspan="groupedDates.length" class="gantt-timeline">
                       <div class="gantt-bar-container">
                         <div class="gantt-bar operation-bar"
@@ -227,6 +231,21 @@ const formatDate = (start: Date, end: Date) => {
     case 'month':
       return start.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
   }
+};
+
+const formatDateRange = (startDate: string, endDate: string) => {
+  if (!startDate || !endDate) return '';
+  
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  };
+  
+  return `${start.toLocaleDateString('ru-RU', options)} - ${end.toLocaleDateString('ru-RU', options)}`;
 };
 
 const getWellTotalRowspan = (well: Well) => {
@@ -937,5 +956,20 @@ tr:hover {
 
 .operation-row:hover {
   background-color: rgba(0, 0, 0, 0.005);
+}
+
+.dates-header, .dates-cell {
+  min-width: 200px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  background-color: #fff;
+  white-space: nowrap;
+}
+
+.dates-header {
+  background-color: #f5f5f5;
+  font-weight: 700;
+  color: #333333;
 }
 </style> 
