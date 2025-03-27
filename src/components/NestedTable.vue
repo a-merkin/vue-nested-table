@@ -37,7 +37,9 @@
                   {{ event.name }}
                 </div>
               </td>
-              <td class="dates-cell">{{ formatDateRange(event.startDate, event.endDate) }}</td>
+              <td class="dates-cell" :title="formatDateRange(event.startDate, event.endDate).full">
+                {{ formatDateRange(event.startDate, event.endDate).short }}
+              </td>
               <td :colspan="groupedDates.length" class="gantt-timeline">
                 <div class="gantt-bar-container">
                   <div class="gantt-bar"
@@ -63,7 +65,9 @@
                       {{ resource.name }}
                     </div>
                   </td>
-                  <td class="dates-cell">{{ formatDateRange(resource.operations[0]?.startDate, resource.operations[resource.operations.length - 1]?.endDate) }}</td>
+                  <td class="dates-cell" :title="formatDateRange(resource.operations[0]?.startDate, resource.operations[resource.operations.length - 1]?.endDate).full">
+                    {{ formatDateRange(resource.operations[0]?.startDate, resource.operations[resource.operations.length - 1]?.endDate).short }}
+                  </td>
                   <td :colspan="groupedDates.length" class="gantt-timeline">
                     <div class="gantt-bar-container">
                       <div class="gantt-bar resource-bar"
@@ -86,7 +90,9 @@
                     <td class="team-cell operation-name" :title="operation.name">
                       {{ operation.name }}
                     </td>
-                    <td class="dates-cell">{{ formatDateRange(operation.startDate, operation.endDate || operation.startDate) }}</td>
+                    <td class="dates-cell" :title="formatDateRange(operation.startDate, operation.endDate || operation.startDate).full">
+                      {{ formatDateRange(operation.startDate, operation.endDate || operation.startDate).short }}
+                    </td>
                     <td :colspan="groupedDates.length" class="gantt-timeline">
                       <div class="gantt-bar-container">
                         <div class="gantt-bar operation-bar"
@@ -239,13 +245,30 @@ const formatDateRange = (startDate: string, endDate: string) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
   
-  const options: Intl.DateTimeFormatOptions = {
+  const shortOptions: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
   };
+
+  const fullOptions: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
   
-  return `${start.toLocaleDateString('ru-RU', options)} - ${end.toLocaleDateString('ru-RU', options)}`;
+  // Для отображения в ячейке используем короткий формат
+  const shortFormat = `${start.toLocaleDateString('ru-RU', shortOptions)} - ${end.toLocaleDateString('ru-RU', shortOptions)}`;
+  
+  // Для тултипа используем полный формат с временем
+  const fullFormat = `${start.toLocaleDateString('ru-RU', fullOptions)}, ${start.toLocaleTimeString('ru-RU')} - ${end.toLocaleDateString('ru-RU', fullOptions)}, ${end.toLocaleTimeString('ru-RU')}`;
+  
+  return {
+    short: shortFormat,
+    full: fullFormat
+  };
 };
 
 const getWellTotalRowspan = (well: Well) => {
@@ -399,30 +422,113 @@ const getOperationBarStyle = (operation: Operation) => {
 .nested-table {
   overflow-x: auto;
   /* margin: 20px; */
-  font-family: 'IBM Plex Mono', monospace;
+  /* font-family: 'IBM Plex Mono', monospace; */
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   min-width: 800px;
+  table-layout: fixed;
 }
 
 th, td {
   border: 1px solid #C0C0C0;
-  padding: 8px;
+  padding: 2px 4px;
   text-align: left;
 }
 
-.well-header, .team-header {
-  /* position: sticky; */
-  left: 0;
+.well-header, .team-header, .dates-header {
+  width: fit-content;
+  white-space: nowrap;
   background-color: #f5f5f5;
-  z-index: 2;
+  font-weight: 700;
+  color: #333333;
+  width: 10%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.well-header {
+  max-width: 100px;
 }
 
 .team-header {
-  left: 120px;
+  max-width: 150px;
+}
+
+.team-cell {
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  padding: 2px 4px;
+}
+
+.event-name {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  border-radius: 2px;
+  background-color: rgba(0, 0, 0, 0.03);
+  transition: background-color 0.2s;
+}
+
+.resource-title {
+  /* display: flex; */
+  align-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333333;
+  padding: 2px 4px 2px 16px;
+  border-radius: 2px;
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: background-color 0.2s;
+}
+
+.operation-name {
+  font-size: 11px;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px 4px 2px 28px;
+}
+
+.expand-icon {
+  margin-right: 4px;
+  font-size: 10px;
+  transition: transform 0.2s;
+  opacity: 0.7;
+  min-width: 10px;
+}
+
+.resource-name {
+  font-weight: bold;
+  color: #1976d2;
+  padding: 2px 4px;
+  background-color: #e3f2fd;
+  border-radius: 2px;
+  cursor: pointer;
+  /* display: flex; */
+  align-items: center;
+  transition: background-color 0.2s;
+  margin: 0;
+}
+
+.dates-header, .dates-cell {
+  width: 10%;
+  max-width: 200px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  background-color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .date-header {
@@ -431,13 +537,14 @@ th, td {
   font-size: 12px;
   color: #333333;
   text-align: center;
-  min-width: 150px;
+  width: auto;
 }
 
 .gantt-timeline {
   padding: 0;
   position: relative;
   vertical-align: top;
+  width: auto;
   background: repeating-linear-gradient(
     90deg,
     rgba(0, 0, 0, 0.03) 0px,
@@ -489,112 +596,12 @@ th, td {
   max-width: calc(100% - 8px);
 }
 
-.team-cell {
-  /* position: sticky; */
-  left: 120px;
-  background-color: #fff;
-  z-index: 1;
-  min-width: 120px;
-}
-
 .team-name {
   display: flex;
   align-items: center;
   cursor: pointer;
   padding: 4px 0;
   font-size: 12px;
-}
-
-.expand-icon {
-  margin-right: 8px;
-  font-size: 10px;
-  transition: transform 0.2s;
-}
-
-.operation-row {
-  background-color: #f8f9fa;
-}
-
-.operation-name {
-  padding-left: 24px;
-  font-size: 11px;
-  color: #666;
-}
-
-.operation-bar {
-  height: 20px;
-  opacity: 0.8;
-}
-
-.operation-bar .gantt-bar-label {
-  font-size: 10px;
-}
-
-/* Обновленные стили для видов мероприятий */
-.event-kind-gtm {
-  background-color: rgba(227, 242, 253, 0.7);
-  border: 2px solid #1976d2;
-}
-
-.event-kind-otm {
-  background-color: rgba(243, 229, 245, 0.7);
-  border: 2px solid #7b1fa2;
-}
-
-.event-kind-start {
-  background-color: rgba(232, 245, 233, 0.7);
-  border: 2px solid #388e3c;
-}
-
-.event-kind-shut {
-  background-color: rgba(255, 235, 238, 0.7);
-  border: 2px solid #d32f2f;
-}
-
-/* Остальные стили остаются без изменений */
-.nested-table {
-  overflow-x: auto;
-  margin: 20px;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  min-width: 800px;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f5f5f5;
-  /* position: sticky; */
-  top: 0;
-  z-index: 1;
-}
-
-.resource-operations {
-  margin: 4px 0;
-}
-
-.resource-name {
-  font-weight: bold;
-  color: #1976d2;
-  margin-bottom: 4px;
-  padding: 4px 8px;
-  background-color: #e3f2fd;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.2s;
-}
-
-.resource-name:hover {
-  background-color: #bbdefb;
 }
 
 .resource-icon {
@@ -754,27 +761,9 @@ tr:hover {
   background-color: #ffffff;
 }
 
-.event-name {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 4px 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #333;
-}
-
 .resource-name {
   padding-left: 24px;
   background-color: #f8f9fa;
-}
-
-.resource-title {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 12px;
-  color: #666;
 }
 
 .resource-bar {
@@ -784,12 +773,6 @@ tr:hover {
 
 .operation-row {
   background-color: #f8f9fa;
-}
-
-.operation-name {
-  padding-left: 48px;
-  font-size: 11px;
-  color: #666;
 }
 
 .operation-bar {
@@ -887,7 +870,7 @@ tr:hover {
 }
 
 .resource-title {
-  display: flex;
+  /* display: flex; */
   align-items: center;
   cursor: pointer;
   font-size: 12px;
@@ -956,20 +939,5 @@ tr:hover {
 
 .operation-row:hover {
   background-color: rgba(0, 0, 0, 0.005);
-}
-
-.dates-header, .dates-cell {
-  min-width: 200px;
-  text-align: center;
-  font-size: 12px;
-  color: #666;
-  background-color: #fff;
-  white-space: nowrap;
-}
-
-.dates-header {
-  background-color: #f5f5f5;
-  font-weight: 700;
-  color: #333333;
 }
 </style> 
