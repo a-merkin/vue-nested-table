@@ -121,93 +121,57 @@
 import { computed, ref } from 'vue';
 import type { Well, Resource, Operation, EventKind, OperatingState, EventType, DateGranularity } from '../types/table';
 
+// Типы
+type DateRange = {
+  start: Date;
+  end: Date;
+  key: string;
+};
+
+type FormatDateResult = {
+  short: string;
+  full: string;
+};
+
+// Константы
+const DATE_FORMATS = {
+  SHORT: {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  },
+  FULL: {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }
+} as const;
+
+// Пропсы
 const props = defineProps<{
   wells: Well[];
 }>();
 
+// Состояние
 const granularity = ref<DateGranularity>('month');
-
 const expandedEvents = ref<Set<string>>(new Set());
 const expandedResources = ref<Set<string>>(new Set());
 
-const toggleEvent = (eventId: string) => {
-  if (expandedEvents.value.has(eventId)) {
-    expandedEvents.value.delete(eventId);
-    // При сворачивании события сворачиваем все его ресурсы
-    expandedResources.value.clear();
-  } else {
-    expandedEvents.value.add(eventId);
-  }
-};
+// Вычисляемые свойства
+const groupedDates = computed<DateRange[]>(() => {
+  const { minDate, maxDate } = findDateRange(props.wells);
+  if (!minDate || !maxDate) return [];
+  return getDateRanges(minDate, maxDate, granularity.value);
+});
 
-const isEventExpanded = (eventId: string): boolean => {
-  return expandedEvents.value.has(eventId);
-};
-
-const toggleResource = (resourceId: string) => {
-  if (expandedResources.value.has(resourceId)) {
-    expandedResources.value.delete(resourceId);
-  } else {
-    expandedResources.value.add(resourceId);
-  }
-};
-
-const isResourceExpanded = (resourceId: string): boolean => {
-  return expandedResources.value.has(resourceId);
-};
-
-const getDateRanges = (startDate: Date, endDate: Date, granularity: DateGranularity) => {
-  const ranges: { start: Date; end: Date; key: string }[] = [];
-  let currentDate = new Date(startDate);
-
-  while (currentDate <= endDate) {
-    let rangeEnd: Date;
-    
-    switch (granularity) {
-      case 'day':
-        rangeEnd = new Date(currentDate);
-        rangeEnd.setHours(23, 59, 59, 999);
-        break;
-      case 'week':
-        rangeEnd = new Date(currentDate);
-        rangeEnd.setDate(currentDate.getDate() + (6 - currentDate.getDay()));
-        rangeEnd.setHours(23, 59, 59, 999);
-        break;
-      case 'month':
-        rangeEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
-        break;
-    }
-
-    ranges.push({
-      start: new Date(currentDate),
-      end: rangeEnd,
-      key: currentDate.toISOString()
-    });
-
-    // Переход к следующему периоду
-    switch (granularity) {
-      case 'day':
-        currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
-        break;
-      case 'week':
-        currentDate = new Date(currentDate.setDate(currentDate.getDate() + 7));
-        break;
-      case 'month':
-        currentDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
-        break;
-    }
-  }
-
-  return ranges;
-};
-
-const groupedDates = computed(() => {
-  const allDates = new Set<string>();
+// Методы для работы с датами
+const findDateRange = (wells: Well[]) => {
   let minDate: Date | null = null;
   let maxDate: Date | null = null;
 
-  // Находим минимальную и максимальную даты
-  props.wells.forEach(well => {
+  wells.forEach(well => {
     well.events.forEach(event => {
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
@@ -217,18 +181,66 @@ const groupedDates = computed(() => {
     });
   });
 
-  if (!minDate || !maxDate) return [];
+  return { minDate, maxDate };
+};
 
-  return getDateRanges(minDate, maxDate, granularity.value);
-});
+const getDateRanges = (startDate: Date, endDate: Date, granularity: DateGranularity): DateRange[] => {
+  const ranges: DateRange[] = [];
+  let currentDate = new Date(startDate);
 
-const formatDate = (start: Date, end: Date) => {
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  };
+  while (currentDate <= endDate) {
+    const rangeEnd = calculateRangeEnd(currentDate, granularity);
+    ranges.push({
+      start: new Date(currentDate),
+      end: rangeEnd,
+      key: currentDate.toISOString()
+    });
+    currentDate = getNextDate(currentDate, granularity);
+  }
 
+  return ranges;
+};
+
+const calculateRangeEnd = (date: Date, granularity: DateGranularity): Date => {
+  const end = new Date(date);
+  
+  switch (granularity) {
+    case 'day':
+      end.setHours(23, 59, 59, 999);
+      break;
+    case 'week':
+      end.setDate(date.getDate() + (6 - date.getDay()));
+      end.setHours(23, 59, 59, 999);
+      break;
+    case 'month':
+      end.setMonth(end.getMonth() + 1, 0);
+      end.setHours(23, 59, 59, 999);
+      break;
+  }
+  
+  return end;
+};
+
+const getNextDate = (date: Date, granularity: DateGranularity): Date => {
+  const next = new Date(date);
+  
+  switch (granularity) {
+    case 'day':
+      next.setDate(next.getDate() + 1);
+      break;
+    case 'week':
+      next.setDate(next.getDate() + 7);
+      break;
+    case 'month':
+      next.setMonth(next.getMonth() + 1);
+      break;
+  }
+  
+  return next;
+};
+
+// Форматирование дат
+const formatDate = (start: Date, end: Date): string => {
   switch (granularity.value) {
     case 'day':
       return start.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
@@ -236,45 +248,103 @@ const formatDate = (start: Date, end: Date) => {
       return `${start.toLocaleDateString('ru-RU', { day: 'numeric' })} - ${end.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}`;
     case 'month':
       return start.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+    default:
+      return '';
   }
 };
 
-const formatDateRange = (startDate: string, endDate: string) => {
-  if (!startDate || !endDate) return '';
+const formatDateRange = (startDate: string, endDate: string): FormatDateResult => {
+  if (!startDate || !endDate) {
+    return { short: '', full: '' };
+  }
   
   const start = new Date(startDate);
   const end = new Date(endDate);
   
-  const shortOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  };
-
-  const fullOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  };
-  
-  // Для отображения в ячейке используем короткий формат
-  const shortFormat = `${start.toLocaleDateString('ru-RU', shortOptions)} - ${end.toLocaleDateString('ru-RU', shortOptions)}`;
-  
-  // Для тултипа используем полный формат с временем
-  const fullFormat = `${start.toLocaleDateString('ru-RU', fullOptions)}, ${start.toLocaleTimeString('ru-RU')} - ${end.toLocaleDateString('ru-RU', fullOptions)}, ${end.toLocaleTimeString('ru-RU')}`;
-  
   return {
-    short: shortFormat,
-    full: fullFormat
+    short: formatDateToString(start, end, DATE_FORMATS.SHORT),
+    full: formatDateToString(start, end, DATE_FORMATS.FULL)
   };
 };
 
-const getWellTotalRowspan = (well: Well) => {
+const formatDateToString = (start: Date, end: Date, options: Intl.DateTimeFormatOptions): string => {
+  const startStr = start.toLocaleDateString('ru-RU', options);
+  const endStr = end.toLocaleDateString('ru-RU', options);
+  
+  if (options === DATE_FORMATS.FULL) {
+    const startTime = start.toLocaleTimeString('ru-RU');
+    const endTime = end.toLocaleTimeString('ru-RU');
+    return `${startStr}, ${startTime} - ${endStr}, ${endTime}`;
+  }
+  
+  return `${startStr} - ${endStr}`;
+};
+
+// Управление состоянием разворачивания
+const toggleEvent = (eventId: string): void => {
+  if (expandedEvents.value.has(eventId)) {
+    expandedEvents.value.delete(eventId);
+    expandedResources.value.clear();
+  } else {
+    expandedEvents.value.add(eventId);
+  }
+};
+
+const toggleResource = (resourceId: string): void => {
+  if (expandedResources.value.has(resourceId)) {
+    expandedResources.value.delete(resourceId);
+  } else {
+    expandedResources.value.add(resourceId);
+  }
+};
+
+const isEventExpanded = (eventId: string): boolean => expandedEvents.value.has(eventId);
+const isResourceExpanded = (resourceId: string): boolean => expandedResources.value.has(resourceId);
+
+// Вычисление стилей для диаграммы Ганта
+const calculateGanttBarStyle = (startDate: string, endDate: string): { left: string; width: string; minWidth: string } => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  start.setHours(0, 0, 0, 0);
+  end.setHours(23, 59, 59, 999);
+  
+  const timelineStart = new Date(groupedDates.value[0].start);
+  const timelineEnd = new Date(groupedDates.value[groupedDates.value.length - 1].end);
+  
+  timelineStart.setHours(0, 0, 0, 0);
+  
+  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
+  const startOffset = Math.max(0, ((start.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
+  const width = Math.min(100 - startOffset, ((end.getTime() - start.getTime()) / timelineDuration) * 100);
+  
+  return {
+    left: `${startOffset}%`,
+    width: `${Math.max(width, 5)}%`,
+    minWidth: '20px'
+  };
+};
+
+const getEventBarStyle = (event: { startDate: string; endDate: string }) => 
+  calculateGanttBarStyle(event.startDate, event.endDate);
+
+const getGanttBarStyle = (resource: Resource) => {
+  if (resource.operations.length === 0) return {};
+  
+  const firstOperation = resource.operations[0];
+  const lastOperation = resource.operations[resource.operations.length - 1];
+  
+  return calculateGanttBarStyle(firstOperation.startDate, lastOperation.endDate || lastOperation.startDate);
+};
+
+const getOperationBarStyle = (operation: Operation) => 
+  calculateGanttBarStyle(operation.startDate, operation.endDate || operation.startDate);
+
+// Вспомогательные методы для классов
+const getWellTotalRowspan = (well: Well): number => {
   return well.events.reduce((total, event) => {
     if (!isEventExpanded(event.id)) {
-      return total + 1; // Только строка события
+      return total + 1;
     }
     return total + 1 + event.resources.reduce((resourceTotal, resource) => {
       return resourceTotal + 1 + (isResourceExpanded(resource.id) ? resource.operations.length : 0);
@@ -282,140 +352,9 @@ const getWellTotalRowspan = (well: Well) => {
   }, 0);
 };
 
-const getEventBarStyle = (event: { startDate: string; endDate: string }) => {
-  const startDate = new Date(event.startDate);
-  const endDate = new Date(event.endDate);
-  
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(23, 59, 59, 999);
-  
-  const timelineStart = new Date(groupedDates.value[0].start);
-  const timelineEnd = new Date(groupedDates.value[groupedDates.value.length - 1].end);
-  
-  timelineStart.setHours(0, 0, 0, 0);
-  
-  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
-  const startOffset = Math.max(0, ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
-  const width = Math.min(100 - startOffset, ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100);
-  
-  return {
-    left: `${startOffset}%`,
-    width: `${Math.max(width, 5)}%`,
-    minWidth: '20px'
-  };
-};
-
-const getEventTypeClass = (type: EventType): string => {
-  switch (type) {
-    // ГТМ
-    case 'event_type_grp':
-      return 'event-type-grp';
-    case 'event_type_opz':
-      return 'event-type-opz';
-    case 'event_type_zbs':
-      return 'event-type-zbs';
-    case 'event_type_vns':
-      return 'event-type-vns';
-    // ОТМ
-    case 'event_type_krs':
-      return 'event-type-krs';
-    case 'event_type_trs':
-      return 'event-type-trs';
-    case 'event_type_ppr':
-      return 'event-type-ppr';
-    // Запуски
-    case 'event_type_start':
-      return 'event-type-start';
-    // Отключения
-    case 'event_type_conservation':
-      return 'event-type-conservation';
-    case 'event_type_liquidation':
-      return 'event-type-liquidation';
-    default:
-      return '';
-  }
-};
-
-const getEventKindClass = (kind: EventKind): string => {
-  switch (kind) {
-    case 'event_kind_gtm':
-      return 'event-kind-gtm';
-    case 'event_kind_otm':
-      return 'event-kind-otm';
-    case 'event_kind_start':
-      return 'event-kind-start';
-    case 'event_kind_shut':
-      return 'event-kind-shut';
-    default:
-      return '';
-  }
-};
-
-const getWellStateClass = (state: OperatingState): string => {
-  switch (state) {
-    case 'operating_state_prod':
-      return 'well-state-prod';
-    case 'operating_state_inje':
-      return 'well-state-inje';
-    case 'operating_state_idle':
-      return 'well-state-idle';
-    case 'operating_state_intake':
-      return 'well-state-intake';
-    default:
-      return '';
-  }
-};
-
-const getGanttBarStyle = (resource: Resource) => {
-  if (resource.operations.length === 0) return {};
-
-  const firstOperation = resource.operations[0];
-  const lastOperation = resource.operations[resource.operations.length - 1];
-  
-  const startDate = new Date(firstOperation.startDate);
-  const endDate = new Date(lastOperation.endDate || lastOperation.startDate);
-  
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(23, 59, 59, 999);
-  
-  const timelineStart = new Date(groupedDates.value[0].start);
-  const timelineEnd = new Date(groupedDates.value[groupedDates.value.length - 1].end);
-  
-  timelineStart.setHours(0, 0, 0, 0);
-  
-  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
-  const startOffset = Math.max(0, ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
-  const width = Math.min(100 - startOffset, ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100);
-  
-  return {
-    left: `${startOffset}%`,
-    width: `${Math.max(width, 5)}%`,
-    minWidth: '20px'
-  };
-};
-
-const getOperationBarStyle = (operation: Operation) => {
-  const startDate = new Date(operation.startDate);
-  const endDate = new Date(operation.endDate || operation.startDate);
-  
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(23, 59, 59, 999);
-  
-  const timelineStart = new Date(groupedDates.value[0].start);
-  const timelineEnd = new Date(groupedDates.value[groupedDates.value.length - 1].end);
-  
-  timelineStart.setHours(0, 0, 0, 0);
-  
-  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
-  const startOffset = Math.max(0, ((startDate.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
-  const width = Math.min(100 - startOffset, ((endDate.getTime() - startDate.getTime()) / timelineDuration) * 100);
-  
-  return {
-    left: `${startOffset}%`,
-    width: `${Math.max(width, 5)}%`,
-    minWidth: '20px'
-  };
-};
+const getEventKindClass = (kind: EventKind): string => `event-kind-${kind.replace('event_kind_', '')}`;
+const getEventTypeClass = (type: EventType): string => `event-type-${type.replace('event_type_', '')}`;
+const getWellStateClass = (state: OperatingState): string => `well-state-${state.replace('operating_state_', '')}`;
 </script>
 
 <style scoped>
