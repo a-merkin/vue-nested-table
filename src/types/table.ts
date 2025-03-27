@@ -42,6 +42,8 @@ export interface Resource {
   id: string;
   name: string;
   type: string;
+  startDate: string;
+  endDate: string;
   operations: Operation[];
 }
 
@@ -49,7 +51,7 @@ export interface Event {
   id: string;
   name: string;
   type: EventType;
-  kind: EventKind;
+  kind?: EventKind;
   startDate: string;
   endDate: string;
   resources: Resource[];

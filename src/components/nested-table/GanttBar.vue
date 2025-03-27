@@ -5,7 +5,7 @@
            getEventKindClass(kind),
            getEventTypeClass(type),
            `${styleType}-bar`
-         ]"
+         ].filter(Boolean)"
          :style="calculateBarStyle()"
          :title="item.name">
       <div class="gantt-bar-label">{{ item.name }}</div>
@@ -31,7 +31,7 @@ type Item = {
 const props = defineProps<{
   item: Item;
   groupedDates: DateRange[];
-  kind: EventKind;
+  kind?: EventKind;
   type: EventType;
   styleType: 'event' | 'resource' | 'operation';
 }>();
@@ -59,7 +59,8 @@ const calculateBarStyle = () => {
   };
 };
 
-const getEventKindClass = (kind: EventKind): string => `event-kind-${kind.replace('event_kind_', '')}`;
+const getEventKindClass = (kind?: EventKind): string => 
+  kind ? `event-kind-${kind.replace('event_kind_', '')}` : '';
 const getEventTypeClass = (type: EventType): string => `event-type-${type.replace('event_type_', '')}`;
 </script>
 
