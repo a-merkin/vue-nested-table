@@ -20,12 +20,22 @@ const wells: Well[] = [
           {
             state: "operating_state_prod",
             startDate: "2025-01-01",
+            endDate: "2025-02-15"
+          },
+          {
+            state: "operating_state_idle",
+            startDate: "2025-02-15",
+            endDate: "2025-03-01"
+          },
+          {
+            state: "operating_state_inje",
+            startDate: "2025-03-01",
             endDate: "2025-04-11"
           },
           {
             state: "operating_state_idle",
             startDate: "2025-04-11",
-            endDate: "2025-12-31"
+            endDate: "2026-01-01"
           }
         ]
       },

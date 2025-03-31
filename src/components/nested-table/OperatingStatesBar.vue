@@ -1,6 +1,6 @@
 <template>
   <div class="operating-states-container">
-    <div v-for="state in operating_states" 
+    <div v-for="state in validOperatingStates" 
          :key="state.startDate" 
          class="operating-state"
          :class="getStateClass(state.state)"
@@ -10,29 +10,35 @@
 </template>
 
 <script setup lang="ts">
-interface OperatingState {
-  state: string;
-  startDate: string;
-  endDate: string;
-}
+import { computed } from 'vue';
+import type { OperatingStateEntry } from '../../types/table';
+import { validateOperatingStates } from '../../types/table';
 
-const props = defineProps<{
-  operating_states?: OperatingState[];
+interface Props {
+  operating_states?: OperatingStateEntry[];
   groupedDates: Array<{
     start: Date;
     end: Date;
     key: string;
   }>;
-}>();
+}
 
-const operating_states = props.operating_states ?? [];
+const props = defineProps<Props>();
 
-const calculateStateStyle = (state: OperatingState) => {
+const validOperatingStates = computed(() => {
+  const states = props.operating_states ?? [];
+  return validateOperatingStates(states) ? states : [];
+});
+
+const calculateStateStyle = (state: OperatingStateEntry) => {
   const start = new Date(state.startDate);
   const end = new Date(state.endDate);
   
+  // Устанавливаем начало дня для начальной даты
   start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
+  
+  // Для конечной даты берем начало дня (не включаем саму дату окончания)
+  end.setHours(0, 0, 0, 0);
   
   const timelineStart = new Date(props.groupedDates[0].start);
   const timelineEnd = new Date(props.groupedDates[props.groupedDates.length - 1].end);
@@ -72,8 +78,18 @@ const getStateClass = (state: string): string => `state-${state.replace('operati
   border-right: 2px solid rgba(76, 175, 80, 0.5);
 }
 
+.state-inje {
+  background: linear-gradient(to right, rgba(33, 150, 243, 0.3), rgba(33, 150, 243, 0.2));
+  border-right: 2px solid rgba(33, 150, 243, 0.5);
+}
+
 .state-idle {
   background: linear-gradient(to right, rgba(244, 67, 54, 0.3), rgba(244, 67, 54, 0.2));
   border-right: 2px solid rgba(244, 67, 54, 0.5);
+}
+
+.state-intake {
+  background: linear-gradient(to right, rgba(156, 39, 176, 0.3), rgba(156, 39, 176, 0.2));
+  border-right: 2px solid rgba(156, 39, 176, 0.5);
 }
 </style> 

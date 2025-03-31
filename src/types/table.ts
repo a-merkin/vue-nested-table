@@ -66,4 +66,35 @@ export interface Well {
   startDate: string;
   endDate: string;
   events: Event[];
+}
+
+export interface OperatingStateEntry {
+  state: OperatingState;
+  startDate: string;
+  endDate: string;
+}
+
+export function validateOperatingStates(states: OperatingStateEntry[]): boolean {
+  if (states.length === 0) return true;
+  
+  // Сортируем состояния по дате начала
+  const sortedStates = [...states].sort((a, b) => 
+    new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+  );
+  
+  // Проверяем, что каждое следующее состояние начинается в день окончания предыдущего
+  for (let i = 0; i < sortedStates.length - 1; i++) {
+    const currentEnd = new Date(sortedStates[i].endDate);
+    const nextStart = new Date(sortedStates[i + 1].startDate);
+    
+    // Устанавливаем время в начало дня для корректного сравнения
+    currentEnd.setHours(0, 0, 0, 0);
+    nextStart.setHours(0, 0, 0, 0);
+    
+    if (currentEnd.getTime() !== nextStart.getTime()) {
+      return false;
+    }
+  }
+  
+  return true;
 } 
