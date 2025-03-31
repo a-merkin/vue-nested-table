@@ -5,6 +5,7 @@ export type EventKind =
   | 'event_kind_shut';
 
 export type EventType = 
+  | 'base_production'
   // ГТМ
   | 'event_type_grp'
   | 'event_type_opz'
@@ -35,7 +36,7 @@ export interface Operation {
   id: string;
   name: string;
   startDate: string;
-  endDate?: string;
+  endDate: string;
 }
 
 export interface Resource {
@@ -54,12 +55,15 @@ export interface Event {
   kind?: EventKind;
   startDate: string;
   endDate: string;
-  resources: Resource[];
+  resources?: Resource[];
+  operating_states?: { state: OperatingState; startDate: string; endDate: string; }[];
 }
 
 export interface Well {
   id: string;
   name: string;
   state: OperatingState;
+  startDate: string;
+  endDate: string;
   events: Event[];
 } 

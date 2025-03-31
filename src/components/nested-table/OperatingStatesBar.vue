@@ -17,13 +17,15 @@ interface OperatingState {
 }
 
 const props = defineProps<{
-  operating_states: OperatingState[];
+  operating_states?: OperatingState[];
   groupedDates: Array<{
     start: Date;
     end: Date;
     key: string;
   }>;
 }>();
+
+const operating_states = props.operating_states ?? [];
 
 const calculateStateStyle = (state: OperatingState) => {
   const start = new Date(state.startDate);

@@ -119,9 +119,9 @@ const getWellTotalRowspan = (well: Well): number => {
     if (!isEventExpanded(event.id)) {
       return total + 1;
     }
-    return total + 1 + event.resources.reduce((resourceTotal, resource) => {
+    return total + 1 + (event.resources?.reduce((resourceTotal, resource) => {
       return resourceTotal + 1 + (isResourceExpanded(resource.id) ? resource.operations.length : 0);
-    }, 0);
+    }, 0) ?? 0);
   }, 0);
 };
 
