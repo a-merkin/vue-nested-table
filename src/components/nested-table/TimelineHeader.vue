@@ -24,8 +24,11 @@ defineProps<{
   font-size: 12px;
   color: #333333;
   text-align: center;
-  width: auto;
+  min-width: 45px;
   border: 1px solid #C0C0C0;
   padding: 2px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style> 

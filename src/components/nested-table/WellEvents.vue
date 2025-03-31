@@ -4,7 +4,7 @@
     <tr :class="{ 'event-row': true }">
       <td v-if="eventIndex === 0" 
           :rowspan="getWellTotalRowspan(well)" 
-          :class="getWellStateClass(well.state)">
+          :class="['well-name-cell', getWellStateClass(well.state)]">
         {{ well.name }}
       </td>
       <td class="team-cell">
@@ -129,11 +129,59 @@ const getWellStateClass = (state: OperatingState): string => `well-state-${state
 </script>
 
 <style scoped>
+/* Фиксированные ширины для первых трех колонок */
+.well-name-cell {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 120px;
+  max-width: 120px;
+  background-color: #fff;
+}
+
 .team-cell {
-  white-space: nowrap;
+  position: sticky;
+  left: 120px;
+  z-index: 2;
+  min-width: 150px;
   max-width: 150px;
   overflow: hidden;
   padding: 2px 4px;
+  white-space: nowrap;
+  background-color: #fff;
+}
+
+.dates-cell {
+  position: sticky;
+  left: 270px;
+  z-index: 2;
+  min-width: 100px;
+  max-width: 100px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  background-color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gantt-timeline {
+  padding: 0;
+  position: relative;
+  vertical-align: top;
+  width: auto;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.03) 0px,
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 45px
+  );
+}
+
+.gantt-timeline > * {
+  min-width: 45px;
 }
 
 .event-name {
@@ -196,32 +244,6 @@ const getWellStateClass = (state: OperatingState): string => `well-state-${state
 .resource-title .expand-icon {
   font-size: 10px;
   opacity: 0.7;
-}
-
-.dates-cell {
-  width: 10%;
-  max-width: 200px;
-  text-align: center;
-  font-size: 12px;
-  color: #666;
-  background-color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.gantt-timeline {
-  padding: 0;
-  position: relative;
-  vertical-align: top;
-  width: auto;
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0.03) 0px,
-    rgba(0, 0, 0, 0.03) 1px,
-    transparent 1px,
-    transparent 20px
-  );
 }
 
 /* Цвета для состояний скважин */
