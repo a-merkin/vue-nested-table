@@ -244,6 +244,7 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
   align-items: center;
   overflow: hidden;
   min-width: 20px;
+  max-width: 100%;
 }
 
 .inner-operation:hover {
@@ -261,5 +262,7 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
   padding: 0 4px;
   color: #333;
   user-select: none;
+  width: 100%;
+  min-width: 0;
 }
 </style> 
