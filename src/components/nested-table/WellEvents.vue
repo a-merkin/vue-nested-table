@@ -17,13 +17,21 @@
         {{ formatDateRange(event.startDate, event.endDate).short }}
       </td>
       <td :colspan="groupedDates.length" class="gantt-timeline">
-        <GanttBar
-          :item="event"
-          :grouped-dates="groupedDates"
-          :kind="event.kind"
-          :type="event.type"
-          :style-type="'event'"
-        />
+        <template v-if="event.type === 'base_production'">
+          <OperatingStatesBar
+            :operating_states="event.operating_states"
+            :grouped-dates="groupedDates"
+          />
+        </template>
+        <template v-else>
+          <GanttBar
+            :item="event"
+            :grouped-dates="groupedDates"
+            :kind="event.kind"
+            :type="event.type"
+            :style-type="'event'"
+          />
+        </template>
       </td>
     </tr>
     <!-- Строки ресурсов и их операций -->
@@ -81,6 +89,7 @@
 import type { Well, Resource, Operation, EventKind, OperatingState, EventType } from '../../types/table';
 import { useDateFormatting } from '../../composables/useDateFormatting';
 import GanttBar from './GanttBar.vue';
+import OperatingStatesBar from './OperatingStatesBar.vue';
 
 type DateRange = {
   start: Date;
@@ -217,12 +226,8 @@ const getWellStateClass = (state: OperatingState): string => `well-state-${state
 
 /* Цвета для состояний скважин */
 .well-state-prod {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-  font-weight: bold;
-}
-.well-state-prod:hover {
-  background-color: #c8e6c9;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-left: 3px solid #4CAF50;
 }
 
 .well-state-inje {
@@ -235,12 +240,8 @@ const getWellStateClass = (state: OperatingState): string => `well-state-${state
 }
 
 .well-state-idle {
-  background-color: #fff3e0;
-  color: #ef6c00;
-  font-weight: bold;
-}
-.well-state-idle:hover {
-  background-color: #ffe0b2;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-left: 3px solid #F44336;
 }
 
 .well-state-intake {
