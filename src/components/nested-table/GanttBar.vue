@@ -9,6 +9,15 @@
          :style="calculateBarStyle()"
          :title="item.name">
       <div class="gantt-bar-label">{{ item.name }}</div>
+      <template v-if="styleType === 'resource' && item.operations">
+        <div v-for="operation in item.operations"
+             :key="operation.id"
+             class="inner-operation"
+             :style="calculateInnerOperationStyle(operation)"
+             :title="operation.name">
+          <span class="inner-operation-label">{{ operation.name }}</span>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -22,10 +31,18 @@ type DateRange = {
   key: string;
 };
 
+type Operation = {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+};
+
 type Item = {
   name: string;
   startDate: string;
   endDate: string;
+  operations?: Operation[];
 };
 
 const props = defineProps<{
@@ -59,6 +76,29 @@ const calculateBarStyle = () => {
   };
 };
 
+const calculateInnerOperationStyle = (operation: Operation) => {
+  const start = new Date(operation.startDate);
+  const end = new Date(operation.endDate);
+  
+  start.setHours(0, 0, 0, 0);
+  end.setHours(23, 59, 59, 999);
+  
+  const resourceStart = new Date(props.item.startDate);
+  const resourceEnd = new Date(props.item.endDate);
+  
+  resourceStart.setHours(0, 0, 0, 0);
+  resourceEnd.setHours(23, 59, 59, 999);
+  
+  const resourceDuration = resourceEnd.getTime() - resourceStart.getTime();
+  const startOffset = Math.max(0, ((start.getTime() - resourceStart.getTime()) / resourceDuration) * 100);
+  const width = Math.min(100 - startOffset, ((end.getTime() - start.getTime()) / resourceDuration) * 100);
+  
+  return {
+    left: `${startOffset}%`,
+    width: `${Math.max(width, 2)}%`
+  };
+};
+
 const getEventKindClass = (kind?: EventKind): string => 
   kind ? `event-kind-${kind.replace('event_kind_', '')}` : '';
 const getEventTypeClass = (type: EventType): string => `event-type-${type.replace('event_type_', '')}`;
@@ -66,9 +106,9 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 <style scoped>
 .gantt-bar-container {
-  height: 30px;
+  height: 60px;
   position: relative;
-  margin: 2px 0;
+  margin: 4px 0;
   width: 100%;
   padding: 0 2px;
   box-sizing: border-box;
@@ -85,10 +125,12 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
   justify-content: flex-start;
   box-sizing: border-box;
   z-index: 1;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .gantt-bar:hover {
-  transform: translateY(-1px);
+  transform: translateY(calc(-50% - 1px));
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 2;
 }
@@ -104,8 +146,7 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 /* События - самый высокий уровень */
 .event-bar {
-  height: 28px;
-  top: 1px;
+  height: 40px;
   border-width: 2px;
   border-style: solid;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
@@ -120,23 +161,29 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 /* Ресурсы - средний уровень */
 .resource-bar {
-  height: 24px;
-  top: 3px;
+  height: 50px;
   border-width: 1px;
   border-style: solid;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .resource-bar .gantt-bar-label {
   font-size: 11px;
   font-weight: 500;
   color: #333333;
+  padding: 6px 8px;
+  height: 20px;
+  display: flex;
+  align-items: center;
 }
 
 /* Операции - нижний уровень */
 .operation-bar {
-  height: 20px;
-  top: 5px;
+  height: 30px;
   border-width: 1px;
   border-style: dashed;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3));
@@ -183,4 +230,36 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 .event-type-conservation { border-right: 3px solid #d32f2f; }
 .event-type-liquidation { border-right: 3px solid #f44336; }
+
+/* Стили для внутренних операций */
+.inner-operation {
+  position: absolute;
+  height: 16px;
+  bottom: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  min-width: 20px;
+}
+
+.inner-operation:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scaleY(1.2);
+  z-index: 3;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.inner-operation-label {
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+  color: #333;
+  user-select: none;
+}
 </style> 
