@@ -42,7 +42,7 @@
           <td class="team-cell resource-name">
             <div class="resource-title" @click="$emit('toggle-resource', resource.id)" :title="resource.name">
               <span class="expand-icon resource-icon">{{ isResourceExpanded(resource.id) ? '▼' : '▶' }}</span>
-              {{ resource.name }}
+              <span>{{ resource.name }}</span>
             </div>
           </td>
           <td class="dates-cell" :title="formatDateRange(resource.operations[0]?.startDate, resource.operations[resource.operations.length - 1]?.endDate).full">
@@ -211,6 +211,16 @@ const getWellStateClass = (state: OperatingState): string => `well-state-${state
   border-radius: 4px;
   background-color: #F9F9F9;
   transition: background-color 0.2s;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.resource-title > span:not(.expand-icon) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
 }
 
 .resource-title:hover {

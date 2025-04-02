@@ -130,9 +130,9 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 }
 
 .gantt-bar:hover {
-  transform: translateY(calc(-50% - 1px));
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 2;
+  transform: translateY(calc(-50% - 1px));
+  /* z-index: 2; */
 }
 
 .gantt-bar-label {
@@ -249,8 +249,8 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 .inner-operation:hover {
   background: rgba(255, 255, 255, 1);
-  transform: scaleY(1.2);
-  z-index: 3;
+  /* transform: scaleY(1.2); */
+  /* z-index: 3; */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
