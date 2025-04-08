@@ -56,7 +56,7 @@ export interface Event {
   startDate: string | null;
   endDate: string | null;
   resources?: Resource[];
-  operating_states?: { state: OperatingState; startDate: string; endDate: string; }[];
+  operating_states?: OperatingStateEntry[];
 }
 
 export interface Well {
@@ -67,7 +67,7 @@ export interface Well {
 }
 
 export interface OperatingStateEntry {
-  state: OperatingState;
+  state: OperatingState | null;
   startDate: string;
   endDate: string;
 }

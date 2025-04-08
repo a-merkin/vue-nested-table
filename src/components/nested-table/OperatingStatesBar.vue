@@ -55,7 +55,10 @@ const calculateStateStyle = (state: OperatingStateEntry) => {
   };
 };
 
-const getStateClass = (state: string): string => `state-${state.replace('operating_state_', '')}`;
+const getStateClass = (state: string | null): string => {
+  if (state === null) return 'state-null';
+  return `state-${state.replace('operating_state_', '')}`;
+};
 </script>
 
 <style scoped>
@@ -91,5 +94,13 @@ const getStateClass = (state: string): string => `state-${state.replace('operati
 .state-intake {
   background: linear-gradient(to right, rgba(156, 39, 176, 0.3), rgba(156, 39, 176, 0.2));
   border-right: 2px solid rgba(156, 39, 176, 0.5);
+}
+
+/* Стиль для null состояния */
+.state-null {
+  background-image: radial-gradient(circle at 50% 50%, rgba(128, 128, 128, 0.3) 2px, transparent 2px);
+  background-size: 8px 8px;
+  background-color: rgba(200, 200, 200, 0.2);
+  border-right: 2px solid rgba(128, 128, 128, 0.5);
 }
 </style>

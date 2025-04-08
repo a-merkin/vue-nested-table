@@ -4,78 +4,48 @@ import type { Well } from './types/table';
 
 const wells: Well[] = [
     {
-        id: "152",
-        name: "60",
-        state: "operating_state_prod",
-        events: [
+        "id": "group_1.gtm_1",
+        "name": "ВНС_1",
+        "state": "operating_state_prod",
+        "events": [
             {
-                id: "152.base",
-                name: "База",
-                type: "base_production",
-                startDate: null,
-                endDate: null,
-                operating_states: [
+                "id": "group_1.gtm_1",
+                "name": "ВНС_1",
+                "kind": "event_kind_gtm",
+                "type": "event_type_vns",
+                "startDate": null,
+                "endDate": null,
+                "resources": [],
+                "operating_states": [
                     {
-                        startDate: "2025-03-01",
-                        endDate: "2025-04-01",
-                        state: "operating_state_prod"
+                        "startDate": "2025-03-01",
+                        "endDate": "2025-04-01",
+                        "state": null
                     }
                 ]
-            },
-            {
-                id: "group_1.gtm_2",
-                name: "ЗБС_60",
-                kind: "event_kind_gtm",
-                type: "event_type_zbs",
-                startDate: null,
-                endDate: null,
-                resources: []
             }
         ]
     },
     {
-        id: "155",
-        name: "61",
-        state: "operating_state_idle",
-        events: [
+        "id": "group_1.gtm_2",
+        "name": "ВНС_2",
+        "state": "operating_state_prod",
+        "events": [
             {
-                id: "155.base",
-                name: "База",
-                type: "base_production",
-                startDate: null,
-                endDate: null,
-                operating_states: [
+                "id": "group_1.gtm_2",
+                "name": "ВНС_2",
+                "kind": "event_kind_gtm",
+                "type": "event_type_vns",
+                "startDate": null,
+                "endDate": null,
+                "resources": [],
+                "operating_states": [
                     {
-                        startDate: "2025-03-01",
-                        endDate: "2025-04-01",
-                        state: "operating_state_idle"
+                        "startDate": "2025-03-01",
+                        "endDate": "2025-04-01",
+                        "state": null
                     }
                 ]
-            },
-            {
-                id: "group_1.gtm_3",
-                name: "ГРП_61",
-                kind: "event_kind_gtm",
-                type: "event_type_grp",
-                startDate: null,
-                endDate: null,
-                resources: []
-            }
-        ]
-    },
-    {
-        id: "group_1.gtm_1",
-        name: "ВНС_1",
-        state: "operating_state_prod",
-        events: [
-            {
-                id: "group_1.gtm_1",
-                name: "ВНС_1",
-                kind: "event_kind_gtm",
-                type: "event_type_vns",
-                startDate: null,
-                endDate: null,
-                resources: []
             }
         ]
     }
