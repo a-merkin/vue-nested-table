@@ -11,9 +11,9 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/vue-nested-table.es.js",
-      "require": "./dist/vue-nested-table.umd.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/vue-nested-table.umd.js"
     }
   },
   "scripts": {

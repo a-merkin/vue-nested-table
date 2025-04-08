@@ -25,6 +25,7 @@ export default defineConfig({
     rollupOptions: {
       external: ['vue'],
       output: {
+        exports: 'named',
         globals: {
           vue: 'Vue'
         },
@@ -36,6 +37,15 @@ export default defineConfig({
     },
     sourcemap: true,
     minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      },
+      format: {
+        comments: false
+      }
+    },
     cssCodeSplit: false,
     target: 'esnext'
   }
