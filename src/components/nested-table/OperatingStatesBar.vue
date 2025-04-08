@@ -1,7 +1,7 @@
 <template>
   <div class="operating-states-container">
-    <div v-for="state in validOperatingStates" 
-         :key="state.startDate" 
+    <div v-for="state in validOperatingStates"
+         :key="state.startDate"
          class="operating-state"
          :class="getStateClass(state.state)"
          :style="calculateStateStyle(state)">
@@ -33,22 +33,22 @@ const validOperatingStates = computed(() => {
 const calculateStateStyle = (state: OperatingStateEntry) => {
   const start = new Date(state.startDate);
   const end = new Date(state.endDate);
-  
+
   // Устанавливаем начало дня для начальной даты
   start.setHours(0, 0, 0, 0);
-  
+
   // Для конечной даты берем начало дня (не включаем саму дату окончания)
   end.setHours(0, 0, 0, 0);
-  
+
   const timelineStart = new Date(props.groupedDates[0].start);
   const timelineEnd = new Date(props.groupedDates[props.groupedDates.length - 1].end);
-  
+
   timelineStart.setHours(0, 0, 0, 0);
-  
+
   const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
   const startOffset = Math.max(0, ((start.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
   const width = Math.min(100 - startOffset, ((end.getTime() - start.getTime()) / timelineDuration) * 100);
-  
+
   return {
     left: `${startOffset}%`,
     width: `${width}%`
@@ -92,4 +92,4 @@ const getStateClass = (state: string): string => `state-${state.replace('operati
   background: linear-gradient(to right, rgba(156, 39, 176, 0.3), rgba(156, 39, 176, 0.2));
   border-right: 2px solid rgba(156, 39, 176, 0.5);
 }
-</style> 
+</style>

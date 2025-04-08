@@ -15,8 +15,8 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity>) 
 
     wells.forEach(well => {
       well.events.forEach(event => {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
+        const startDate = new Date(event.startDate || 0);
+        const endDate = new Date(event.endDate || 0 );
 
         if (!minDate || startDate < minDate) minDate = startDate;
         if (!maxDate || endDate > maxDate) maxDate = endDate;

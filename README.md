@@ -1,6 +1,85 @@
-# vue-nested-table
+# Vue Nested Table
 
-This template should help get you started developing with Vue 3 in Vite.
+Вложенная таблица для Vue 3 с поддержкой группировки и раскрывающихся строк.
+
+## Установка
+
+```bash
+npm install vue-nested-table
+# или
+yarn add vue-nested-table
+```
+
+## Использование
+
+### Глобальная регистрация
+
+```typescript
+import { createApp } from 'vue'
+import VueNestedTable from 'vue-nested-table'
+import App from './App.vue'
+
+const app = createApp(App)
+app.use(VueNestedTable)
+app.mount('#app')
+```
+
+### Локальная регистрация
+
+```vue
+<template>
+  <NestedTable :wells="wells" />
+</template>
+
+<script setup lang="ts">
+import { NestedTable } from 'vue-nested-table'
+import type { Well } from 'vue-nested-table'
+
+const wells: Well[] = [
+  // ваши данные
+]
+</script>
+```
+
+## Типы данных
+
+```typescript
+interface Well {
+  id: string | number
+  name: string
+  events: Event[]
+}
+
+interface Event {
+  id: string | number
+  name: string
+  startDate: string | Date
+  endDate: string | Date
+  resources: Resource[]
+}
+
+interface Resource {
+  id: string | number
+  name: string
+  startDate: string | Date
+  endDate: string | Date
+}
+
+type DateGranularity = 'day' | 'week' | 'month'
+```
+
+## Пропсы
+
+| Имя | Тип | Обязательный | Описание |
+|-----|-----|--------------|-----------|
+| wells | Well[] | Да | Массив данных для отображения в таблице |
+
+## События
+
+| Имя | Параметры | Описание |
+|-----|-----------|-----------|
+| toggle-event | (eventId: string \| number) => void | Вызывается при раскрытии/скрытии события |
+| toggle-resource | (resourceId: string \| number) => void | Вызывается при раскрытии/скрытии ресурса |
 
 ## Recommended IDE Setup
 
@@ -37,4 +116,3 @@ npm run build
 ```sh
 npm run lint
 ```
-# vue-nested-table
