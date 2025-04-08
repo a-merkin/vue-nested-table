@@ -59,6 +59,9 @@ const { groupedDates, formatDate } = useDateRanges(props.wells, granularity);
 <style scoped>
 .nested-table {
   width: 100%;
+  --table-border-color: #C0C0C0;
+  --table-header-bg: #f5f5f5;
+  --table-header-color: #333333;
 }
 
 .table-container {
@@ -75,7 +78,7 @@ table {
 }
 
 th {
-  border: 1px solid #C0C0C0;
+  border: 1px solid var(--table-border-color);
   padding: 2px 4px;
   text-align: left;
   min-width: 45px;
@@ -88,7 +91,7 @@ th {
   width: 120px;
   min-width: 120px;
   max-width: 120px;
-  background-color: #f5f5f5;
+  background-color: var(--table-header-bg);
 }
 
 .team-header {
@@ -98,7 +101,7 @@ th {
   width: 150px;
   min-width: 150px;
   max-width: 150px;
-  background-color: #f5f5f5;
+  background-color: var(--table-header-bg);
 }
 
 .dates-header {
@@ -108,7 +111,7 @@ th {
   width: 100px;
   min-width: 100px;
   max-width: 100px;
-  background-color: #f5f5f5;
+  background-color: var(--table-header-bg);
 }
 
 th:not(.well-header):not(.team-header):not(.dates-header) {
@@ -118,7 +121,7 @@ th:not(.well-header):not(.team-header):not(.dates-header) {
 .well-header, .team-header, .dates-header {
   white-space: nowrap;
   font-weight: 700;
-  color: #333333;
+  color: var(--table-header-color);
   overflow: hidden;
   text-overflow: ellipsis;
 }

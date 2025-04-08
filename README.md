@@ -1,30 +1,14 @@
 # Vue Nested Table
 
-Вложенная таблица для Vue 3 с поддержкой группировки и раскрывающихся строк.
+Вложенная таблица для Vue 3 с поддержкой иерархических данных и временной шкалы.
 
 ## Установка
 
 ```bash
 npm install vue-nested-table
-# или
-yarn add vue-nested-table
 ```
 
 ## Использование
-
-### Глобальная регистрация
-
-```typescript
-import { createApp } from 'vue'
-import VueNestedTable from 'vue-nested-table'
-import App from './App.vue'
-
-const app = createApp(App)
-app.use(VueNestedTable)
-app.mount('#app')
-```
-
-### Локальная регистрация
 
 ```vue
 <template>
@@ -36,50 +20,110 @@ import { NestedTable } from 'vue-nested-table'
 import type { Well } from 'vue-nested-table'
 
 const wells: Well[] = [
-  // ваши данные
+  {
+    id: '1',
+    name: 'Скважина 1',
+    state: 'operating_state_prod',
+    events: [
+      {
+        id: '1',
+        name: 'Событие 1',
+        type: 'base_production',
+        startDate: '2024-01-01',
+        endDate: '2024-01-31',
+        resources: [
+          {
+            id: '1',
+            name: 'Ресурс 1',
+            type: 'type1',
+            startDate: '2024-01-01',
+            endDate: '2024-01-15',
+            operations: [
+              {
+                id: '1',
+                name: 'Операция 1',
+                startDate: '2024-01-01',
+                endDate: '2024-01-15'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ]
 </script>
 ```
 
 ## Типы данных
 
+### Well
 ```typescript
 interface Well {
-  id: string | number
-  name: string
-  events: Event[]
+  id: string;
+  name: string;
+  state: OperatingState;
+  events: Event[];
 }
-
-interface Event {
-  id: string | number
-  name: string
-  startDate: string | Date
-  endDate: string | Date
-  resources: Resource[]
-}
-
-interface Resource {
-  id: string | number
-  name: string
-  startDate: string | Date
-  endDate: string | Date
-}
-
-type DateGranularity = 'day' | 'week' | 'month'
 ```
 
-## Пропсы
+### Event
+```typescript
+interface Event {
+  id: string;
+  name: string;
+  type: EventType;
+  kind?: EventKind;
+  startDate: string | null;
+  endDate: string | null;
+  resources?: Resource[];
+  operating_states?: { state: OperatingState; startDate: string; endDate: string; }[];
+}
+```
 
-| Имя | Тип | Обязательный | Описание |
-|-----|-----|--------------|-----------|
-| wells | Well[] | Да | Массив данных для отображения в таблице |
+### Resource
+```typescript
+interface Resource {
+  id: string;
+  name: string;
+  type: string;
+  startDate: string;
+  endDate: string;
+  operations: Operation[];
+}
+```
+
+### Operation
+```typescript
+interface Operation {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+```
 
 ## События
 
-| Имя | Параметры | Описание |
-|-----|-----------|-----------|
-| toggle-event | (eventId: string \| number) => void | Вызывается при раскрытии/скрытии события |
-| toggle-resource | (resourceId: string \| number) => void | Вызывается при раскрытии/скрытии ресурса |
+Компонент поддерживает следующие события:
+- `toggle-event` - при раскрытии/скрытии события
+- `toggle-resource` - при раскрытии/скрытии ресурса
+
+## Стилизация
+
+Компонент использует scoped стили, но вы можете переопределить их через CSS-переменные:
+
+```css
+.nested-table {
+  --table-border-color: #C0C0C0;
+  --table-header-bg: #f5f5f5;
+  --table-header-color: #333333;
+}
+```
+
+## Лицензия
+
+MIT
 
 ## Recommended IDE Setup
 

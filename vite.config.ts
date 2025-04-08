@@ -27,8 +27,16 @@ export default defineConfig({
       output: {
         globals: {
           vue: 'Vue'
-        }
+        },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === 'style.css') return 'vue-nested-table.css';
+          return assetInfo.name || '';
+        },
       }
-    }
+    },
+    sourcemap: true,
+    minify: 'terser',
+    cssCodeSplit: false,
+    target: 'esnext'
   }
 })

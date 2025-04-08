@@ -1,7 +1,7 @@
 {
   "name": "vue-nested-table",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "type": "module",
   "main": "dist/vue-nested-table.umd.js",
   "module": "dist/vue-nested-table.es.js",
@@ -22,11 +22,13 @@
     "preview": "vite preview",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "prepare": "npm run build"
   },
-  "dependencies": {
-    "vue": "^3.5.13"
+  "peerDependencies": {
+    "vue": "^3.5.0"
   },
+  "dependencies": {},
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
     "@types/node": "^22.13.9",
@@ -42,6 +44,24 @@
     "typescript": "~5.8.0",
     "vite": "^6.2.1",
     "vite-plugin-vue-devtools": "^7.7.2",
+    "vue": "^3.5.13",
     "vue-tsc": "^2.2.8"
-  }
+  },
+  "keywords": [
+    "vue",
+    "table",
+    "nested",
+    "vue3",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/vue-nested-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/vue-nested-table/issues"
+  },
+  "homepage": "https://github.com/yourusername/vue-nested-table#readme"
 }
