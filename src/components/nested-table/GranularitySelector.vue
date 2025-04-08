@@ -2,7 +2,7 @@
   <div class="controls">
     <div class="granularity-selector">
       <label>Детализация:</label>
-      <select :value="modelValue" @input="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)">
+      <select :value="modelValue" @input="$emit('update:modelValue', ($event.target as HTMLSelectElement).value as DateGranularity)">
         <option value="day">День</option>
         <option value="week">Неделя</option>
         <option value="month">Месяц</option>
@@ -49,4 +49,4 @@ defineEmits<{
   font-size: 12px;
   color: #333333;
 }
-</style> 
+</style>

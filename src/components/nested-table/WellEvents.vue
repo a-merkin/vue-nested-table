@@ -23,7 +23,7 @@
             :grouped-dates="groupedDates"
           />
         </template>
-        <template v-else>
+        <template v-else-if="event.startDate && event.endDate">
           <GanttBar
             :item="event"
             :grouped-dates="groupedDates"
@@ -50,6 +50,7 @@
           </td>
           <td :colspan="groupedDates.length" class="gantt-timeline">
             <GanttBar
+              v-if="resource.operations[0]?.startDate && resource.operations[resource.operations.length - 1]?.endDate"
               :item="resource"
               :grouped-dates="groupedDates"
               :kind="event.kind"
@@ -71,6 +72,7 @@
             </td>
             <td :colspan="groupedDates.length" class="gantt-timeline">
               <GanttBar
+                v-if="operation.startDate && operation.endDate"
                 :item="operation"
                 :grouped-dates="groupedDates"
                 :kind="event.kind"
@@ -86,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Well, Resource, Operation, EventKind, OperatingState, EventType } from '../../types/table';
+import type { Well, OperatingState } from '../../types/table';
 import { useDateFormatting } from '../../composables/useDateFormatting';
 import GanttBar from './GanttBar.vue';
 import OperatingStatesBar from './OperatingStatesBar.vue';
@@ -259,7 +261,6 @@ const getWellStateClass = (state: OperatingState): string => `well-state-${state
 /* Цвета для состояний скважин */
 .well-state-prod {
   background-color: #E8F5E9;
-  /* border-left: 3px solid #4CAF50; */
 }
 
 .well-state-inje {

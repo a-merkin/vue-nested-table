@@ -11,6 +11,7 @@
             <th class="team-header">Мероприятие</th>
             <th class="dates-header">Период</th>
             <TimelineHeader
+              v-if="groupedDates.length > 1"
               :dates="groupedDates"
               :format-date="formatDate"
             />
@@ -34,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import type { Well, DateGranularity } from '../types/table';
 import { useDateRanges } from '../composables/useDateRanges';
 import { useExpansionState } from '../composables/useExpansionState';
@@ -121,4 +122,4 @@ th:not(.well-header):not(.team-header):not(.dates-header) {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-</style> 
+</style>

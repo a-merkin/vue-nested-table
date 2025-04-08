@@ -28,7 +28,7 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity>) 
 
   const calculateRangeEnd = (date: Date, granularityValue: DateGranularity): Date => {
     const end = new Date(date);
-    
+
     switch (granularityValue) {
       case 'day':
         end.setHours(23, 59, 59, 999);
@@ -42,13 +42,13 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity>) 
         end.setHours(23, 59, 59, 999);
         break;
     }
-    
+
     return end;
   };
 
   const getNextDate = (date: Date, granularityValue: DateGranularity): Date => {
     const next = new Date(date);
-    
+
     switch (granularityValue) {
       case 'day':
         next.setDate(next.getDate() + 1);
@@ -60,7 +60,7 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity>) 
         next.setMonth(next.getMonth() + 1);
         break;
     }
-    
+
     return next;
   };
 
@@ -104,4 +104,4 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity>) 
     groupedDates,
     formatDate
   };
-}; 
+};

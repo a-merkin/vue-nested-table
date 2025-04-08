@@ -40,8 +40,8 @@ type Operation = {
 
 type Item = {
   name: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
   operations?: Operation[];
 };
 
@@ -54,6 +54,12 @@ const props = defineProps<{
 }>();
 
 const calculateBarStyle = () => {
+  if (!props.item.startDate || !props.item.endDate) {
+    return {
+      display: 'none'
+    };
+  }
+
   const start = new Date(props.item.startDate);
   const end = new Date(props.item.endDate);
   
@@ -83,8 +89,8 @@ const calculateInnerOperationStyle = (operation: Operation) => {
   start.setHours(0, 0, 0, 0);
   end.setHours(23, 59, 59, 999);
   
-  const resourceStart = new Date(props.item.startDate);
-  const resourceEnd = new Date(props.item.endDate);
+  const resourceStart = new Date(props.item.startDate || '');
+  const resourceEnd = new Date(props.item.endDate || '');
   
   resourceStart.setHours(0, 0, 0, 0);
   resourceEnd.setHours(23, 59, 59, 999);
@@ -132,7 +138,6 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 .gantt-bar:hover {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   transform: translateY(calc(-50% - 1px));
-  /* z-index: 2; */
 }
 
 .gantt-bar-label {
@@ -249,8 +254,6 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 .inner-operation:hover {
   background: rgba(255, 255, 255, 1);
-  /* transform: scaleY(1.2); */
-  /* z-index: 3; */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
