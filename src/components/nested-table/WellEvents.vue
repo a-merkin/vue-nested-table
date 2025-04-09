@@ -2,10 +2,34 @@
   <template v-for="(event, eventIndex) in well.events" :key="event.id">
     <!-- Строка события -->
     <tr :class="{ 'event-row': true }">
-      <td v-if="eventIndex === 0" 
-          :rowspan="getWellTotalRowspan(well)" 
+      <td v-if="eventIndex === 0"
+          :rowspan="getWellTotalRowspan(well)"
           :class="['well-name-cell', getWellStateClass(well.state)]">
-        {{ well.name }}
+        <div class="well-name-container" :title="well.name">
+          <span class="well-name">{{ well.name }}</span>
+          <div class="well-actions">
+            <button
+              class="action-button edit-button"
+              @click="$emit('well-action', { type: 'edit', wellId: well.id })"
+              title="Редактировать скважину"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button
+              class="action-button add-button"
+              @click="$emit('well-action', { type: 'add', wellId: well.id })"
+              title="Добавить мероприятие"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
       </td>
       <td class="team-cell">
         <div class="event-name" @click="$emit('toggle-event', event.id)" :title="event.name">
@@ -61,7 +85,7 @@
         </tr>
         <!-- Строки операций -->
         <template v-if="isResourceExpanded(resource.id)">
-          <tr v-for="operation in resource.operations" 
+          <tr v-for="operation in resource.operations"
               :key="operation.id"
               class="operation-row">
             <td class="team-cell operation-name" :title="operation.name">
@@ -109,6 +133,7 @@ const props = defineProps<{
 defineEmits<{
   (e: 'toggle-event', eventId: string): void;
   (e: 'toggle-resource', resourceId: string): void;
+  (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
 }>();
 
 const { formatDateRange } = useDateFormatting();
@@ -313,4 +338,63 @@ const getWellStateClass = (state: OperatingState): string => `well-state-${state
 .operation-row:hover {
   background-color: #FCFCFC;
 }
-</style> 
+
+.well-name-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  min-height: 32px;
+}
+
+.well-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.well-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.well-name-cell:hover .well-actions {
+  opacity: 1;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.action-button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.action-button:active {
+  background-color: #e0e0e0;
+}
+
+.edit-button:hover {
+  color: #2196F3;
+}
+
+.add-button:hover {
+  color: #4CAF50;
+}
+</style>

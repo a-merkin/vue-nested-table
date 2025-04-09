@@ -51,13 +51,30 @@ const wells: Well[] = [
     }
 ]
 
+// Обработчики событий
+const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => {
+  const well = wells.find(w => w.id === payload.wellId);
+  if (!well) return;
 
+  if (payload.type === 'edit') {
+    // Здесь можно добавить логику редактирования скважины
+    console.log('Редактирование скважины:', payload.wellId);
+    // Например, открыть модальное окно для редактирования
+  } else {
+    // Здесь можно добавить логику добавления мероприятия
+    console.log('Добавление мероприятия для скважины:', payload.wellId);
+    // Например, открыть модальное окно для добавления мероприятия
+  }
+};
 </script>
 
 <template>
   <div class="app">
     <!-- <h1>Планирование работ на скважинах</h1> -->
-    <NestedTable :wells="wells" />
+    <NestedTable
+      :wells="wells"
+      @well-action="handleWellAction"
+    />
   </div>
 </template>
 

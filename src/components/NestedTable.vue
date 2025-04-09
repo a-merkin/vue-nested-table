@@ -11,8 +11,8 @@
             <th class="team-header">Мероприятие</th>
             <th class="dates-header">Период</th>
             <TimelineHeader
-              v-if="groupedDates.length > 1"
-              :dates="groupedDates"
+              v-if="groupedDates?.value?.length > 1"
+              :dates="groupedDates?.value"
               :format-date="formatDate"
             />
           </tr>
@@ -21,11 +21,12 @@
           <template v-for="well in wells" :key="well.id">
             <WellEvents
               :well="well"
-              :grouped-dates="groupedDates"
-              :expanded-events="expandedEvents"
-              :expanded-resources="expandedResources"
+              :grouped-dates="groupedDates?.value || []"
+              :expanded-events="expandedEvents?.value || new Set()"
+              :expanded-resources="expandedResources?.value || new Set()"
               @toggle-event="toggleEvent"
               @toggle-resource="toggleResource"
+              @well-action="handleWellAction"
             />
           </template>
         </tbody>
@@ -48,12 +49,22 @@ const props = defineProps<{
   wells: Well[];
 }>();
 
+// Эмиты
+const emit = defineEmits<{
+  (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
+}>();
+
 // Состояние
 const granularity = ref<DateGranularity>('month');
 
 // Композиции
 const { expandedEvents, expandedResources, toggleEvent, toggleResource } = useExpansionState();
 const { groupedDates, formatDate } = useDateRanges(props.wells, granularity);
+
+// Обработчики
+const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => {
+  emit('well-action', payload);
+};
 </script>
 
 <style scoped>

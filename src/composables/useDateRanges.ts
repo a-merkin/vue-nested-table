@@ -8,7 +8,7 @@ type DateRange = {
   key: string;
 };
 
-export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity>) => {
+export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> | { value: DateGranularity }) => {
   const findDateRange = (wells: Well[]) => {
     let minDate: Date | null = null;
     let maxDate: Date | null = null;

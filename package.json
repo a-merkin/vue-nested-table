@@ -14,7 +14,8 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/vue-nested-table.es.js",
       "require": "./dist/vue-nested-table.umd.js"
-    }
+    },
+    "./style.css": "./dist/vue-nested-table.css"
   },
   "scripts": {
     "dev": "vite",
@@ -23,7 +24,8 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
@@ -63,5 +65,8 @@
   "bugs": {
     "url": "https://github.com/yourusername/vue-nested-table/issues"
   },
-  "homepage": "https://github.com/yourusername/vue-nested-table#readme"
+  "homepage": "https://github.com/yourusername/vue-nested-table#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
