@@ -32,4 +32,4 @@ export const useExpansionState = () => {
     isEventExpanded,
     isResourceExpanded
   };
-}; 
+};

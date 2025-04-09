@@ -2,7 +2,7 @@ import { computed } from 'vue';
 import type { Ref } from 'vue';
 import type { Well, DateGranularity } from '../types/table';
 
-type DateRange = {
+export type DateRange = {
   start: Date;
   end: Date;
   key: string;

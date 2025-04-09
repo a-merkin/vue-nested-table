@@ -11,8 +11,8 @@
             <th class="team-header">Мероприятие</th>
             <th class="dates-header">Период</th>
             <TimelineHeader
-              v-if="groupedDates?.value?.length > 1"
-              :dates="groupedDates?.value"
+              v-if="(groupedDates as unknown as DateRange[]).length > 1"
+              :dates="groupedDates as unknown as DateRange[]"
               :format-date="formatDate"
             />
           </tr>
@@ -21,9 +21,9 @@
           <template v-for="well in wells" :key="well.id">
             <WellEvents
               :well="well"
-              :grouped-dates="groupedDates?.value || []"
-              :expanded-events="expandedEvents?.value || new Set()"
-              :expanded-resources="expandedResources?.value || new Set()"
+              :grouped-dates="groupedDates as unknown as DateRange[]"
+              :expanded-events="expandedEvents as unknown as Set<string>"
+              :expanded-resources="expandedResources as unknown as Set<string>"
               @toggle-event="toggleEvent"
               @toggle-resource="toggleResource"
               @well-action="handleWellAction"
@@ -38,6 +38,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { Well, DateGranularity } from '../types/table';
+import type { DateRange } from '../composables/useDateRanges';
 import { useDateRanges } from '../composables/useDateRanges';
 import { useExpansionState } from '../composables/useExpansionState';
 import GranularitySelector from './nested-table/GranularitySelector.vue';

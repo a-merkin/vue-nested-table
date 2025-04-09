@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import NestedTable from './components/NestedTable.vue';
 import type { Well } from './types/table';
+import { ref } from 'vue';
 
-const wells: Well[] = [
+const wells = ref<Well[]>([
     {
         "id": "group_1.gtm_1",
         "name": "ВНС_1",
@@ -49,11 +50,11 @@ const wells: Well[] = [
             }
         ]
     }
-]
+])
 
 // Обработчики событий
 const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => {
-  const well = wells.find(w => w.id === payload.wellId);
+  const well = wells.value.find(w => w.id === payload.wellId);
   if (!well) return;
 
   if (payload.type === 'edit') {
