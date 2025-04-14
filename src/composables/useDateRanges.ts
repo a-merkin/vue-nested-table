@@ -13,15 +13,68 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
     let minDate: Date | null = null;
     let maxDate: Date | null = null;
 
-    wells.forEach(well => {
-      well.events.forEach(event => {
-        const startDate = new Date(event.startDate || 0);
-        const endDate = new Date(event.endDate || 0 );
+    const updateDateRange = (startDate: string | null, endDate: string | null) => {
+      if (!startDate || !endDate) return;
 
-        if (!minDate || startDate < minDate) minDate = startDate;
-        if (!maxDate || endDate > maxDate) maxDate = endDate;
+      try {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        // Проверяем валидность дат
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
+
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+
+        if (!minDate || start < minDate) minDate = start;
+        if (!maxDate || end > maxDate) maxDate = end;
+      } catch (error) {
+        console.warn('Invalid date format:', { startDate, endDate });
+      }
+    };
+
+    wells.forEach(well => {
+      // Проверяем состояния работы скважины
+      if (well.state) {
+        updateDateRange(well.events[0]?.startDate, well.events[0]?.endDate);
+      }
+
+      // Проверяем события
+      well.events.forEach(event => {
+        // Проверяем даты события
+        updateDateRange(event.startDate, event.endDate);
+
+        // Проверяем состояния работы
+        event.operating_states?.forEach(state => {
+          updateDateRange(state.startDate, state.endDate);
+        });
+
+        // Проверяем ресурсы
+        if (event.resources && event.resources.length > 0) {
+          event.resources.forEach(resource => {
+            // Проверяем даты ресурса (от первой до последней операции)
+            const firstOperation = resource.operations?.[0];
+            const lastOperation = resource.operations?.[resource.operations.length - 1];
+            if (firstOperation && lastOperation) {
+              updateDateRange(firstOperation.startDate, lastOperation.endDate);
+            }
+
+            // Проверяем каждую операцию отдельно
+            resource.operations?.forEach(operation => {
+              updateDateRange(operation.startDate, operation.endDate);
+            });
+          });
+        }
       });
     });
+
+    // Если не нашли ни одной валидной даты, возвращаем текущий месяц
+    if (!minDate || !maxDate) {
+      const now = new Date();
+      minDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      maxDate.setHours(23, 59, 59, 999);
+    }
 
     return { minDate, maxDate };
   };

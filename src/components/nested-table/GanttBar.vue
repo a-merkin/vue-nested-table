@@ -62,19 +62,21 @@ const calculateBarStyle = () => {
 
   const start = new Date(props.item.startDate);
   const end = new Date(props.item.endDate);
-  
+
   start.setHours(0, 0, 0, 0);
   end.setHours(23, 59, 59, 999);
-  
+
   const timelineStart = new Date(props.groupedDates[0].start);
   const timelineEnd = new Date(props.groupedDates[props.groupedDates.length - 1].end);
-  
+
   timelineStart.setHours(0, 0, 0, 0);
-  
+  timelineEnd.setHours(23, 59, 59, 999);
+
   const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
   const startOffset = Math.max(0, ((start.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
-  const width = Math.min(100 - startOffset, ((end.getTime() - start.getTime()) / timelineDuration) * 100);
-  
+  const endOffset = Math.min(100, ((end.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
+  const width = Math.max(0, endOffset - startOffset);
+
   return {
     left: `${startOffset}%`,
     width: `${Math.max(width, 5)}%`,
@@ -85,27 +87,27 @@ const calculateBarStyle = () => {
 const calculateInnerOperationStyle = (operation: Operation) => {
   const start = new Date(operation.startDate);
   const end = new Date(operation.endDate);
-  
+
   start.setHours(0, 0, 0, 0);
   end.setHours(23, 59, 59, 999);
-  
+
   const resourceStart = new Date(props.item.startDate || '');
   const resourceEnd = new Date(props.item.endDate || '');
-  
+
   resourceStart.setHours(0, 0, 0, 0);
   resourceEnd.setHours(23, 59, 59, 999);
-  
+
   const resourceDuration = resourceEnd.getTime() - resourceStart.getTime();
   const startOffset = Math.max(0, ((start.getTime() - resourceStart.getTime()) / resourceDuration) * 100);
   const width = Math.min(100 - startOffset, ((end.getTime() - start.getTime()) / resourceDuration) * 100);
-  
+
   return {
     left: `${startOffset}%`,
     width: `${Math.max(width, 2)}%`
   };
 };
 
-const getEventKindClass = (kind?: EventKind): string => 
+const getEventKindClass = (kind?: EventKind): string =>
   kind ? `event-kind-${kind.replace('event_kind_', '')}` : '';
 const getEventTypeClass = (type: EventType): string => `event-type-${type.replace('event_type_', '')}`;
 </script>
@@ -268,4 +270,4 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
   width: 100%;
   min-width: 0;
 }
-</style> 
+</style>

@@ -5,6 +5,69 @@ import { ref } from 'vue';
 
 const wells = ref<Well[]>([
     {
+        "id": "152",
+        "name": "60",
+        "state": "operating_state_prod",
+        "events": [
+            {
+                "id": "152.base",
+                "name": "База",
+                "type": "base_production",
+                "startDate": null,
+                "endDate": null,
+                "operating_states": [
+                    {
+                        "startDate": "2025-03-01",
+                        "endDate": "2025-03-31",
+                        "state": "operating_state_prod"
+                    },
+                    {
+                        "startDate": "2025-03-31",
+                        "endDate": "2025-04-14",
+                        "state": "operating_state_idle"
+                    },
+                    {
+                        "startDate": "2025-04-14",
+                        "endDate": "2025-04-01",
+                        "state": "operating_state_prod"
+                    }
+                ]
+            },
+            {
+                "id": "group_1.gtm_2",
+                "name": "ГРП_60",
+                "kind": "event_kind_gtm",
+                "type": "event_type_grp",
+                "startDate": null,
+                "endDate": null,
+                "resources": [],
+                "operating_states": [
+                    {
+                        "startDate": "2025-03-01",
+                        "endDate": "2025-04-01",
+                        "state": null
+                    }
+                ]
+            },
+            {
+                "id": "otm_1",
+                "name": "ЛАР_60",
+                "kind": "event_kind_otm",
+                "type": "event_type_grp",
+                "startDate": "2025-03-31",
+                "endDate": "2025-04-14",
+                "resources": [],
+                "operating_states": [
+                    {
+                        "startDate": "2025-03-01",
+                        "endDate": "2025-04-01",
+                        "state": null
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "id": "group_1.gtm_1",
         "name": "ВНС_1",
         "state": "operating_state_prod",
@@ -26,31 +89,9 @@ const wells = ref<Well[]>([
                 ]
             }
         ]
-    },
-    {
-        "id": "group_1.gtm_2",
-        "name": "ВНС_2",
-        "state": "operating_state_prod",
-        "events": [
-            {
-                "id": "group_1.gtm_2",
-                "name": "ВНС_2",
-                "kind": "event_kind_gtm",
-                "type": "event_type_vns",
-                "startDate": null,
-                "endDate": null,
-                "resources": [],
-                "operating_states": [
-                    {
-                        "startDate": "2025-03-01",
-                        "endDate": "2025-04-01",
-                        "state": null
-                    }
-                ]
-            }
-        ]
     }
-])
+]
+)
 
 // Обработчики событий
 const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => {
