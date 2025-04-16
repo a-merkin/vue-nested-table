@@ -30,7 +30,8 @@
               @toggle-resource="toggleResource"
               @well-action="handleWellAction"
               @event-action="handleEventAction"
-              @dates-change="handleDatesChange"
+              @event-dates-change="handleEventDatesChange"
+              @resource-dates-change="handleResourceDatesChange"
             />
           </template>
         </tbody>
@@ -58,7 +59,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
   (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string }): void;
-  (e: 'dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
+  (e: 'event-dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
+  (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
 }>();
 
 // Состояние
@@ -77,8 +79,12 @@ const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) =
   emit('event-action', payload);
 };
 
-const handleDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
-  emit('dates-change', payload);
+const handleEventDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
+  emit('event-dates-change', payload);
+};
+
+const handleResourceDatesChange = (payload: { resourceId: string, startDate: string, endDate: string }) => {
+  emit('resource-dates-change', payload);
 };
 </script>
 
