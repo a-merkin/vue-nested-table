@@ -48,7 +48,7 @@
         <input 
           type="date" 
           v-model="event.startDate"
-          @change="$emit('dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
+          @change="$emit('event-dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
           class="date-input"
           :min="getMinDate(event)"
           :max="event.endDate || undefined"
@@ -58,7 +58,7 @@
         <input 
           type="date" 
           v-model="event.endDate"
-          @change="$emit('dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
+          @change="$emit('event-dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
           class="date-input"
           :min="event.startDate || undefined"
           :max="getMaxDate(event)"
@@ -90,24 +90,33 @@
           <td class="team-cell resource-name">
             <div class="resource-title" :title="resource.name">
               <div class="resource-title-content" @click="$emit('toggle-resource', resource.id)">
-                <span class="expand-icon resource-icon">{{ isResourceExpanded(resource.id) ? '▼' : '▶' }}</span>
                 <span>{{ resource.name }}</span>
               </div>
             </div>
           </td>
-          <td class="dates-cell" :title="formatDateRange(
-            resource.operations?.[0]?.startDate || resource.startDate,
-            resource.operations?.[resource.operations?.length - 1]?.endDate || resource.endDate
-          ).full">
-            {{ formatDateRange(
-              resource.operations?.[0]?.startDate || resource.startDate,
-              resource.operations?.[resource.operations?.length - 1]?.endDate || resource.endDate
-            ).short }}
+          <td class="date-start-cell">
+            <input 
+              type="date" 
+              v-model="resource.startDate"
+              @change="$emit('resource-dates-change', { resourceId: resource.id, startDate: resource.startDate || '', endDate: resource.endDate || '' })"
+              class="date-input"
+              :min="event.startDate || undefined"
+              :max="resource.endDate || undefined"
+            />
+          </td>
+          <td class="date-end-cell">
+            <input 
+              type="date" 
+              v-model="resource.endDate"
+              @change="$emit('resource-dates-change', { resourceId: resource.id, startDate: resource.startDate || '', endDate: resource.endDate || '' })"
+              class="date-input"
+              :min="resource.startDate || undefined"
+              :max="event.endDate || undefined"
+            />
           </td>
           <td :colspan="groupedDates.length" class="gantt-timeline">
             <GanttBar
-              v-if="(resource.operations?.[0]?.startDate || resource.startDate) && 
-                    (resource.operations?.[resource.operations?.length - 1]?.endDate || resource.endDate)"
+              v-if="resource.startDate && resource.endDate"
               :item="resource"
               :grouped-dates="groupedDates"
               :kind="event.kind"
@@ -116,29 +125,6 @@
             />
           </td>
         </tr>
-        <!-- Строки операций -->
-        <template v-if="isResourceExpanded(resource.id)">
-          <tr v-for="operation in resource.operations"
-              :key="operation.id"
-              class="operation-row">
-            <td class="team-cell operation-name" :title="operation.name">
-              {{ operation.name }}
-            </td>
-            <td class="dates-cell" :title="formatDateRange(operation.startDate, operation.endDate || operation.startDate).full">
-              {{ formatDateRange(operation.startDate, operation.endDate || operation.startDate).short }}
-            </td>
-            <td :colspan="groupedDates.length" class="gantt-timeline">
-              <GanttBar
-                v-if="operation.startDate && operation.endDate"
-                :item="operation"
-                :grouped-dates="groupedDates"
-                :kind="event.kind"
-                :type="event.type"
-                :style-type="'operation'"
-              />
-            </td>
-          </tr>
-        </template>
       </template>
     </template>
   </template>
@@ -169,7 +155,8 @@ defineEmits<{
   (e: 'toggle-resource', resourceId: string): void;
   (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
   (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string }): void;
-  (e: 'dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
+  (e: 'event-dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
+  (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
 }>();
 
 const { formatDateRange } = useDateFormatting();
@@ -182,9 +169,7 @@ const getWellTotalRowspan = (well: Well): number => {
     if (!isEventExpanded(event.id)) {
       return total + 1;
     }
-    return total + 1 + (event.resources?.reduce((resourceTotal, resource) => {
-      return resourceTotal + 1 + (isResourceExpanded(resource.id) ? resource.operations.length : 0);
-    }, 0) ?? 0);
+    return total + 1 + (event.resources?.length ?? 0);
   }, 0);
 };
 

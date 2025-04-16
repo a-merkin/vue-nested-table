@@ -309,14 +309,28 @@ const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) =
   }
 };
 
-const handleDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
-  console.log(payload)
+const handleEventDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
   wells.value = wells.value.map(well => {
     const updatedEvents = well.events.map(event => 
       event.id === payload.eventId 
         ? { ...event, startDate: payload.startDate, endDate: payload.endDate }
         : event
     );
+    return { ...well, events: updatedEvents };
+  });
+};
+
+const handleResourceDatesChange = (payload: { resourceId: string, startDate: string, endDate: string }) => {
+  wells.value = wells.value.map(well => {
+    const updatedEvents = well.events.map(event => {
+      if (!event.resources) return event;
+      const updatedResources = event.resources.map(resource =>
+        resource.id === payload.resourceId
+          ? { ...resource, startDate: payload.startDate, endDate: payload.endDate }
+          : resource
+      );
+      return { ...event, resources: updatedResources };
+    });
     return { ...well, events: updatedEvents };
   });
 };
@@ -330,7 +344,8 @@ const handleDatesChange = (payload: { eventId: string, startDate: string, endDat
       @well-action="handleWellAction"
       @event-action="handleEventAction"
       @update:wells="wells = $event"
-      @dates-change="handleDatesChange"
+      @event-dates-change="handleEventDatesChange"
+      @resource-dates-change="handleResourceDatesChange"
     />
   </div>
 </template>

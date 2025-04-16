@@ -1,6 +1,8 @@
 type FormatDateResult = {
   short: string;
   full: string;
+  start: string;
+  end: string;
 };
 
 const DATE_FORMATS = {
@@ -21,7 +23,7 @@ const DATE_FORMATS = {
 export const useDateFormatting = () => {
   const formatDateRange = (startDate: string | null, endDate: string | null): FormatDateResult => {
     if (!startDate || !endDate) {
-      return { short: '-', full: 'Даты не указаны' };
+      return { short: '-', full: 'Даты не указаны', start: '-', end: '-' };
     }
 
     const start = new Date(startDate);
@@ -29,7 +31,9 @@ export const useDateFormatting = () => {
 
     return {
       short: formatDateToString(start, end, DATE_FORMATS.SHORT),
-      full: formatDateToString(start, end, DATE_FORMATS.FULL)
+      full: formatDateToString(start, end, DATE_FORMATS.FULL),
+      start: start.toLocaleDateString('ru-RU', DATE_FORMATS.SHORT),
+      end: end.toLocaleDateString('ru-RU', DATE_FORMATS.SHORT)
     };
   };
 
