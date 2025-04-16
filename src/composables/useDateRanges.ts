@@ -35,19 +35,14 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
 
     wells.forEach(well => {
       // Проверяем состояния работы скважины
-      if (well.state) {
-        updateDateRange(well.events[0]?.startDate, well.events[0]?.endDate);
-      }
-
-      // Проверяем события
       well.events.forEach(event => {
-        // Проверяем даты события
-        updateDateRange(event.startDate, event.endDate);
-
         // Проверяем состояния работы
         event.operating_states?.forEach(state => {
           updateDateRange(state.startDate, state.endDate);
         });
+
+        // Проверяем даты события
+        updateDateRange(event.startDate, event.endDate);
 
         // Проверяем ресурсы
         if (event.resources && event.resources.length > 0) {

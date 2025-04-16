@@ -35,14 +35,16 @@
         </div>
       </td>
       <td class="team-cell">
-        <div class="event-name" @click="$emit('toggle-event', event.id)" :title="event.name">
-          <span class="expand-icon">{{ isEventExpanded(event.id) ? '▼' : '▶' }}</span>
-          <span class="event-name-text">{{ event.name }}</span>
+        <div class="event-name" :title="event.name">
+          <div class="event-name-content" @click="$emit('toggle-event', event.id)">
+            <span class="expand-icon">{{ isEventExpanded(event.id) ? '▼' : '▶' }}</span>
+            <span class="event-name-text">{{ event.name }}</span>
+          </div>
           <div class="event-actions">
             <button
               v-if="event.type === 'base_production'"
               class="action-button add-button"
-              @click="$emit('event-action', { type: 'add', eventId: event.id })"
+              @click.stop="$emit('event-action', { type: 'add', eventId: event.id })"
               title="Добавить мероприятие"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -53,7 +55,7 @@
             <button
               v-else
               class="action-button edit-button"
-              @click="$emit('event-action', { type: 'edit', eventId: event.id })"
+              @click.stop="$emit('event-action', { type: 'edit', eventId: event.id })"
               title="Редактировать мероприятие"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -91,17 +93,26 @@
         <!-- Строка ресурса -->
         <tr class="resource-row">
           <td class="team-cell resource-name">
-            <div class="resource-title" @click="$emit('toggle-resource', resource.id)" :title="resource.name">
-              <span class="expand-icon resource-icon">{{ isResourceExpanded(resource.id) ? '▼' : '▶' }}</span>
-              <span>{{ resource.name }}</span>
+            <div class="resource-title" :title="resource.name">
+              <div class="resource-title-content" @click="$emit('toggle-resource', resource.id)">
+                <span class="expand-icon resource-icon">{{ isResourceExpanded(resource.id) ? '▼' : '▶' }}</span>
+                <span>{{ resource.name }}</span>
+              </div>
             </div>
           </td>
-          <td class="dates-cell" :title="formatDateRange(resource.operations[0]?.startDate, resource.operations[resource.operations.length - 1]?.endDate).full">
-            {{ formatDateRange(resource.operations[0]?.startDate, resource.operations[resource.operations.length - 1]?.endDate).short }}
+          <td class="dates-cell" :title="formatDateRange(
+            resource.operations?.[0]?.startDate || resource.startDate,
+            resource.operations?.[resource.operations?.length - 1]?.endDate || resource.endDate
+          ).full">
+            {{ formatDateRange(
+              resource.operations?.[0]?.startDate || resource.startDate,
+              resource.operations?.[resource.operations?.length - 1]?.endDate || resource.endDate
+            ).short }}
           </td>
           <td :colspan="groupedDates.length" class="gantt-timeline">
             <GanttBar
-              v-if="resource.operations[0]?.startDate && resource.operations[resource.operations.length - 1]?.endDate"
+              v-if="(resource.operations?.[0]?.startDate || resource.startDate) && 
+                    (resource.operations?.[resource.operations?.length - 1]?.endDate || resource.endDate)"
               :item="resource"
               :grouped-dates="groupedDates"
               :kind="event.kind"
@@ -246,7 +257,6 @@ const getWellStateClass = (state: string | null): string => {
 .event-name {
   display: flex;
   align-items: center;
-  cursor: pointer;
   padding: 6px 8px;
   font-size: 13px;
   font-weight: 600;
@@ -255,6 +265,14 @@ const getWellStateClass = (state: string | null): string => {
   background-color: #F7F7F7;
   transition: background-color 0.2s;
   position: relative;
+}
+
+.event-name-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+  padding-right: 40px;
 }
 
 .event-name:hover {
@@ -304,7 +322,6 @@ const getWellStateClass = (state: string | null): string => {
 .resource-title {
   display: flex;
   align-items: center;
-  cursor: pointer;
   font-size: 12px;
   color: #333333;
   padding: 4px 8px 4px 32px;
@@ -315,12 +332,11 @@ const getWellStateClass = (state: string | null): string => {
   overflow: hidden;
 }
 
-.resource-title > span:not(.expand-icon) {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.resource-title-content {
+  display: flex;
+  align-items: center;
   flex: 1;
-  min-width: 0;
+  cursor: pointer;
 }
 
 .resource-title:hover {
