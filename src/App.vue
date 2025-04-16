@@ -292,6 +292,22 @@ const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => 
     // Например, открыть модальное окно для добавления мероприятия
   }
 };
+
+const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) => {
+  const [wellId, eventId] = payload.eventId.split('.');
+  const well = wells.value.find(w => w.id === wellId);
+  if (!well) return;
+
+  if (payload.type === 'edit') {
+    // Здесь можно добавить логику редактирования мероприятия
+    console.log('Редактирование мероприятия:', payload.eventId);
+    // Например, открыть модальное окно для редактирования
+  } else {
+    // Здесь можно добавить логику добавления мероприятия
+    console.log('Добавление мероприятия:', payload.eventId);
+    // Например, открыть модальное окно для добавления
+  }
+};
 </script>
 
 <template>
@@ -300,6 +316,7 @@ const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => 
     <NestedTable
       :wells="wells"
       @well-action="handleWellAction"
+      @event-action="handleEventAction"
     />
   </div>
 </template>

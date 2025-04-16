@@ -62,7 +62,7 @@ export interface Event {
 export interface Well {
   id: string;
   name: string;
-  state: OperatingState;
+  state: OperatingState | null;
   events: Event[];
 }
 

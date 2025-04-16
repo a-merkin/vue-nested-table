@@ -28,6 +28,7 @@
               @toggle-event="toggleEvent"
               @toggle-resource="toggleResource"
               @well-action="handleWellAction"
+              @event-action="handleEventAction"
             />
           </template>
         </tbody>
@@ -54,6 +55,7 @@ const props = defineProps<{
 // Эмиты
 const emit = defineEmits<{
   (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
+  (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string }): void;
 }>();
 
 // Состояние
@@ -66,6 +68,10 @@ const { groupedDates, formatDate } = useDateRanges(props.wells, granularity);
 // Обработчики
 const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => {
   emit('well-action', payload);
+};
+
+const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) => {
+  emit('event-action', payload);
 };
 </script>
 

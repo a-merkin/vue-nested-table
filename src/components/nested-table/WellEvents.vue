@@ -37,7 +37,31 @@
       <td class="team-cell">
         <div class="event-name" @click="$emit('toggle-event', event.id)" :title="event.name">
           <span class="expand-icon">{{ isEventExpanded(event.id) ? '▼' : '▶' }}</span>
-          {{ event.name }}
+          <span class="event-name-text">{{ event.name }}</span>
+          <div class="event-actions">
+            <button
+              v-if="event.type === 'base_production'"
+              class="action-button add-button"
+              @click="$emit('event-action', { type: 'add', eventId: event.id })"
+              title="Добавить мероприятие"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+            <button
+              v-else
+              class="action-button edit-button"
+              @click="$emit('event-action', { type: 'edit', eventId: event.id })"
+              title="Редактировать мероприятие"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </td>
       <td class="dates-cell" :title="formatDateRange(event.startDate, event.endDate).full">
@@ -138,6 +162,7 @@ defineEmits<{
   (e: 'toggle-event', eventId: string): void;
   (e: 'toggle-resource', resourceId: string): void;
   (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
+  (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string }): void;
 }>();
 
 const { formatDateRange } = useDateFormatting();
@@ -229,10 +254,51 @@ const getWellStateClass = (state: string | null): string => {
   border-radius: 4px;
   background-color: #F7F7F7;
   transition: background-color 0.2s;
+  position: relative;
 }
 
 .event-name:hover {
   background-color: #F0F0F0;
+}
+
+.event-actions {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 1;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.action-button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.action-button:active {
+  background-color: #e0e0e0;
+}
+
+.edit-button, .add-button {
+  color: #2196F3;
+}
+
+.edit-button:hover, .add-button:hover {
+  color: #1976D2;
 }
 
 .resource-title {
@@ -283,6 +349,13 @@ const getWellStateClass = (state: string | null): string => {
 .event-name .expand-icon {
   font-size: 11px;
   opacity: 0.8;
+}
+
+.event-name-text {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .resource-title .expand-icon {
@@ -371,38 +444,6 @@ const getWellStateClass = (state: string | null): string => {
 
 .well-name-cell:hover .well-actions {
   opacity: 1;
-}
-
-.action-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: none;
-  border-radius: 4px;
-  background: none;
-  cursor: pointer;
-  color: #666;
-  transition: all 0.2s;
-}
-
-.action-button:hover {
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.action-button:active {
-  background-color: #e0e0e0;
-}
-
-.edit-button:hover {
-  color: #2196F3;
-}
-
-.add-button:hover {
-  color: #4CAF50;
 }
 
 .well-group-separator {
