@@ -9,8 +9,8 @@
           <tr>
             <th class="well-header">Скважина</th>
             <th class="team-header">Мероприятие</th>
-            <th class="dates-header">Дата начала</th>
-            <th class="dates-header">Дата конца</th>
+            <th class="date-start-header">Дата начала</th>
+            <th class="date-end-header">Дата конца</th>
             <TimelineHeader
               v-if="(groupedDates as unknown as DateRange[]).length > 1"
               :dates="groupedDates as unknown as DateRange[]"
@@ -130,7 +130,7 @@ th {
   background-color: var(--table-header-bg);
 }
 
-.dates-header {
+.date-start-header {
   position: sticky;
   left: 270px;
   z-index: 3;
@@ -140,11 +140,20 @@ th {
   background-color: var(--table-header-bg);
 }
 
-th:not(.well-header):not(.team-header):not(.dates-header) {
+.date-end-header {
+  position: sticky;
+  left: 370px;
+  z-index: 3;
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
+  background-color: var(--table-header-bg);
+}
+th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-header) {
   min-width: 45px;
 }
 
-.well-header, .team-header, .dates-header {
+.well-header, .team-header, .date-start-header, .date-end-header {
   white-space: nowrap;
   font-weight: 700;
   color: var(--table-header-color);

@@ -44,7 +44,7 @@
           </div>
         </div>
       </td>
-      <td class="dates-cell">
+      <td class="date-start-cell">
         <input 
           type="date" 
           v-model="event.startDate"
@@ -54,7 +54,7 @@
           :max="event.endDate || undefined"
         />
       </td>
-      <td class="dates-cell">
+      <td class="date-end-cell">
         <input 
           type="date" 
           v-model="event.endDate"
@@ -233,7 +233,7 @@ const getMaxDate = (event: TableEvent): string => {
   background-color: #FFFFFF;
 }
 
-.dates-cell {
+.date-start-cell {
   position: sticky;
   left: 270px;
   z-index: 2;
@@ -248,6 +248,12 @@ const getMaxDate = (event: TableEvent): string => {
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
+}
+
+.date-end-cell {
+  position: sticky;
+  left: 370px;
+  z-index: 2;
 }
 
 .gantt-timeline {
