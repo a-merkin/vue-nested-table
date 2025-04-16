@@ -63,14 +63,8 @@ const calculateBarStyle = () => {
   const start = new Date(props.item.startDate);
   const end = new Date(props.item.endDate);
 
-  start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
-
   const timelineStart = new Date(props.groupedDates[0].start);
   const timelineEnd = new Date(props.groupedDates[props.groupedDates.length - 1].end);
-
-  timelineStart.setHours(0, 0, 0, 0);
-  timelineEnd.setHours(23, 59, 59, 999);
 
   const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
   const startOffset = Math.max(0, ((start.getTime() - timelineStart.getTime()) / timelineDuration) * 100);

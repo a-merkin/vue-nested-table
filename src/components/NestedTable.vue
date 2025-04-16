@@ -18,12 +18,13 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="well in wells" :key="well.id">
+          <template v-for="(well, wellIndex) in wells" :key="well.id">
             <WellEvents
               :well="well"
               :grouped-dates="groupedDates as unknown as DateRange[]"
               :expanded-events="expandedEvents as unknown as Set<string>"
               :expanded-resources="expandedResources as unknown as Set<string>"
+              :is-last-well="wellIndex === wells.length - 1"
               @toggle-event="toggleEvent"
               @toggle-resource="toggleResource"
               @well-action="handleWellAction"
@@ -136,5 +137,9 @@ th:not(.well-header):not(.team-header):not(.dates-header) {
   color: var(--table-header-color);
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.well-group-separator {
+  border-bottom: 2px solid #e0e0e0;
 }
 </style>

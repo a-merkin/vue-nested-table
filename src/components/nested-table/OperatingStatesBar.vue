@@ -34,20 +34,13 @@ const calculateStateStyle = (state: OperatingStateEntry) => {
   const start = new Date(state.startDate);
   const end = new Date(state.endDate);
 
-  // Устанавливаем начало дня для начальной даты
-  start.setHours(0, 0, 0, 0);
-
-  // Для конечной даты берем начало дня (не включаем саму дату окончания)
-  end.setHours(0, 0, 0, 0);
-
   const timelineStart = new Date(props.groupedDates[0].start);
   const timelineEnd = new Date(props.groupedDates[props.groupedDates.length - 1].end);
 
-  timelineStart.setHours(0, 0, 0, 0);
-
   const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
   const startOffset = Math.max(0, ((start.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
-  const width = Math.min(100 - startOffset, ((end.getTime() - start.getTime()) / timelineDuration) * 100);
+  const endOffset = Math.min(100, ((end.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
+  const width = Math.max(0, endOffset - startOffset);
 
   return {
     left: `${startOffset}%`,

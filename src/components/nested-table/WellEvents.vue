@@ -1,7 +1,10 @@
 <template>
   <template v-for="(event, eventIndex) in well.events" :key="event.id">
     <!-- Строка события -->
-    <tr :class="{ 'event-row': true }">
+    <tr :class="[
+      'event-row',
+      { 'well-group-separator': eventIndex === well.events.length - 1 && !isLastWell }
+    ]">
       <td v-if="eventIndex === 0"
           :rowspan="getWellTotalRowspan(well)"
           :class="['well-name-cell', getWellStateClass(well.state)]">
@@ -128,6 +131,7 @@ const props = defineProps<{
   groupedDates: DateRange[];
   expandedEvents: Set<string>;
   expandedResources: Set<string>;
+  isLastWell: boolean;
 }>();
 
 defineEmits<{
@@ -152,7 +156,10 @@ const getWellTotalRowspan = (well: Well): number => {
   }, 0);
 };
 
-const getWellStateClass = (state: OperatingState): string => `well-state-${state.replace('operating_state_', '')}`;
+const getWellStateClass = (state: string | null): string => {
+  if (!state) return 'well-state-unknown';
+  return `well-state-${state.replace('operating_state_', '')}`;
+};
 </script>
 
 <style scoped>
@@ -396,5 +403,9 @@ const getWellStateClass = (state: OperatingState): string => `well-state-${state
 
 .add-button:hover {
   color: #4CAF50;
+}
+
+.well-group-separator {
+  border-bottom: 2px solid #e0e0e0;
 }
 </style>
