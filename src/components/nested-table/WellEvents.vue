@@ -22,7 +22,7 @@
             <button
               v-if="event.type === 'base_production'"
               class="action-button add-button"
-              @click.stop="$emit('event-action', { type: 'add', eventId: event.id })"
+              @click="$emit('event-action', { type: 'add', eventId: event.id })"
               title="Добавить мероприятие"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -33,7 +33,7 @@
             <button
               v-else
               class="action-button edit-button"
-              @click.stop="$emit('event-action', { type: 'edit', eventId: event.id })"
+              @click="$emit('event-action', { type: 'edit', eventId: event.id })"
               title="Редактировать мероприятие"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -102,6 +102,7 @@
               class="date-input"
               :min="event.startDate || undefined"
               :max="resource.endDate || undefined"
+              disabled
             />
           </td>
           <td class="date-end-cell">
@@ -112,6 +113,7 @@
               class="date-input"
               :min="resource.startDate || undefined"
               :max="event.endDate || undefined"
+              disabled
             />
           </td>
           <td :colspan="groupedDates.length" class="gantt-timeline">
@@ -417,27 +419,22 @@ const getMaxDate = (event: TableEvent): string => {
 /* Стили для строк */
 .event-row {
   background-color: #FFFFFF;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .resource-row {
   background-color: #FFFFFF;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.operation-row {
-  background-color: #FFFFFF;
+/* Убираем бордер между событием и его ресурсами */
+.event-row + .resource-row {
+  border-top: none;
 }
 
-/* Hover эффекты для строк */
-.event-row:hover {
-  background-color: #F9F9F9;
-}
-
-.resource-row:hover {
-  background-color: #FAFAFA;
-}
-
-.operation-row:hover {
-  background-color: #FCFCFC;
+/* Добавляем бордер только между разными группами */
+.well-group-separator {
+  border-bottom: 2px solid #e0e0e0;
 }
 
 .well-name-container {
@@ -465,10 +462,6 @@ const getMaxDate = (event: TableEvent): string => {
 
 .well-name-cell:hover .well-actions {
   opacity: 1;
-}
-
-.well-group-separator {
-  border-bottom: 2px solid #e0e0e0;
 }
 
 .date-input {

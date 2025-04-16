@@ -47,16 +47,16 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
         // Проверяем ресурсы
         if (event.resources && event.resources.length > 0) {
           event.resources.forEach(resource => {
-            // Проверяем даты ресурса (от первой до последней операции)
-            const firstOperation = resource.operations?.[0];
-            const lastOperation = resource.operations?.[resource.operations.length - 1];
-            if (firstOperation && lastOperation) {
-              updateDateRange(firstOperation.startDate, lastOperation.endDate);
+            // Проверяем даты ресурса (от первой до последней стадии)
+            const firstStage = resource.stages?.[0];
+            const lastStage = resource.stages?.[resource.stages.length - 1];
+            if (firstStage && lastStage) {
+              updateDateRange(firstStage.startDate, lastStage.startDate);
             }
 
-            // Проверяем каждую операцию отдельно
-            resource.operations?.forEach(operation => {
-              updateDateRange(operation.startDate, operation.endDate);
+            // Проверяем каждую стадию отдельно
+            resource.stages?.forEach(stage => {
+              updateDateRange(stage.startDate, stage.startDate);
             });
           });
         }

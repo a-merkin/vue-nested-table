@@ -302,6 +302,7 @@ const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) =
 };
 
 const handleEventDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
+    console.log(payload)
   wells.value = wells.value.map(well => {
     const updatedEvents = well.events.map(event => 
       event.id === payload.eventId 
