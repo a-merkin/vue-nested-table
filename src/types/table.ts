@@ -15,6 +15,7 @@ export type EventType =
   | 'event_type_krs'
   | 'event_type_trs'
   | 'event_type_ppr'
+  | 'event_type_lar'
   // Запуски
   | 'event_type_start'
   // Отключения
@@ -25,12 +26,19 @@ export type OperatingState =
   | 'operating_state_prod'
   | 'operating_state_inje'
   | 'operating_state_idle'
-  | 'operating_state_intake';
+  | 'operating_state_intake'
+  | null;
 
 export type DateGranularity =
   | 'day'
   | 'week'
   | 'month';
+
+export interface Stage {
+  id: string;
+  name: string;
+  startDate: string;
+}
 
 export interface Operation {
   id: string;
@@ -45,7 +53,13 @@ export interface Resource {
   type: string;
   startDate: string;
   endDate: string;
-  operations: Operation[];
+  stages: Stage[];
+}
+
+export interface OperatingStateEntry {
+  state: OperatingState;
+  startDate: string;
+  endDate: string;
 }
 
 export interface Event {
@@ -57,19 +71,15 @@ export interface Event {
   endDate: string | null;
   resources?: Resource[];
   operating_states?: OperatingStateEntry[];
+  stop_well: boolean;
+  shut_well: boolean;
 }
 
 export interface Well {
   id: string;
   name: string;
-  state: OperatingState | null;
+  state: OperatingState;
   events: Event[];
-}
-
-export interface OperatingStateEntry {
-  state: OperatingState | null;
-  startDate: string;
-  endDate: string;
 }
 
 export function validateOperatingStates(states: OperatingStateEntry[]): boolean {

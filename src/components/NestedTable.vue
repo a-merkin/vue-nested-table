@@ -9,7 +9,8 @@
           <tr>
             <th class="well-header">Скважина</th>
             <th class="team-header">Мероприятие</th>
-            <th class="dates-header">Период</th>
+            <th class="dates-header">Дата начала</th>
+            <th class="dates-header">Дата конца</th>
             <TimelineHeader
               v-if="(groupedDates as unknown as DateRange[]).length > 1"
               :dates="groupedDates as unknown as DateRange[]"
@@ -29,6 +30,7 @@
               @toggle-resource="toggleResource"
               @well-action="handleWellAction"
               @event-action="handleEventAction"
+              @dates-change="handleDatesChange"
             />
           </template>
         </tbody>
@@ -39,7 +41,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { Well, DateGranularity } from '../types/table';
+import type { Well, DateGranularity, Event } from '../types/table';
 import type { DateRange } from '../composables/useDateRanges';
 import { useDateRanges } from '../composables/useDateRanges';
 import { useExpansionState } from '../composables/useExpansionState';
@@ -56,6 +58,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
   (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string }): void;
+  (e: 'dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
 }>();
 
 // Состояние
@@ -72,6 +75,10 @@ const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => 
 
 const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) => {
   emit('event-action', payload);
+};
+
+const handleDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
+  emit('dates-change', payload);
 };
 </script>
 

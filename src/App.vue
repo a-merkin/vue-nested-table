@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NestedTable from './components/NestedTable.vue';
 import { ref } from 'vue';
-import type { Well } from './types/well';
+import type { Well, Event } from './types/table';
 
 const wells = ref<Well[]>([
     {
@@ -308,6 +308,18 @@ const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) =
     // Например, открыть модальное окно для добавления
   }
 };
+
+const handleDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
+  console.log(payload)
+  wells.value = wells.value.map(well => {
+    const updatedEvents = well.events.map(event => 
+      event.id === payload.eventId 
+        ? { ...event, startDate: payload.startDate, endDate: payload.endDate }
+        : event
+    );
+    return { ...well, events: updatedEvents };
+  });
+};
 </script>
 
 <template>
@@ -317,6 +329,8 @@ const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) =
       :wells="wells"
       @well-action="handleWellAction"
       @event-action="handleEventAction"
+      @update:wells="wells = $event"
+      @dates-change="handleDatesChange"
     />
   </div>
 </template>

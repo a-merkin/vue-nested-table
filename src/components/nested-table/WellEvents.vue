@@ -10,28 +10,6 @@
           :class="['well-name-cell', getWellStateClass(well.state)]">
         <div class="well-name-container" :title="well.name">
           <span class="well-name">{{ well.name }}</span>
-          <div class="well-actions">
-            <button
-              class="action-button edit-button"
-              @click="$emit('well-action', { type: 'edit', wellId: well.id })"
-              title="Редактировать скважину"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-            </button>
-            <button
-              class="action-button add-button"
-              @click="$emit('well-action', { type: 'add', wellId: well.id })"
-              title="Добавить мероприятие"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-            </button>
-          </div>
         </div>
       </td>
       <td class="team-cell">
@@ -66,8 +44,25 @@
           </div>
         </div>
       </td>
-      <td class="dates-cell" :title="formatDateRange(event.startDate, event.endDate).full">
-        {{ formatDateRange(event.startDate, event.endDate).short }}
+      <td class="dates-cell">
+        <input 
+          type="date" 
+          v-model="event.startDate"
+          @change="$emit('dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
+          class="date-input"
+          :min="getMinDate(event)"
+          :max="event.endDate || undefined"
+        />
+      </td>
+      <td class="dates-cell">
+        <input 
+          type="date" 
+          v-model="event.endDate"
+          @change="$emit('dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
+          class="date-input"
+          :min="event.startDate || undefined"
+          :max="getMaxDate(event)"
+        />
       </td>
       <td :colspan="groupedDates.length" class="gantt-timeline">
         <template v-if="event.type === 'base_production'">
@@ -150,7 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Well, OperatingState } from '../../types/table';
+import type { Well, OperatingState, Event as TableEvent } from '../../types/table';
 import { useDateFormatting } from '../../composables/useDateFormatting';
 import GanttBar from './GanttBar.vue';
 import OperatingStatesBar from './OperatingStatesBar.vue';
@@ -174,6 +169,7 @@ defineEmits<{
   (e: 'toggle-resource', resourceId: string): void;
   (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
   (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string }): void;
+  (e: 'dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
 }>();
 
 const { formatDateRange } = useDateFormatting();
@@ -195,6 +191,22 @@ const getWellTotalRowspan = (well: Well): number => {
 const getWellStateClass = (state: string | null): string => {
   if (!state) return 'well-state-unknown';
   return `well-state-${state.replace('operating_state_', '')}`;
+};
+
+const getMinDate = (event: TableEvent): string => {
+  const well = props.well;
+  const eventIndex = well.events.findIndex(e => e.id === event.id);
+  if (eventIndex === 0) return '';
+  const prevEvent = well.events[eventIndex - 1];
+  return prevEvent?.endDate || '';
+};
+
+const getMaxDate = (event: TableEvent): string => {
+  const well = props.well;
+  const eventIndex = well.events.findIndex(e => e.id === event.id);
+  if (eventIndex === well.events.length - 1) return '';
+  const nextEvent = well.events[eventIndex + 1];
+  return nextEvent?.startDate || '';
 };
 </script>
 
@@ -225,8 +237,9 @@ const getWellStateClass = (state: string | null): string => {
   position: sticky;
   left: 270px;
   z-index: 2;
-  min-width: 100px;
-  max-width: 100px;
+  min-width: 120px;
+  max-width: 120px;
+  padding: 0 4px;
   text-align: center;
   font-size: 12px;
   color: #666666;
@@ -234,6 +247,7 @@ const getWellStateClass = (state: string | null): string => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 .gantt-timeline {
@@ -464,5 +478,22 @@ const getWellStateClass = (state: string | null): string => {
 
 .well-group-separator {
   border-bottom: 2px solid #e0e0e0;
+}
+
+.date-input {
+  width: 100%;
+  padding: 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #fff;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 </style>
