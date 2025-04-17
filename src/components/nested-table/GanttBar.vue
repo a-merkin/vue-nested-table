@@ -108,9 +108,9 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 <style scoped>
 .gantt-bar-container {
-  height: 60px;
+  height: 40px;
   position: relative;
-  margin: 4px 0;
+  margin: 2px 0;
   width: 100%;
   padding: 0 2px;
   box-sizing: border-box;
@@ -162,7 +162,7 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 /* Ресурсы - средний уровень */
 .resource-bar {
-  height: 50px;
+  height: 40px;
   border-width: 1px;
   border-style: solid;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
@@ -184,7 +184,7 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 
 /* Операции - нижний уровень */
 .operation-bar {
-  height: 30px;
+  height: 40px;
   border-width: 1px;
   border-style: dashed;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3));

@@ -65,10 +65,18 @@
         />
       </td>
       <td :colspan="groupedDates.length" class="gantt-timeline">
-        <template v-if="event.type === 'base_production'">
+        <template v-if="event.operating_states && event.operating_states.length > 0">
           <OperatingStatesBar
             :operating_states="event.operating_states"
             :grouped-dates="groupedDates"
+            :style-type="'primary'"
+          />
+          <GanttBar
+            :item="event"
+            :grouped-dates="groupedDates"
+            :kind="event.kind"
+            :type="event.type"
+            :style-type="'event'"
           />
         </template>
         <template v-else-if="event.startDate && event.endDate">

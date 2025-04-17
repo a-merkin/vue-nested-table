@@ -3,7 +3,7 @@
     <div v-for="state in validOperatingStates"
          :key="state.startDate"
          class="operating-state"
-         :class="getStateClass(state.state)"
+         :class="[getStateClass(state.state), styleType]"
          :style="calculateStateStyle(state)">
     </div>
   </div>
@@ -21,9 +21,12 @@ interface Props {
     end: Date;
     key: string;
   }>;
+  styleType?: 'primary' | 'secondary';
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  styleType: 'primary'
+});
 
 const validOperatingStates = computed(() => {
   const states = props.operating_states ?? [];
@@ -57,7 +60,7 @@ const getStateClass = (state: string | null): string => {
 <style scoped>
 .operating-states-container {
   position: relative;
-  height: 30px;
+  height: 40px;
   width: 100%;
   margin: 2px 0;
 }
@@ -66,6 +69,8 @@ const getStateClass = (state: string | null): string => {
   position: absolute;
   height: 100%;
   transition: all 0.2s;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 /* Цвета для состояний работы скважины */
