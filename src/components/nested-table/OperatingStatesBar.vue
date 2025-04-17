@@ -74,30 +74,30 @@ const getStateClass = (state: string | null): string => {
 
 /* Цвета для состояний работы скважины */
 .state-prod {
-  background: linear-gradient(to right, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+  background-color: rgba(76, 175, 80, 0.2);
   border-right: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .state-inje {
-  background: linear-gradient(to right, rgba(33, 150, 243, 0.1), rgba(33, 150, 243, 0.05));
+  background-color: rgba(33, 150, 243, 0.2);
   border-right: 1px solid rgba(33, 150, 243, 0.2);
 }
 
 .state-idle {
-  background: linear-gradient(to right, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.05));
+  background-color: rgba(244, 67, 54, 0.2);
   border-right: 1px solid rgba(244, 67, 54, 0.2);
 }
 
 .state-intake {
-  background: linear-gradient(to right, rgba(156, 39, 176, 0.1), rgba(156, 39, 176, 0.05));
+  background-color: rgba(156, 39, 176, 0.2);
   border-right: 1px solid rgba(156, 39, 176, 0.2);
 }
 
 /* Стиль для null состояния */
 .state-null {
-  background-image: radial-gradient(circle at 50% 50%, rgba(128, 128, 128, 0.1) 2px, transparent 2px);
-  background-size: 8px 8px;
   background-color: rgba(200, 200, 200, 0.05);
+  background-image: radial-gradient(circle at 50% 50%, rgba(128, 128, 128, 0.2) 2px, transparent 2px);
+  background-size: 8px 8px;
   border-right: 1px solid rgba(128, 128, 128, 0.2);
 }
 </style>
