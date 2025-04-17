@@ -1,8 +1,18 @@
 <template>
   <div class="nested-table">
-    <GranularitySelector
-      v-model="granularity"
-    />
+    <div class="table-controls">
+      <GranularitySelector
+        v-model="granularity"
+      />
+      <label class="expand-all-checkbox">
+        <input 
+          type="checkbox" 
+          v-model="expandAll" 
+          @change="handleExpandAllChange"
+        />
+        Раскрыть все
+      </label>
+    </div>
     <div class="table-container">
       <table>
         <thead>
@@ -41,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { Well, DateGranularity, Event } from '../types/table';
 import type { DateRange } from '../composables/useDateRanges';
 import { useDateRanges } from '../composables/useDateRanges';
@@ -65,6 +75,7 @@ const emit = defineEmits<{
 
 // Состояние
 const granularity = ref<DateGranularity>('month');
+const expandAll = ref(false);
 
 // Композиции
 const { expandedEvents, expandedResources, toggleEvent, toggleResource } = useExpansionState();
@@ -86,6 +97,31 @@ const handleEventDatesChange = (payload: { eventId: string, startDate: string, e
 const handleResourceDatesChange = (payload: { resourceId: string, startDate: string, endDate: string }) => {
   emit('resource-dates-change', payload);
 };
+
+const handleExpandAllChange = () => {
+  if (expandAll.value) {
+    // Expand all events
+    props.wells.forEach(well => {
+      well.events.forEach(event => {
+        if (!expandedEvents.value.has(event.id)) {
+          expandedEvents.value.add(event.id);
+        }
+      });
+    });
+  } else {
+    // Collapse all events and resources
+    expandedEvents.value.clear();
+    expandedResources.value.clear();
+  }
+};
+
+// Watch for changes in wells to update expandAll state
+watch(() => props.wells, (newWells) => {
+  const allEventsExpanded = newWells.every(well => 
+    well.events.every(event => expandedEvents.value.has(event.id))
+  );
+  expandAll.value = allEventsExpanded;
+}, { deep: true });
 </script>
 
 <style scoped>
@@ -169,5 +205,26 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
 
 .well-group-separator {
   border-bottom: 2px solid #e0e0e0;
+}
+
+.table-controls {
+  display: flex;
+  align-items: start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.expand-all-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.expand-all-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 </style>
