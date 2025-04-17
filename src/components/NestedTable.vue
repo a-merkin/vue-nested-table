@@ -211,7 +211,6 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
   display: flex;
   align-items: start;
   gap: 16px;
-  margin-bottom: 16px;
 }
 
 .expand-all-checkbox {
