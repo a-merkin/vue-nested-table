@@ -212,7 +212,7 @@ const getMaxDate = (event: TableEvent): string => {
 .well-name-cell {
   position: sticky;
   left: 0;
-  z-index: 2;
+  z-index: 10;
   min-width: 120px;
   max-width: 120px;
   background-color: #FFFFFF;
@@ -221,7 +221,7 @@ const getMaxDate = (event: TableEvent): string => {
 .team-cell {
   position: sticky;
   left: 120px;
-  z-index: 2;
+  z-index: 10;
   min-width: 150px;
   max-width: 150px;
   overflow: hidden;
@@ -233,10 +233,10 @@ const getMaxDate = (event: TableEvent): string => {
 .date-start-cell {
   position: sticky;
   left: 270px;
-  z-index: 2;
+  z-index: 10;
   min-width: 120px;
   max-width: 120px;
-  padding: 0 4px;
+  padding: 0;
   text-align: center;
   font-size: 12px;
   color: #666666;
@@ -250,7 +250,18 @@ const getMaxDate = (event: TableEvent): string => {
 .date-end-cell {
   position: sticky;
   left: 370px;
-  z-index: 2;
+  z-index: 10;
+  min-width: 120px;
+  max-width: 120px;
+  padding: 0;
+  text-align: center;
+  font-size: 12px;
+  color: #666666;
+  background-color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 .gantt-timeline {
