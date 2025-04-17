@@ -4,8 +4,8 @@
       <label>Детализация:</label>
       <select :value="modelValue" @input="$emit('update:modelValue', ($event.target as HTMLSelectElement).value as DateGranularity)">
         <option value="day">День</option>
-        <option value="week">Неделя</option>
         <option value="month">Месяц</option>
+        <option value="year">Год</option>
       </select>
     </div>
   </div>

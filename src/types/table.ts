@@ -31,8 +31,8 @@ export type OperatingState =
 
 export type DateGranularity =
   | 'day'
-  | 'week'
-  | 'month';
+  | 'month'
+  | 'year';
 
 export interface Stage {
   id: string;

@@ -63,6 +63,10 @@ const calculateBarStyle = () => {
   const start = new Date(props.item.startDate);
   const end = new Date(props.item.endDate);
 
+  // Устанавливаем время для корректного расчета
+  start.setHours(0, 0, 0, 0);
+  end.setHours(23, 59, 59, 999);
+
   const timelineStart = new Date(props.groupedDates[0].start);
   const timelineEnd = new Date(props.groupedDates[props.groupedDates.length - 1].end);
 
@@ -71,10 +75,13 @@ const calculateBarStyle = () => {
   const endOffset = Math.min(100, ((end.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
   const width = Math.max(0, endOffset - startOffset);
 
+  // Для однодневных событий устанавливаем минимальную ширину
+  const minWidth = start.getTime() === end.getTime() ? 2 : 0;
+  const finalWidth = Math.max(width, minWidth);
+
   return {
     left: `${startOffset}%`,
-    width: `${Math.max(width, 5)}%`,
-    minWidth: '20px'
+    width: `${finalWidth}%`
   };
 };
 

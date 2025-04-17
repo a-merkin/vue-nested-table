@@ -81,12 +81,12 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
       case 'day':
         end.setHours(23, 59, 59, 999);
         break;
-      case 'week':
-        end.setDate(date.getDate() + (6 - date.getDay()));
-        end.setHours(23, 59, 59, 999);
-        break;
       case 'month':
         end.setMonth(end.getMonth() + 1, 0);
+        end.setHours(23, 59, 59, 999);
+        break;
+      case 'year':
+        end.setFullYear(end.getFullYear() + 1, 0, 0);
         end.setHours(23, 59, 59, 999);
         break;
     }
@@ -101,11 +101,11 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
       case 'day':
         next.setDate(next.getDate() + 1);
         break;
-      case 'week':
-        next.setDate(next.getDate() + 7);
-        break;
       case 'month':
         next.setMonth(next.getMonth() + 1);
+        break;
+      case 'year':
+        next.setFullYear(next.getFullYear() + 1);
         break;
     }
 
@@ -115,11 +115,14 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
   const getDateRanges = (startDate: Date, endDate: Date, granularityValue: DateGranularity): DateRange[] => {
     const ranges: DateRange[] = [];
     let currentDate = new Date(startDate);
+    currentDate.setHours(0, 0, 0, 0);
 
     while (currentDate <= endDate) {
+      const rangeStart = new Date(currentDate);
       const rangeEnd = calculateRangeEnd(currentDate, granularityValue);
+      
       ranges.push({
-        start: new Date(currentDate),
+        start: rangeStart,
         end: rangeEnd,
         key: currentDate.toISOString()
       });
@@ -133,10 +136,10 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
     switch (granularity.value) {
       case 'day':
         return start.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-      case 'week':
-        return `${start.toLocaleDateString('ru-RU', { day: 'numeric' })} - ${end.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}`;
       case 'month':
         return start.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+      case 'year':
+        return start.toLocaleDateString('ru-RU', { year: 'numeric' });
       default:
         return '';
     }
