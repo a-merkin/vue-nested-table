@@ -66,18 +66,20 @@
       </td>
       <td :colspan="groupedDates.length" class="gantt-timeline">
         <template v-if="event.operating_states && event.operating_states.length > 0">
-          <OperatingStatesBar
-            :operating_states="event.operating_states"
-            :grouped-dates="groupedDates"
-            :style-type="'primary'"
-          />
-          <GanttBar
-            :item="event"
-            :grouped-dates="groupedDates"
-            :kind="event.kind"
-            :type="event.type"
-            :style-type="'event'"
-          />
+          <div class="timeline-container">
+            <OperatingStatesBar
+              :operating_states="event.operating_states"
+              :grouped-dates="groupedDates"
+              :style-type="'background'"
+            />
+            <GanttBar
+              :item="event"
+              :grouped-dates="groupedDates"
+              :kind="event.kind"
+              :type="event.type"
+              :style-type="'event'"
+            />
+          </div>
         </template>
         <template v-else-if="event.startDate && event.endDate">
           <GanttBar
@@ -487,5 +489,19 @@ const getMaxDate = (event: TableEvent): string => {
   outline: none;
   border-color: #4a90e2;
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.timeline-container {
+  position: relative;
+  height: 40px;
+  width: 100%;
+}
+
+.timeline-container :deep(.gantt-bar) {
+  z-index: 2;
+}
+
+.timeline-container :deep(.operating-states-container) {
+  z-index: 1;
 }
 </style>

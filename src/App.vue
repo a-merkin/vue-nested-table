@@ -19,7 +19,7 @@ const wells = ref<Well[]>([
                 "operating_states": [
                     {
                         "startDate": "2025-03-01",
-                        "endDate": "2025-04-01",
+                        "endDate": "2026-04-01",
                         "state": "operating_state_prod"
                     }
                 ],
@@ -265,7 +265,7 @@ const wells = ref<Well[]>([
                 "operating_states": [
                     {
                         "startDate": "2025-03-01",
-                        "endDate": "2025-04-01",
+                        "endDate": "2026-04-01",
                         "state": null
                     }
                 ],

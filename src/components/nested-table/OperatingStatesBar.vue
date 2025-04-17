@@ -21,7 +21,7 @@ interface Props {
     end: Date;
     key: string;
   }>;
-  styleType?: 'primary' | 'secondary';
+  styleType?: 'primary' | 'secondary' | 'background';
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -59,10 +59,10 @@ const getStateClass = (state: string | null): string => {
 
 <style scoped>
 .operating-states-container {
-  position: relative;
-  height: 40px;
+  position: absolute;
+  height: 100%;
   width: 100%;
-  margin: 2px 0;
+  margin: 0;
 }
 
 .operating-state {
@@ -70,35 +70,34 @@ const getStateClass = (state: string | null): string => {
   height: 100%;
   transition: all 0.2s;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 /* Цвета для состояний работы скважины */
 .state-prod {
-  background: linear-gradient(to right, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.2));
-  border-right: 2px solid rgba(76, 175, 80, 0.5);
+  background: linear-gradient(to right, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+  border-right: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .state-inje {
-  background: linear-gradient(to right, rgba(33, 150, 243, 0.3), rgba(33, 150, 243, 0.2));
-  border-right: 2px solid rgba(33, 150, 243, 0.5);
+  background: linear-gradient(to right, rgba(33, 150, 243, 0.1), rgba(33, 150, 243, 0.05));
+  border-right: 1px solid rgba(33, 150, 243, 0.2);
 }
 
 .state-idle {
-  background: linear-gradient(to right, rgba(244, 67, 54, 0.3), rgba(244, 67, 54, 0.2));
-  border-right: 2px solid rgba(244, 67, 54, 0.5);
+  background: linear-gradient(to right, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.05));
+  border-right: 1px solid rgba(244, 67, 54, 0.2);
 }
 
 .state-intake {
-  background: linear-gradient(to right, rgba(156, 39, 176, 0.3), rgba(156, 39, 176, 0.2));
-  border-right: 2px solid rgba(156, 39, 176, 0.5);
+  background: linear-gradient(to right, rgba(156, 39, 176, 0.1), rgba(156, 39, 176, 0.05));
+  border-right: 1px solid rgba(156, 39, 176, 0.2);
 }
 
 /* Стиль для null состояния */
 .state-null {
-  background-image: radial-gradient(circle at 50% 50%, rgba(128, 128, 128, 0.3) 2px, transparent 2px);
+  background-image: radial-gradient(circle at 50% 50%, rgba(128, 128, 128, 0.1) 2px, transparent 2px);
   background-size: 8px 8px;
-  background-color: rgba(200, 200, 200, 0.2);
-  border-right: 2px solid rgba(128, 128, 128, 0.5);
+  background-color: rgba(200, 200, 200, 0.05);
+  border-right: 1px solid rgba(128, 128, 128, 0.2);
 }
 </style>
