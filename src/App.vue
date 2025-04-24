@@ -15,257 +15,139 @@ const wells = ref<Well[]>([
                 "type": "base_production",
                 "startDate": null,
                 "endDate": null,
-                "resources": [],
+                "well_id": "152",
+                "well_name": "60",
+                "stop_well": false,
+                "shut_well": false,
                 "operating_states": [
                     {
-                        "startDate": "2025-03-01",
-                        "endDate": "2026-04-01",
+                        "startDate": "2025-01-01",
+                        "endDate": "2025-04-01",
                         "state": "operating_state_prod"
                     }
-                ],
-                "stop_well": false,
-                "shut_well": false
+                ]
             },
             {
                 "id": "group_1.gtm_2",
                 "name": "ГРП_60",
                 "kind": "event_kind_gtm",
                 "type": "event_type_grp",
+                "well_id": "152",
+                "well_name": "60",
                 "startDate": null,
                 "endDate": null,
                 "resources": [],
                 "operating_states": [
                     {
-                        "startDate": "2025-03-01",
+                        "startDate": "2025-01-01",
                         "endDate": "2025-04-01",
                         "state": null
                     }
                 ],
                 "stop_well": false,
                 "shut_well": false
+            },
+            {
+                "id": "otm_1",
+                "name": "ЛАР_60_123",
+                "kind": "event_kind_otm",
+                "type": "event_type_lar",
+                "well_id": "152",
+                "well_name": "60",
+                "startDate": "2025-04-01",
+                "endDate": "2025-04-24",
+                "resources": [],
+                "operating_states": [
+                    {
+                        "startDate": "2025-01-01",
+                        "endDate": "2025-04-01",
+                        "state": null
+                    }
+                ],
+                "stop_well": false,
+                "shut_well": false
+            },
+            {
+                "id": "otm_2",
+                "name": "ППР_60_123",
+                "kind": "event_kind_otm",
+                "type": "event_type_ppr",
+                "well_id": "152",
+                "well_name": "60",
+                "startDate": "2025-04-01",
+                "endDate": "2025-04-24",
+                "resources": [],
+                "operating_states": [
+                    {
+                        "startDate": "2025-01-01",
+                        "endDate": "2025-04-01",
+                        "state": null
+                    }
+                ],
+                "stop_well": false,
+                "shut_well": false
+            },
+            {
+                "id": "otm_3",
+                "name": "Исследование_60_123",
+                "kind": "event_kind_otm",
+                "type": "event_type_research",
+                "well_id": "152",
+                "well_name": "60",
+                "startDate": "2025-04-01",
+                "endDate": "2025-04-24",
+                "resources": [],
+                "operating_states": [
+                    {
+                        "startDate": "2025-01-01",
+                        "endDate": "2025-04-01",
+                        "state": null
+                    }
+                ],
+                "stop_well": false,
+                "shut_well": false
+            },
+            {
+                "id": "shut_152",
+                "name": "Консервация_60_645",
+                "kind": "event_kind_shut",
+                "type": "event_type_cons",
+                "well_id": "152",
+                "well_name": "60",
+                "startDate": "2025-04-01",
+                "endDate": "2025-04-24",
+                "resources": [],
+                "operating_states": [
+                    {
+                        "startDate": "2025-01-01",
+                        "endDate": "2025-04-01",
+                        "state": null
+                    }
+                ],
+                "stop_well": true,
+                "shut_well": true
             }
         ]
     },
     {
         "id": "group_1.gtm_1",
-        "name": "ВНС_1",
+        "name": "ГРП_1",
         "state": "operating_state_prod",
         "events": [
             {
                 "id": "group_1.gtm_1",
-                "name": "ВНС_1",
+                "name": "ГРП_1",
                 "kind": "event_kind_gtm",
-                "type": "event_type_vns",
+                "type": "event_type_grp",
+                "well_id": null,
+                "well_name": null,
                 "startDate": null,
                 "endDate": null,
                 "resources": [],
                 "operating_states": [
                     {
-                        "startDate": "2025-03-01",
+                        "startDate": "2025-01-01",
                         "endDate": "2025-04-01",
-                        "state": null
-                    }
-                ],
-                "stop_well": false,
-                "shut_well": false
-            }
-        ]
-    },
-    {
-        "id": "otm_1",
-        "name": "ЛАР_безым.",
-        "state": null,
-        "events": [
-            {
-                "id": "otm_1",
-                "name": "ЛАР_безым.",
-                "kind": "event_kind_otm",
-                "type": "event_type_lar",
-                "startDate": "2025-04-01",
-                "endDate": "2025-04-16",
-                "resources": [
-                    {
-                        "id": "resource_krs",
-                        "name": "Бригады КРС",
-                        "type": "resource_krs",
-                        "startDate": "2025-04-10",
-                        "endDate": "2025-04-16",
-                        "stages": [
-                            {
-                                "id": "stage_operations",
-                                "name": "Работы",
-                                "startDate": "2025-04-10"
-                            },
-                            {
-                                "id": "stage_mobilization",
-                                "name": "Мобилизация",
-                                "startDate": "2025-04-14"
-                            }
-                        ]
-                    }
-                ],
-                "operating_states": [
-                    {
-                        "startDate": "2025-03-01",
-                        "endDate": "2025-04-01",
-                        "state": null
-                    }
-                ],
-                "stop_well": false,
-                "shut_well": false
-            }
-        ]
-    },
-    {
-        "id": "otm_2",
-        "name": "ЛАР_безым. (1)",
-        "state": null,
-        "events": [
-            {
-                "id": "otm_2",
-                "name": "ЛАР_безым. (1)",
-                "kind": "event_kind_otm",
-                "type": "event_type_lar",
-                "startDate": "2025-04-01",
-                "endDate": "2025-04-16",
-                "resources": [
-                    {
-                        "id": "resource_krs",
-                        "name": "Бригады КРС",
-                        "type": "resource_krs",
-                        "startDate": "2025-04-16",
-                        "endDate": "2025-04-16",
-                        "stages": [
-                            {"id": "stage_mobilization",
-                                "name": "Мобилизация",
-                                "startDate": "2025-04-16"
-                            }
-                        ]
-                    }
-                ],
-                "operating_states": [
-                    {
-                        "startDate": "2025-03-01",
-                        "endDate": "2025-04-01",
-                        "state": null
-                    }
-                ],
-                "stop_well": false,
-                "shut_well": false
-            }
-        ]
-    },
-    {
-        "id": "otm_3",
-        "name": "ЛАР_безым. (2)",
-        "state": null,
-        "events": [
-            {
-                "id": "otm_3",
-                "name": "ЛАР_безым. (2)",
-                "kind": "event_kind_otm",
-                "type": "event_type_lar",
-                "startDate": "2025-04-01",
-                "endDate": "2025-04-16",
-                "resources": [
-                    {
-                        "id": "resource_krs",
-                        "name": "Бригады КРС",
-                        "type": "resource_krs",
-                        "startDate": "2025-04-16",
-                        "endDate": "2025-04-16",
-                        "stages": [
-                            {
-                                "id": "stage_mobilization",
-                                "name": "Мобилизация",
-                                "startDate": "2025-04-16"
-                            }
-                        ]
-                    }
-                ],
-                "operating_states": [
-                    {
-                        "startDate": "2025-03-01",
-                        "endDate": "2025-04-01",
-                        "state": null
-                    }
-                ],
-                "stop_well": false,
-                "shut_well": false
-            }
-        ]
-    },
-    {
-        "id": "otm_4",
-        "name": "ЛАР_безым. (3)",
-        "state": null,
-        "events": [
-            {
-                "id": "otm_4",
-                "name": "ЛАР_безым. (3)",
-                "kind": "event_kind_otm",
-                "type": "event_type_lar",
-                "startDate": "2025-04-01",
-                "endDate": "2025-04-30",
-                "resources": [
-                    {
-                        "id": "resource_krs",
-                        "name": "Бригады КРС",
-                        "type": "resource_krs",
-                        "startDate": "2025-04-16",
-                        "endDate": "2025-04-30",
-                        "stages": [
-                            {
-                                "id": "stage_mobilization",
-                                "name": "Мобилизация",
-                                "startDate": "2025-04-16"
-                            }
-                        ]
-                    }
-                ],
-                "operating_states": [
-                    {
-                        "startDate": "2025-03-01",
-                        "endDate": "2025-04-01",
-                        "state": null
-                    }
-                ],
-                "stop_well": false,
-                "shut_well": false
-            }
-        ]
-    },
-    {
-        "id": "otm_5",
-        "name": "ЛАР_безым. (4)",
-        "state": null,
-        "events": [
-            {
-                "id": "otm_5",
-                "name": "ЛАР_безым. (4)",
-                "kind": "event_kind_otm",
-                "type": "event_type_lar",
-                "startDate": "2025-04-01",
-                "endDate": "2025-04-30",
-                "resources": [
-                    {
-                        "id": "resource_krs",
-                        "name": "Бригады КРС",
-                        "type": "resource_krs",
-                        "startDate": "2025-04-16",
-                        "endDate": "2025-04-30",
-                        "stages": [
-                            {
-                                "id": "stage_mobilization",
-                                "name": "Мобилизация",
-                                "startDate": "2025-04-16"
-                            }]
-                    }
-                ],
-                "operating_states": [
-                    {
-                        "startDate": "2025-03-01",
-                        "endDate": "2026-04-01",
                         "state": null
                     }
                 ],

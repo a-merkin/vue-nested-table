@@ -74,23 +74,23 @@ const getStateClass = (state: string | null): string => {
 
 /* Цвета для состояний работы скважины */
 .state-prod {
-  background-color: rgba(76, 175, 80, 0.2);
-  border-right: 1px solid rgba(76, 175, 80, 0.2);
+  background-color: rgba(76, 175, 80, 0.3);
+  border-right: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .state-inje {
-  background-color: rgba(33, 150, 243, 0.2);
-  border-right: 1px solid rgba(33, 150, 243, 0.2);
+  background-color: rgba(33, 150, 243, 0.3);
+  border-right: 1px solid rgba(33, 150, 243, 0.3);
 }
 
 .state-idle {
-  background-color: rgba(244, 67, 54, 0.2);
-  border-right: 1px solid rgba(244, 67, 54, 0.2);
+  background-color: rgba(244, 67, 54, 0.3);
+  border-right: 1px solid rgba(244, 67, 54, 0.3);
 }
 
 .state-intake {
-  background-color: rgba(156, 39, 176, 0.2);
-  border-right: 1px solid rgba(156, 39, 176, 0.2);
+  background-color: rgba(156, 39, 176, 0.3);
+  border-right: 1px solid rgba(156, 39, 176, 0.3);
 }
 
 /* Стиль для null состояния */

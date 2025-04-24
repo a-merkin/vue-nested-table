@@ -20,8 +20,9 @@ export type EventType =
   | 'event_type_start'
   // Отключения
   | 'event_type_conservation'
-  | 'event_type_liquidation';
-
+  | 'event_type_liquidation'
+  | 'event_type_research'
+  | 'event_type_cons';
 export type OperatingState =
   | 'operating_state_prod'
   | 'operating_state_inje'
@@ -73,6 +74,8 @@ export interface Event {
   operating_states?: OperatingStateEntry[];
   stop_well: boolean;
   shut_well: boolean;
+  well_id: string | null;
+  well_name: string | null;
 }
 
 export interface Well {
