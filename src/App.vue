@@ -172,6 +172,7 @@ const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => 
 };
 
 const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) => {
+    console.log(payload)
   const [wellId, eventId] = payload.eventId.split('.');
   const well = wells.value.find(w => w.id === wellId);
   if (!well) return;

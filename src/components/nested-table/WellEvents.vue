@@ -22,7 +22,7 @@
             <button
               v-if="event.type === 'base_production'"
               class="action-button add-button"
-              @click="$emit('event-action', { type: 'add', eventId: event.id })"
+              @click="$emit('event-action', { type: 'add', eventId: event.id, wellId: well.id, wellName: well.name })"
               title="Добавить мероприятие"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -33,7 +33,7 @@
             <button
               v-else
               class="action-button edit-button"
-              @click="$emit('event-action', { type: 'edit', eventId: event.id })"
+              @click="$emit('event-action', { type: 'edit', eventId: event.id, wellId: well.id, wellName: well.name })"
               title="Редактировать мероприятие"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -166,7 +166,7 @@ defineEmits<{
   (e: 'toggle-event', eventId: string): void;
   (e: 'toggle-resource', resourceId: string): void;
   (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
-  (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string }): void;
+  (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }): void;
   (e: 'event-dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
   (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
 }>();
