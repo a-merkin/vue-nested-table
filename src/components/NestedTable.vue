@@ -36,12 +36,14 @@
               :expanded-events="expandedEvents as unknown as Set<string>"
               :expanded-resources="expandedResources as unknown as Set<string>"
               :is-last-well="wellIndex === wells.length - 1"
+              :selected-id="selectedId"
               @toggle-event="toggleEvent"
               @toggle-resource="toggleResource"
               @well-action="handleWellAction"
               @event-action="handleEventAction"
               @event-dates-change="handleEventDatesChange"
               @resource-dates-change="handleResourceDatesChange"
+              @select-row="handleSelectRow"
             />
           </template>
         </tbody>
@@ -69,11 +71,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }): void;
   (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
+  (e: 'select-row', showId: string): void;
 }>();
 
 // Состояние
 const granularity = ref<DateGranularity>('month');
 const expandAll = ref(false);
+const selectedId = ref<string | null>(null);
 
 // Композиции
 const { expandedEvents, expandedResources, toggleEvent, toggleResource } = useExpansionState();
@@ -85,6 +89,14 @@ const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => 
 };
 
 const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }) => {
+  const well = props.wells.find(w => w.id === payload.wellId);
+  if (well) {
+    const event = well.events.find(e => e.id === payload.eventId);
+    if (event) {
+      const showId = event.well_id || event.id;
+      handleSelectRow(showId);
+    }
+  }
   emit('event-action', payload);
 };
 
@@ -111,6 +123,11 @@ const handleExpandAllChange = () => {
     expandedEvents.value.clear();
     expandedResources.value.clear();
   }
+};
+
+const handleSelectRow = (showId: string) => {
+  selectedId.value = showId;
+  emit('select-row', showId);
 };
 
 // Watch for changes in wells to update expandAll state

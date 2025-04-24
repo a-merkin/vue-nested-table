@@ -3,18 +3,21 @@
     <!-- Строка события -->
     <tr :class="[
       'event-row',
-      { 'well-group-separator': eventIndex === well.events.length - 1 && !isLastWell }
-    ]">
+      { 'well-group-separator': eventIndex === well.events.length - 1 && !isLastWell },
+      { 'selected': selectedId === (event.well_id || event.id) }
+    ]"
+    @click="handleRowClick(event)">
       <td v-if="eventIndex === 0"
           :rowspan="getWellTotalRowspan(well)"
-          :class="['well-name-cell', getWellStateClass(well.state)]">
+          :class="['well-name-cell', getWellStateClass(well.state), { 'selected': selectedId === well.id }]"
+          @click.stop="handleRowClick(event)">
         <div class="well-name-container" :title="well.name">
           <span class="well-name">{{ well.name }}</span>
         </div>
       </td>
       <td class="team-cell">
         <div class="event-name" :title="event.name">
-          <div class="event-name-content" @click="$emit('toggle-event', event.id)">
+          <div class="event-name-content" @click.stop="$emit('toggle-event', event.id)">
             <span class="expand-icon">{{ isEventExpanded(event.id) ? '▼' : '▶' }}</span>
             <span class="event-name-text">{{ event.name }}</span>
           </div>
@@ -22,7 +25,7 @@
             <button
               v-if="event.type === 'base_production'"
               class="action-button add-button"
-              @click="$emit('event-action', { type: 'add', eventId: event.id, wellId: well.id, wellName: well.name })"
+              @click.stop="$emit('event-action', { type: 'add', eventId: event.id, wellId: well.id, wellName: well.name })"
               title="Добавить мероприятие"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -33,7 +36,7 @@
             <button
               v-else
               class="action-button edit-button"
-              @click="$emit('event-action', { type: 'edit', eventId: event.id, wellId: well.id, wellName: well.name })"
+              @click.stop="$emit('event-action', { type: 'edit', eventId: event.id, wellId: well.id, wellName: well.name })"
               title="Редактировать мероприятие"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -160,15 +163,17 @@ const props = defineProps<{
   expandedEvents: Set<string>;
   expandedResources: Set<string>;
   isLastWell: boolean;
+  selectedId: string | null;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'toggle-event', eventId: string): void;
   (e: 'toggle-resource', resourceId: string): void;
   (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
   (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }): void;
   (e: 'event-dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
   (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
+  (e: 'select-row', showId: string): void;
 }>();
 
 const { formatDateRange } = useDateFormatting();
@@ -204,6 +209,20 @@ const getMaxDate = (event: TableEvent): string => {
   if (eventIndex === well.events.length - 1) return '';
   const nextEvent = well.events[eventIndex + 1];
   return nextEvent?.startDate || '';
+};
+
+const handleRowClick = (event: TableEvent) => {
+  const showId = event.well_id || event.id;
+  emit('select-row', showId);
+};
+
+const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }) => {
+  const event = props.well.events.find(e => e.id === payload.eventId);
+  if (event) {
+    const showId = event.well_id || event.id;
+    emit('select-row', showId);
+  }
+  emit('event-action', payload);
 };
 </script>
 
@@ -441,6 +460,41 @@ const getMaxDate = (event: TableEvent): string => {
 .event-row {
   background-color: #FFFFFF;
   border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* .event-row:hover {
+  background-color: #f5f5f5;
+} */
+
+/* .selected {
+  background-color: #e3f2fd;
+  position: relative;
+} */
+
+/* .selected::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #2196f3;
+} */
+
+/* .well-name-cell.selected {
+  background-color: #e3f2fd;
+} */
+
+.well-name-cell.selected::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #2196f3;
 }
 
 .resource-row {

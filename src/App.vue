@@ -177,6 +177,10 @@ const handleResourceDatesChange = (payload: { resourceId: string, startDate: str
     return { ...well, events: updatedEvents };
   });
 };
+
+const handleSelectRow = (showId: string) => {
+  console.log('Selected row:', showId);
+};
 </script>
 
 <template>
@@ -186,6 +190,7 @@ const handleResourceDatesChange = (payload: { resourceId: string, startDate: str
       :wells="wells"
       @event-action="handleEventAction"
       @resource-dates-change="handleResourceDatesChange"
+      @select-row="handleSelectRow"
     />
   </div>
 </template>
