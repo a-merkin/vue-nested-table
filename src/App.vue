@@ -159,41 +159,8 @@ const wells = ref<Well[]>([
 ]
 )
 
-// Обработчики событий
-const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => {
-  const well = wells.value.find(w => w.id === payload.wellId);
-  if (!well) return;
-
-  if (payload.type === 'edit') {
-    console.log('Редактирование скважины:', payload.wellId);
-  } else {
-    console.log('Добавление мероприятия для скважины:', payload.wellId);
-  }
-};
-
 const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) => {
     console.log(payload)
-  const [wellId, eventId] = payload.eventId.split('.');
-  const well = wells.value.find(w => w.id === wellId);
-  if (!well) return;
-
-  if (payload.type === 'edit') {
-    console.log('Редактирование мероприятия:', payload.eventId);
-  } else {
-    console.log('Добавление мероприятия:', payload.eventId);
-  }
-};
-
-const handleEventDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
-    console.log(payload)
-  wells.value = wells.value.map(well => {
-    const updatedEvents = well.events.map(event => 
-      event.id === payload.eventId 
-        ? { ...event, startDate: payload.startDate, endDate: payload.endDate }
-        : event
-    );
-    return { ...well, events: updatedEvents };
-  });
 };
 
 const handleResourceDatesChange = (payload: { resourceId: string, startDate: string, endDate: string }) => {
@@ -217,10 +184,7 @@ const handleResourceDatesChange = (payload: { resourceId: string, startDate: str
     <!-- <h1>Планирование работ на скважинах</h1> -->
     <NestedTable
       :wells="wells"
-      @well-action="handleWellAction"
       @event-action="handleEventAction"
-      @update:wells="wells = $event"
-      @event-dates-change="handleEventDatesChange"
       @resource-dates-change="handleResourceDatesChange"
     />
   </div>

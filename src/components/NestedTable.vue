@@ -67,9 +67,7 @@ const props = defineProps<{
 
 // Эмиты
 const emit = defineEmits<{
-  (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
-  (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string }): void;
-  (e: 'event-dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
+  (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }): void;
   (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
 }>();
 
@@ -83,15 +81,15 @@ const { groupedDates, formatDate } = useDateRanges(props.wells, granularity);
 
 // Обработчики
 const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => {
-  emit('well-action', payload);
+  // Implementation needed
 };
 
-const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string }) => {
+const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }) => {
   emit('event-action', payload);
 };
 
 const handleEventDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
-  emit('event-dates-change', payload);
+  // Implementation needed
 };
 
 const handleResourceDatesChange = (payload: { resourceId: string, startDate: string, endDate: string }) => {
