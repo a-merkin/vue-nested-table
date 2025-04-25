@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import type { Ref } from 'vue';
-import type { Well, DateGranularity } from '../types/table';
+import type { Well, DateGranularity, OperatingStateEntry, Resource, Stage, Event } from '../types/table';
+import { format } from 'date-fns';
 
 export type DateRange = {
   start: Date;
@@ -20,54 +21,57 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
         const start = new Date(startDate);
         const end = new Date(endDate);
 
-        // Проверяем валидность дат
         if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
 
-        start.setHours(0, 0, 0, 0);
-        end.setHours(23, 59, 59, 999);
+        if (granularity.value === 'year') {
+          start.setMonth(0, 1);
+          start.setHours(0, 0, 0, 0);
+          end.setMonth(11, 31);
+          end.setHours(23, 59, 59, 999);
+        } else {
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+        }
 
         if (!minDate || start < minDate) minDate = start;
         if (!maxDate || end > maxDate) maxDate = end;
-      } catch (error) {
+      } catch {
         console.warn('Invalid date format:', { startDate, endDate });
       }
     };
 
-    wells.forEach(well => {
-      // Проверяем состояния работы скважины
-      well.events.forEach(event => {
-        // Проверяем состояния работы
-        event.operating_states?.forEach(state => {
+    const processEvent = (event: Event) => {
+      updateDateRange(event.startDate, event.endDate);
+
+      if (event.operating_states) {
+        event.operating_states.forEach((state: OperatingStateEntry) => {
           updateDateRange(state.startDate, state.endDate);
         });
+      }
 
-        // Проверяем даты события
-        updateDateRange(event.startDate, event.endDate);
+      if (event.resources) {
+        event.resources.forEach((resource: Resource) => {
+          updateDateRange(resource.startDate, resource.endDate);
 
-        // Проверяем ресурсы
-        if (event.resources && event.resources.length > 0) {
-          event.resources.forEach(resource => {
-            // Проверяем даты ресурса (от первой до последней стадии)
-            const firstStage = resource.stages?.[0];
-            const lastStage = resource.stages?.[resource.stages.length - 1];
-            if (firstStage && lastStage) {
-              updateDateRange(firstStage.startDate, lastStage.startDate);
-            }
-
-            // Проверяем каждую стадию отдельно
-            resource.stages?.forEach(stage => {
+          if (resource.stages) {
+            resource.stages.forEach((stage: Stage) => {
               updateDateRange(stage.startDate, stage.startDate);
             });
-          });
-        }
-      });
+          }
+        });
+      }
+    };
+
+    wells.forEach(well => {
+      if (well.events) {
+        well.events.forEach(processEvent);
+      }
     });
 
-    // Если не нашли ни одной валидной даты, возвращаем текущий месяц
     if (!minDate || !maxDate) {
       const now = new Date();
-      minDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      minDate = new Date(now.getFullYear(), 0, 1);
+      maxDate = new Date(now.getFullYear(), 11, 31);
       maxDate.setHours(23, 59, 59, 999);
     }
 
@@ -117,6 +121,17 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
     let currentDate = new Date(startDate);
     currentDate.setHours(0, 0, 0, 0);
 
+    if (startDate.getTime() === endDate.getTime()) {
+      const rangeStart = new Date(startDate);
+      const rangeEnd = calculateRangeEnd(startDate, granularityValue);
+      ranges.push({
+        start: rangeStart,
+        end: rangeEnd,
+        key: startDate.toISOString()
+      });
+      return ranges;
+    }
+
     while (currentDate <= endDate) {
       const rangeStart = new Date(currentDate);
       const rangeEnd = calculateRangeEnd(currentDate, granularityValue);
@@ -129,17 +144,28 @@ export const useDateRanges = (wells: Well[], granularity: Ref<DateGranularity> |
       currentDate = getNextDate(currentDate, granularityValue);
     }
 
+    if (ranges.length === 0) {
+      const now = new Date();
+      const yearStart = new Date(now.getFullYear(), 0, 1);
+      const yearEnd = calculateRangeEnd(yearStart, granularityValue);
+      ranges.push({
+        start: yearStart,
+        end: yearEnd,
+        key: yearStart.toISOString()
+      });
+    }
+
     return ranges;
   };
 
-  const formatDate = (start: Date, end: Date): string => {
+  const formatDate = (start: Date): string => {
     switch (granularity.value) {
       case 'day':
-        return start.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        return format(start, 'yyyy-MM-dd');
       case 'month':
-        return start.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+        return format(start, 'yyyy-MM');
       case 'year':
-        return start.toLocaleDateString('ru-RU', { year: 'numeric' });
+        return `${format(start, 'yyyy')}`;
       default:
         return '';
     }

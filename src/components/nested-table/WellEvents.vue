@@ -53,7 +53,6 @@
           v-model="event.startDate"
           @change="$emit('event-dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
           class="date-input"
-          :min="getMinDate(event)"
           :max="event.endDate || undefined"
         />
       </td>
@@ -146,8 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Well, OperatingState, Event as TableEvent } from '../../types/table';
-import { useDateFormatting } from '../../composables/useDateFormatting';
+import type { Well, Event as TableEvent } from '../../types/table';
 import GanttBar from './GanttBar.vue';
 import OperatingStatesBar from './OperatingStatesBar.vue';
 
@@ -176,10 +174,7 @@ const emit = defineEmits<{
   (e: 'select-row', showId: string): void;
 }>();
 
-const { formatDateRange } = useDateFormatting();
-
 const isEventExpanded = (eventId: string): boolean => props.expandedEvents.has(eventId);
-const isResourceExpanded = (resourceId: string): boolean => props.expandedResources.has(resourceId);
 
 const getWellTotalRowspan = (well: Well): number => {
   return well.events.reduce((total, event) => {
@@ -195,14 +190,6 @@ const getWellStateClass = (state: string | null): string => {
   return `well-state-${state.replace('operating_state_', '')}`;
 };
 
-const getMinDate = (event: TableEvent): string => {
-  const well = props.well;
-  const eventIndex = well.events.findIndex(e => e.id === event.id);
-  if (eventIndex === 0) return '';
-  const prevEvent = well.events[eventIndex - 1];
-  return prevEvent?.endDate || '';
-};
-
 const getMaxDate = (event: TableEvent): string => {
   const well = props.well;
   const eventIndex = well.events.findIndex(e => e.id === event.id);
@@ -216,14 +203,6 @@ const handleRowClick = (event: TableEvent) => {
   emit('select-row', showId);
 };
 
-const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }) => {
-  const event = props.well.events.find(e => e.id === payload.eventId);
-  if (event) {
-    const showId = event.well_id || event.id;
-    emit('select-row', showId);
-  }
-  emit('event-action', payload);
-};
 </script>
 
 <style scoped>
@@ -428,32 +407,30 @@ const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string, wel
 
 /* Цвета для состояний скважин */
 .well-state-prod {
-  background-color: #E8F5E9;
+  background-color: #C8E6C9;
+  border-right: 1px solid #4CAF50;
 }
 
 .well-state-inje {
-  background-color: #E3F2FD;
-  color: #1565C0;
-  font-weight: bold;
-}
-
-.well-state-inje:hover {
   background-color: #BBDEFB;
+  border-right: 1px solid #2196F3;
 }
 
 .well-state-idle {
-  background-color: #FFEBEE;
-  border-left: 3px solid #F44336;
+  background-color: #FFCDD2;
+  border-right: 1px solid #F44336;
 }
 
 .well-state-intake {
-  background-color: #F3E5F5;
-  color: #7B1FA2;
-  font-weight: bold;
+  background-color: #E1BEE7;
+  border-right: 1px solid #9C27B0;
 }
 
-.well-state-intake:hover {
-  background-color: #E1BEE7;
+.well-state-unknown {
+  background-color: #EEEEEE;
+  background-image: radial-gradient(circle at 50% 50%, #9E9E9E 2px, transparent 2px);
+  background-size: 8px 8px;
+  border-right: 1px solid #9E9E9E;
 }
 
 /* Стили для строк */

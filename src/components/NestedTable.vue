@@ -22,8 +22,8 @@
             <th class="date-start-header">Дата начала</th>
             <th class="date-end-header">Дата конца</th>
             <TimelineHeader
-              v-if="(groupedDates as unknown as DateRange[]).length > 1"
-              :dates="groupedDates as unknown as DateRange[]"
+              v-if="groupedDates.length > 0"
+              :dates="groupedDates"
               :format-date="formatDate"
             />
           </tr>
@@ -39,28 +39,34 @@
               :selected-id="selectedId"
               @toggle-event="toggleEvent"
               @toggle-resource="toggleResource"
-              @well-action="handleWellAction"
               @event-action="handleEventAction"
               @event-dates-change="handleEventDatesChange"
-              @resource-dates-change="handleResourceDatesChange"
               @select-row="handleSelectRow"
             />
           </template>
         </tbody>
       </table>
+      <DateGrid
+        v-if="showDateGrid"
+        :rows="dateGridRows"
+        :cols="dateGridCols"
+        :initial-values="dateGridValues"
+        @update:values="handleDateGridUpdate"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { Well, DateGranularity, Event } from '../types/table';
+import type { Well, DateGranularity } from '../types/table';
 import type { DateRange } from '../composables/useDateRanges';
 import { useDateRanges } from '../composables/useDateRanges';
 import { useExpansionState } from '../composables/useExpansionState';
 import GranularitySelector from './nested-table/GranularitySelector.vue';
 import TimelineHeader from './nested-table/TimelineHeader.vue';
 import WellEvents from './nested-table/WellEvents.vue';
+import DateGrid from './nested-table/DateGrid.vue';
 
 // Пропсы
 const props = defineProps<{
@@ -72,6 +78,7 @@ const emit = defineEmits<{
   (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }): void;
   (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
   (e: 'select-row', showId: string): void;
+  (e: 'event-dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
 }>();
 
 // Состояние
@@ -83,10 +90,11 @@ const selectedId = ref<string | null>(null);
 const { expandedEvents, expandedResources, toggleEvent, toggleResource } = useExpansionState();
 const { groupedDates, formatDate } = useDateRanges(props.wells, granularity);
 
-// Обработчики
-const handleWellAction = (payload: { type: 'edit' | 'add', wellId: string }) => {
-  // Implementation needed
-};
+// Date grid state
+const showDateGrid = ref(false);
+const dateGridRows = ref(10);
+const dateGridCols = ref(10);
+const dateGridValues = ref<string[][]>([]);
 
 const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }) => {
   const well = props.wells.find(w => w.id === payload.wellId);
@@ -101,11 +109,7 @@ const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string, wel
 };
 
 const handleEventDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
-  // Implementation needed
-};
-
-const handleResourceDatesChange = (payload: { resourceId: string, startDate: string, endDate: string }) => {
-  emit('resource-dates-change', payload);
+  emit('event-dates-change', payload);
 };
 
 const handleExpandAllChange = () => {
@@ -128,6 +132,11 @@ const handleExpandAllChange = () => {
 const handleSelectRow = (showId: string) => {
   selectedId.value = showId;
   emit('select-row', showId);
+};
+
+const handleDateGridUpdate = (values: string[][]) => {
+  dateGridValues.value = values;
+  // Here you can update your data model with the new values
 };
 
 // Watch for changes in wells to update expandAll state
@@ -240,5 +249,12 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
   width: 16px;
   height: 16px;
   cursor: pointer;
+}
+
+.date-grid-container {
+  margin-top: 20px;
+  border: 1px solid var(--table-border-color);
+  border-radius: 4px;
+  overflow: hidden;
 }
 </style>
