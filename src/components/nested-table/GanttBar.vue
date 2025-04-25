@@ -1,23 +1,25 @@
 <template>
   <div class="gantt-bar-container">
     <div
-class="gantt-bar"
-         :class="[
-           getEventKindClass(kind),
-           getEventTypeClass(type),
-           `${styleType}-bar`
-         ].filter(Boolean)"
-         :style="calculateBarStyle()"
-         :title="item.name">
-      <div class="gantt-bar-label">{{ item.name }}</div>
+      class="gantt-bar"
+      :class="
+        [getEventKindClass(kind), getEventTypeClass(type), `${styleType}-bar`].filter(Boolean)
+      "
+      :style="calculateBarStyle()"
+      :title="item.name"
+    >
+      <div v-if="shouldShowLabel" class="gantt-bar-label">{{ item.name }}</div>
       <template v-if="styleType === 'resource' && item.operations">
         <div
-v-for="operation in item.operations"
-             :key="operation.id"
-             class="inner-operation"
-             :style="calculateInnerOperationStyle(operation)"
-             :title="operation.name">
-          <span class="inner-operation-label">{{ operation.name }}</span>
+          v-for="operation in item.operations"
+          :key="operation.id"
+          class="inner-operation"
+          :style="calculateInnerOperationStyle(operation)"
+          :title="operation.name"
+        >
+          <span v-if="shouldShowOperationLabel(operation)" class="inner-operation-label">{{
+            operation.name
+          }}</span>
         </div>
       </template>
     </div>
@@ -25,94 +27,128 @@ v-for="operation in item.operations"
 </template>
 
 <script setup lang="ts">
-import type { EventKind, EventType } from '../../types/table';
+import type { EventKind, EventType } from '../../types/table'
+import { computed } from 'vue'
 
 type DateRange = {
-  start: Date;
-  end: Date;
-  key: string;
-};
+  start: Date
+  end: Date
+  key: string
+}
 
 type Operation = {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-};
+  id: string
+  name: string
+  startDate: string
+  endDate: string
+}
 
 type Item = {
-  name: string;
-  startDate: string | null;
-  endDate: string | null;
-  operations?: Operation[];
-};
+  name: string
+  startDate: string | null
+  endDate: string | null
+  operations?: Operation[]
+}
 
 const props = defineProps<{
-  item: Item;
-  groupedDates: DateRange[];
-  kind?: EventKind;
-  type: EventType;
-  styleType: 'event' | 'resource' | 'operation';
-}>();
+  item: Item
+  groupedDates: DateRange[]
+  kind?: EventKind
+  type: EventType
+  styleType: 'event' | 'resource' | 'operation'
+}>()
+
+const MIN_BAR_WIDTH_FOR_LABEL = 60 // минимальная ширина в пикселях для отображения названия
+
+const shouldShowLabel = computed(() => {
+  const style = calculateBarStyle()
+  if (!style.width) return false
+
+  // Конвертируем процент в пиксели (предполагая, что контейнер имеет ширину 100%)
+  const widthInPixels = (parseFloat(style.width) / 100) * window.innerWidth
+  return widthInPixels >= MIN_BAR_WIDTH_FOR_LABEL
+})
+
+const shouldShowOperationLabel = (operation: Operation) => {
+  const style = calculateInnerOperationStyle(operation)
+  if (!style.width) return false
+
+  // Конвертируем процент в пиксели
+  const widthInPixels = (parseFloat(style.width) / 100) * window.innerWidth
+  return widthInPixels >= MIN_BAR_WIDTH_FOR_LABEL
+}
 
 const calculateBarStyle = () => {
   if (!props.item.startDate || !props.item.endDate) {
     return {
-      display: 'none'
-    };
+      display: 'none',
+    }
   }
 
-  const start = new Date(props.item.startDate);
-  const end = new Date(props.item.endDate);
+  const start = new Date(props.item.startDate)
+  const end = new Date(props.item.endDate)
 
   // Устанавливаем время для корректного расчета
-  start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
+  start.setHours(0, 0, 0, 0)
+  end.setHours(23, 59, 59, 999)
 
-  const timelineStart = new Date(props.groupedDates[0].start);
-  const timelineEnd = new Date(props.groupedDates[props.groupedDates.length - 1].end);
+  const timelineStart = new Date(props.groupedDates[0].start)
+  const timelineEnd = new Date(props.groupedDates[props.groupedDates.length - 1].end)
 
-  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime();
-  const startOffset = Math.max(0, ((start.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
-  const endOffset = Math.min(100, ((end.getTime() - timelineStart.getTime()) / timelineDuration) * 100);
-  const width = Math.max(0, endOffset - startOffset);
+  const timelineDuration = timelineEnd.getTime() - timelineStart.getTime()
+  const startOffset = Math.max(
+    0,
+    ((start.getTime() - timelineStart.getTime()) / timelineDuration) * 100
+  )
+  const endOffset = Math.min(
+    100,
+    ((end.getTime() - timelineStart.getTime()) / timelineDuration) * 100
+  )
+  const width = Math.max(0, endOffset - startOffset)
 
   // Для однодневных событий устанавливаем минимальную ширину
-  const minWidth = start.getTime() === end.getTime() ? 2 : 0;
-  const finalWidth = Math.max(width, minWidth);
+  const minWidth = start.getTime() === end.getTime() ? 2 : 0
+  const finalWidth = Math.max(width, minWidth)
 
   return {
     left: `${startOffset}%`,
-    width: `${finalWidth}%`
-  };
-};
+    width: `${finalWidth}%`,
+  }
+}
 
 const calculateInnerOperationStyle = (operation: Operation) => {
-  const start = new Date(operation.startDate);
-  const end = new Date(operation.endDate);
+  const start = new Date(operation.startDate)
+  const end = new Date(operation.endDate)
 
-  start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
+  start.setHours(0, 0, 0, 0)
+  end.setHours(23, 59, 59, 999)
 
-  const resourceStart = new Date(props.item.startDate || '');
-  const resourceEnd = new Date(props.item.endDate || '');
+  const resourceStart = new Date(props.item.startDate || '')
+  const resourceEnd = new Date(props.item.endDate || '')
 
-  resourceStart.setHours(0, 0, 0, 0);
-  resourceEnd.setHours(23, 59, 59, 999);
+  resourceStart.setHours(0, 0, 0, 0)
+  resourceEnd.setHours(23, 59, 59, 999)
 
-  const resourceDuration = resourceEnd.getTime() - resourceStart.getTime();
-  const startOffset = Math.max(0, ((start.getTime() - resourceStart.getTime()) / resourceDuration) * 100);
-  const width = Math.min(100 - startOffset, ((end.getTime() - start.getTime()) / resourceDuration) * 100);
+  const resourceDuration = resourceEnd.getTime() - resourceStart.getTime()
+  const startOffset = Math.max(
+    0,
+    ((start.getTime() - resourceStart.getTime()) / resourceDuration) * 100
+  )
+  const width = Math.min(
+    100 - startOffset,
+    ((end.getTime() - start.getTime()) / resourceDuration) * 100
+  )
 
   return {
     left: `${startOffset}%`,
-    width: `${Math.max(width, 2)}%`
-  };
-};
+    width: `${Math.max(width, 2)}%`,
+  }
+}
 
 const getEventKindClass = (kind?: EventKind): string =>
-  kind ? `event-kind-${kind.replace('event_kind_', '')}` : '';
-const getEventTypeClass = (type: EventType): string => `event-type-${type.replace('event_type_', '')}`;
+  kind ? `event-kind-${kind.replace('event_kind_', '')}` : ''
+const getEventTypeClass = (type: EventType): string =>
+  `event-type-${type.replace('event_type_', '')}`
 </script>
 
 <style scoped>
@@ -227,19 +263,39 @@ const getEventTypeClass = (type: EventType): string => `event-type-${type.replac
 }
 
 /* Цвета для типов мероприятий */
-.event-type-grp { border-right: 3px solid #1976d2; }
-.event-type-opz { border-right: 3px solid #2196f3; }
-.event-type-zbs { border-right: 3px solid #64b5f6; }
-.event-type-vns { border-right: 3px solid #90caf9; }
+.event-type-grp {
+  border-right: 3px solid #1976d2;
+}
+.event-type-opz {
+  border-right: 3px solid #2196f3;
+}
+.event-type-zbs {
+  border-right: 3px solid #64b5f6;
+}
+.event-type-vns {
+  border-right: 3px solid #90caf9;
+}
 
-.event-type-krs { border-right: 3px solid #7b1fa2; }
-.event-type-trs { border-right: 3px solid #9c27b0; }
-.event-type-ppr { border-right: 3px solid #ba68c8; }
+.event-type-krs {
+  border-right: 3px solid #7b1fa2;
+}
+.event-type-trs {
+  border-right: 3px solid #9c27b0;
+}
+.event-type-ppr {
+  border-right: 3px solid #ba68c8;
+}
 
-.event-type-start { border-right: 3px solid #388e3c; }
+.event-type-start {
+  border-right: 3px solid #388e3c;
+}
 
-.event-type-conservation { border-right: 3px solid #d32f2f; }
-.event-type-liquidation { border-right: 3px solid #f44336; }
+.event-type-conservation {
+  border-right: 3px solid #d32f2f;
+}
+.event-type-liquidation {
+  border-right: 3px solid #f44336;
+}
 
 /* Стили для внутренних операций */
 .inner-operation {
