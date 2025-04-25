@@ -1,15 +1,9 @@
 <template>
   <div class="nested-table">
     <div class="table-controls">
-      <GranularitySelector
-        v-model="granularity"
-      />
+      <GranularitySelector v-model="granularity" />
       <label class="expand-all-checkbox">
-        <input 
-          v-model="expandAll" 
-          type="checkbox" 
-          @change="handleExpandAllChange"
-        />
+        <input v-model="expandAll" type="checkbox" @change="handleExpandAllChange" />
         Раскрыть все
       </label>
     </div>
@@ -58,59 +52,74 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import type { Well, DateGranularity } from '../types/table';
-import type { DateRange } from '../composables/useDateRanges';
-import { useDateRanges } from '../composables/useDateRanges';
-import { useExpansionState } from '../composables/useExpansionState';
-import GranularitySelector from './nested-table/GranularitySelector.vue';
-import TimelineHeader from './nested-table/TimelineHeader.vue';
-import WellEvents from './nested-table/WellEvents.vue';
-import DateGrid from './nested-table/DateGrid.vue';
+import { ref, watch } from 'vue'
+import type { Well, DateGranularity } from '../types/table'
+import type { DateRange } from '../composables/useDateRanges'
+import { useDateRanges } from '../composables/useDateRanges'
+import { useExpansionState } from '../composables/useExpansionState'
+import GranularitySelector from './nested-table/GranularitySelector.vue'
+import TimelineHeader from './nested-table/TimelineHeader.vue'
+import WellEvents from './nested-table/WellEvents.vue'
+import DateGrid from './nested-table/DateGrid.vue'
 
 // Пропсы
 const props = defineProps<{
-  wells: Well[];
-}>();
+  wells: Well[]
+}>()
 
 // Эмиты
 const emit = defineEmits<{
-  (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }): void;
-  (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
-  (e: 'select-row', showId: string): void;
-  (e: 'event-dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
-}>();
+  (
+    e: 'event-action',
+    payload: { type: 'edit' | 'add'; eventId: string; wellId: string; wellName: string }
+  ): void
+  (
+    e: 'resource-dates-change',
+    payload: { resourceId: string; startDate: string; endDate: string }
+  ): void
+  (e: 'select-row', showId: string): void
+  (e: 'event-dates-change', payload: { eventId: string; startDate: string; endDate: string }): void
+}>()
 
 // Состояние
-const granularity = ref<DateGranularity>('month');
-const expandAll = ref(false);
-const selectedId = ref<string | null>(null);
+const granularity = ref<DateGranularity>('month')
+const expandAll = ref(false)
+const selectedId = ref<string | null>(null)
 
 // Композиции
-const { expandedEvents, expandedResources, toggleEvent, toggleResource } = useExpansionState();
-const { groupedDates, formatDate } = useDateRanges(props.wells, granularity);
+const { expandedEvents, expandedResources, toggleEvent, toggleResource } = useExpansionState()
+const { groupedDates, formatDate } = useDateRanges(props.wells, granularity)
 
 // Date grid state
-const showDateGrid = ref(false);
-const dateGridRows = ref(10);
-const dateGridCols = ref(10);
-const dateGridValues = ref<string[][]>([]);
+const showDateGrid = ref(false)
+const dateGridRows = ref(10)
+const dateGridCols = ref(10)
+const dateGridValues = ref<string[][]>([])
 
-const handleEventAction = (payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }) => {
-  const well = props.wells.find(w => w.id === payload.wellId);
+const handleEventAction = (payload: {
+  type: 'edit' | 'add'
+  eventId: string
+  wellId: string
+  wellName: string
+}) => {
+  const well = props.wells.find(w => w.id === payload.wellId)
   if (well) {
-    const event = well.events.find(e => e.id === payload.eventId);
+    const event = well.events.find(e => e.id === payload.eventId)
     if (event) {
-      const showId = event.well_id || event.id;
-      handleSelectRow(showId);
+      const showId = event.well_id || event.id
+      handleSelectRow(showId)
     }
   }
-  emit('event-action', payload);
-};
+  emit('event-action', payload)
+}
 
-const handleEventDatesChange = (payload: { eventId: string, startDate: string, endDate: string }) => {
-  emit('event-dates-change', payload);
-};
+const handleEventDatesChange = (payload: {
+  eventId: string
+  startDate: string
+  endDate: string
+}) => {
+  emit('event-dates-change', payload)
+}
 
 const handleExpandAllChange = () => {
   if (expandAll.value) {
@@ -118,40 +127,44 @@ const handleExpandAllChange = () => {
     props.wells.forEach(well => {
       well.events.forEach(event => {
         if (!expandedEvents.value.has(event.id)) {
-          expandedEvents.value.add(event.id);
+          expandedEvents.value.add(event.id)
         }
-      });
-    });
+      })
+    })
   } else {
     // Collapse all events and resources
-    expandedEvents.value.clear();
-    expandedResources.value.clear();
+    expandedEvents.value.clear()
+    expandedResources.value.clear()
   }
-};
+}
 
 const handleSelectRow = (showId: string) => {
-  selectedId.value = showId;
-  emit('select-row', showId);
-};
+  selectedId.value = showId
+  emit('select-row', showId)
+}
 
 const handleDateGridUpdate = (values: string[][]) => {
-  dateGridValues.value = values;
+  dateGridValues.value = values
   // Here you can update your data model with the new values
-};
+}
 
 // Watch for changes in wells to update expandAll state
-watch(() => props.wells, (newWells) => {
-  const allEventsExpanded = newWells.every(well => 
-    well.events.every(event => expandedEvents.value.has(event.id))
-  );
-  expandAll.value = allEventsExpanded;
-}, { deep: true });
+watch(
+  () => props.wells,
+  newWells => {
+    const allEventsExpanded = newWells.every(well =>
+      well.events.every(event => expandedEvents.value.has(event.id))
+    )
+    expandAll.value = allEventsExpanded
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
 .nested-table {
   width: 100%;
-  --table-border-color: #C0C0C0;
+  --table-border-color: #c0c0c0;
   --table-header-bg: #f5f5f5;
   --table-header-color: #333333;
 }
@@ -219,7 +232,10 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
   min-width: 45px;
 }
 
-.well-header, .team-header, .date-start-header, .date-end-header {
+.well-header,
+.team-header,
+.date-start-header,
+.date-end-header {
   white-space: nowrap;
   font-weight: 700;
   color: var(--table-header-color);
@@ -233,19 +249,21 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
 
 .table-controls {
   display: flex;
-  align-items: start;
-  gap: 16px;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .expand-all-checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  user-select: none;
+  gap: 0.5rem;
+  font-size: 12px;
+  color: #333333;
+  white-space: nowrap;
 }
 
-.expand-all-checkbox input[type="checkbox"] {
+.expand-all-checkbox input[type='checkbox'] {
   width: 16px;
   height: 16px;
   cursor: pointer;
