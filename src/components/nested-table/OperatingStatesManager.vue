@@ -1,37 +1,43 @@
 <template>
   <div class="operating-states-manager">
-    <div v-for="(state, index) in modelValue" 
+    <div
+v-for="(state, index) in modelValue" 
          :key="index"
          class="operating-state-entry">
-      <select v-model="state.state" 
-              @change="validateAndEmit"
-              class="state-select">
+      <select
+v-model="state.state" 
+              class="state-select"
+              @change="validateAndEmit">
         <option value="operating_state_prod">Добыча</option>
         <option value="operating_state_inje">Закачка</option>
         <option value="operating_state_idle">Простой</option>
         <option value="operating_state_intake">Поглощение</option>
       </select>
-      <input type="date" 
-             v-model="state.startDate"
-             @change="validateAndEmit"
+      <input
+v-model="state.startDate" 
+             type="date"
              class="date-input"
              :min="getMinStartDate(index)"
-             :max="getMaxStartDate(index)">
-      <input type="date"
-             v-model="state.endDate"
-             @change="validateAndEmit"
+             :max="getMaxStartDate(index)"
+             @change="validateAndEmit">
+      <input
+v-model="state.endDate"
+             type="date"
              class="date-input"
              :min="state.startDate"
-             :max="getMaxEndDate(index)">
-      <button @click="removeState(index)"
-              class="remove-button"
-              :disabled="modelValue.length === 1">
+             :max="getMaxEndDate(index)"
+             @change="validateAndEmit">
+      <button
+class="remove-button"
+              :disabled="modelValue.length === 1"
+              @click="removeState(index)">
         ✕
       </button>
     </div>
-    <button @click="addState"
-            class="add-button"
-            :disabled="!canAddState">
+    <button
+class="add-button"
+            :disabled="!canAddState"
+            @click="addState">
       Добавить состояние
     </button>
     <div v-if="!isValid" class="error-message">

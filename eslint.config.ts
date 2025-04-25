@@ -30,8 +30,7 @@ export default defineConfigWithVueTs(
       'vue/no-multiple-template-root': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn'
-    }
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    },
   }
 )

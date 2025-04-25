@@ -1,9 +1,9 @@
 <template>
   <div
     :class="['date-cell', { 'is-selected': isSelected, 'is-active': isActive, 'is-invalid': isInvalid }]"
+    tabindex="0"
     @click="handleClick"
     @dblclick="startEditing"
-    tabindex="0"
   >
     <div v-if="isEditing" class="date-cell__editor">
       <input

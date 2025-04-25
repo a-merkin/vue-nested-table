@@ -1,16 +1,24 @@
 <template>
   <template v-for="(event, eventIndex) in well.events" :key="event.id">
     <!-- Строка события -->
-    <tr :class="[
-      'event-row',
-      { 'well-group-separator': eventIndex === well.events.length - 1 && !isLastWell },
-      { 'selected': selectedId === (event.well_id || event.id) }
-    ]"
-    @click="handleRowClick(event)">
-      <td v-if="eventIndex === 0"
-          :rowspan="getWellTotalRowspan(well)"
-          :class="['well-name-cell', getWellStateClass(well.state), { 'selected': selectedId === well.id }]"
-          @click.stop="handleRowClick(event)">
+    <tr
+      :class="[
+        'event-row',
+        { 'well-group-separator': eventIndex === well.events.length - 1 && !isLastWell },
+        { selected: selectedId === (event.well_id || event.id) },
+      ]"
+      @click="handleRowClick(event)"
+    >
+      <td
+        v-if="eventIndex === 0"
+        :rowspan="getWellTotalRowspan(well)"
+        :class="[
+          'well-name-cell',
+          getWellStateClass(well.state),
+          { selected: selectedId === well.id },
+        ]"
+        @click.stop="handleRowClick(event)"
+      >
         <div class="well-name-container" :title="well.name">
           <span class="well-name">{{ well.name }}</span>
         </div>
@@ -25,10 +33,24 @@
             <button
               v-if="event.type === 'base_production'"
               class="action-button add-button"
-              @click.stop="$emit('event-action', { type: 'add', eventId: event.id, wellId: well.id, wellName: well.name })"
               title="Добавить мероприятие"
+              @click.stop="
+                $emit('event-action', {
+                  type: 'add',
+                  eventId: event.id,
+                  wellId: well.id,
+                  wellName: well.name,
+                })
+              "
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
@@ -36,10 +58,24 @@
             <button
               v-else
               class="action-button edit-button"
-              @click.stop="$emit('event-action', { type: 'edit', eventId: event.id, wellId: well.id, wellName: well.name })"
               title="Редактировать мероприятие"
+              @click.stop="
+                $emit('event-action', {
+                  type: 'edit',
+                  eventId: event.id,
+                  wellId: well.id,
+                  wellName: well.name,
+                })
+              "
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
@@ -48,22 +84,34 @@
         </div>
       </td>
       <td class="date-start-cell">
-        <input 
-          type="date" 
+        <input
           v-model="event.startDate"
-          @change="$emit('event-dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
+          type="date"
           class="date-input"
           :max="event.endDate || undefined"
+          @change="
+            $emit('event-dates-change', {
+              eventId: event.id,
+              startDate: event.startDate || '',
+              endDate: event.endDate || '',
+            })
+          "
         />
       </td>
       <td class="date-end-cell">
-        <input 
-          type="date" 
+        <input
           v-model="event.endDate"
-          @change="$emit('event-dates-change', { eventId: event.id, startDate: event.startDate || '', endDate: event.endDate || '' })"
+          type="date"
           class="date-input"
           :min="event.startDate || undefined"
           :max="getMaxDate(event)"
+          @change="
+            $emit('event-dates-change', {
+              eventId: event.id,
+              startDate: event.startDate || '',
+              endDate: event.endDate || '',
+            })
+          "
         />
       </td>
       <td :colspan="groupedDates.length" class="gantt-timeline">
@@ -107,25 +155,37 @@
             </div>
           </td>
           <td class="date-start-cell">
-            <input 
-              type="date" 
+            <input
               v-model="resource.startDate"
-              @change="$emit('resource-dates-change', { resourceId: resource.id, startDate: resource.startDate || '', endDate: resource.endDate || '' })"
+              type="date"
               class="date-input"
               :min="event.startDate || undefined"
               :max="resource.endDate || undefined"
               disabled
+              @change="
+                $emit('resource-dates-change', {
+                  resourceId: resource.id,
+                  startDate: resource.startDate || '',
+                  endDate: resource.endDate || '',
+                })
+              "
             />
           </td>
           <td class="date-end-cell">
-            <input 
-              type="date" 
+            <input
               v-model="resource.endDate"
-              @change="$emit('resource-dates-change', { resourceId: resource.id, startDate: resource.startDate || '', endDate: resource.endDate || '' })"
+              type="date"
               class="date-input"
               :min="resource.startDate || undefined"
               :max="event.endDate || undefined"
               disabled
+              @change="
+                $emit('resource-dates-change', {
+                  resourceId: resource.id,
+                  startDate: resource.startDate || '',
+                  endDate: resource.endDate || '',
+                })
+              "
             />
           </td>
           <td :colspan="groupedDates.length" class="gantt-timeline">
@@ -145,64 +205,69 @@
 </template>
 
 <script setup lang="ts">
-import type { Well, Event as TableEvent } from '../../types/table';
-import GanttBar from './GanttBar.vue';
-import OperatingStatesBar from './OperatingStatesBar.vue';
+import type { Well, Event as TableEvent } from '../../types/table'
+import GanttBar from './GanttBar.vue'
+import OperatingStatesBar from './OperatingStatesBar.vue'
 
 type DateRange = {
-  start: Date;
-  end: Date;
-  key: string;
-};
+  start: Date
+  end: Date
+  key: string
+}
 
 const props = defineProps<{
-  well: Well;
-  groupedDates: DateRange[];
-  expandedEvents: Set<string>;
-  expandedResources: Set<string>;
-  isLastWell: boolean;
-  selectedId: string | null;
-}>();
+  well: Well
+  groupedDates: DateRange[]
+  expandedEvents: Set<string>
+  expandedResources: Set<string>
+  isLastWell: boolean
+  selectedId: string | null
+}>()
 
 const emit = defineEmits<{
-  (e: 'toggle-event', eventId: string): void;
-  (e: 'toggle-resource', resourceId: string): void;
-  (e: 'well-action', payload: { type: 'edit' | 'add', wellId: string }): void;
-  (e: 'event-action', payload: { type: 'edit' | 'add', eventId: string, wellId: string, wellName: string }): void;
-  (e: 'event-dates-change', payload: { eventId: string, startDate: string, endDate: string }): void;
-  (e: 'resource-dates-change', payload: { resourceId: string, startDate: string, endDate: string }): void;
-  (e: 'select-row', showId: string): void;
-}>();
+  (e: 'toggle-event', eventId: string): void
+  (e: 'toggle-resource', resourceId: string): void
+  (e: 'well-action', payload: { type: 'edit' | 'add'; wellId: string }): void
+  (
+    e: 'event-action',
+    payload: { type: 'edit' | 'add'; eventId: string; wellId: string; wellName: string }
+  ): void
+  (e: 'event-dates-change', payload: { eventId: string; startDate: string; endDate: string }): void
+  (
+    e: 'resource-dates-change',
+    payload: { resourceId: string; startDate: string; endDate: string }
+  ): void
+  (e: 'select-row', showId: string): void
+}>()
 
-const isEventExpanded = (eventId: string): boolean => props.expandedEvents.has(eventId);
+const isEventExpanded = (eventId: string): boolean => props.expandedEvents.has(eventId)
 
 const getWellTotalRowspan = (well: Well): number => {
   return well.events.reduce((total, event) => {
     if (!isEventExpanded(event.id)) {
-      return total + 1;
+      return total + 1
     }
-    return total + 1 + (event.resources?.length ?? 0);
-  }, 0);
-};
+    return total + 1 + (event.resources?.length ?? 0)
+  }, 0)
+}
 
 const getWellStateClass = (state: string | null): string => {
-  if (!state) return 'well-state-unknown';
-  return `well-state-${state.replace('operating_state_', '')}`;
-};
+  if (!state) return 'well-state-unknown'
+  return `well-state-${state.replace('operating_state_', '')}`
+}
 
 const getMaxDate = (event: TableEvent): string => {
-  const well = props.well;
-  const eventIndex = well.events.findIndex(e => e.id === event.id);
-  if (eventIndex === well.events.length - 1) return '';
-  const nextEvent = well.events[eventIndex + 1];
-  return nextEvent?.startDate || '';
-};
+  const well = props.well
+  const eventIndex = well.events.findIndex(e => e.id === event.id)
+  if (eventIndex === well.events.length - 1) return ''
+  const nextEvent = well.events[eventIndex + 1]
+  return nextEvent?.startDate || ''
+}
 
 const handleRowClick = (event: TableEvent) => {
-  const showId = event.well_id || event.id;
-  emit('select-row', showId);
-};
-
+  const showId = event.well_id || event.id
+  emit('select-row', showId)
+}
 </script>
 
 <style scoped>
@@ -213,7 +278,7 @@ const handleRowClick = (event: TableEvent) => {
   z-index: 10;
   min-width: 120px;
   max-width: 120px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .team-cell {
@@ -225,7 +290,7 @@ const handleRowClick = (event: TableEvent) => {
   overflow: hidden;
   padding: 2px 4px;
   white-space: nowrap;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .date-start-cell {
@@ -238,7 +303,7 @@ const handleRowClick = (event: TableEvent) => {
   text-align: center;
   font-size: 12px;
   color: #666666;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -255,7 +320,7 @@ const handleRowClick = (event: TableEvent) => {
   text-align: center;
   font-size: 12px;
   color: #666666;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -267,13 +332,7 @@ const handleRowClick = (event: TableEvent) => {
   position: relative;
   vertical-align: top;
   width: auto;
-  background: repeating-linear-gradient(
-    90deg,
-    #F7F7F7 0px,
-    #F7F7F7 1px,
-    #FFFFFF 1px,
-    #FFFFFF 45px
-  );
+  background: repeating-linear-gradient(90deg, #f7f7f7 0px, #f7f7f7 1px, #ffffff 1px, #ffffff 45px);
 }
 
 .gantt-timeline > * {
@@ -286,9 +345,9 @@ const handleRowClick = (event: TableEvent) => {
   padding: 6px 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #1a1a1a;
   border-radius: 4px;
-  background-color: #F7F7F7;
+  background-color: #f7f7f7;
   transition: background-color 0.2s;
   position: relative;
 }
@@ -302,7 +361,7 @@ const handleRowClick = (event: TableEvent) => {
 }
 
 .event-name:hover {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
 }
 
 .event-actions {
@@ -337,12 +396,14 @@ const handleRowClick = (event: TableEvent) => {
   background-color: #e0e0e0;
 }
 
-.edit-button, .add-button {
-  color: #2196F3;
+.edit-button,
+.add-button {
+  color: #2196f3;
 }
 
-.edit-button:hover, .add-button:hover {
-  color: #1976D2;
+.edit-button:hover,
+.add-button:hover {
+  color: #1976d2;
 }
 
 .resource-title {
@@ -352,7 +413,7 @@ const handleRowClick = (event: TableEvent) => {
   color: #333333;
   padding: 4px 8px 4px 32px;
   border-radius: 4px;
-  background-color: #F9F9F9;
+  background-color: #f9f9f9;
   transition: background-color 0.2s;
   max-width: 100%;
   overflow: hidden;
@@ -366,7 +427,7 @@ const handleRowClick = (event: TableEvent) => {
 }
 
 .resource-title:hover {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
 }
 
 .operation-name {
@@ -378,7 +439,7 @@ const handleRowClick = (event: TableEvent) => {
 }
 
 .operation-row:hover .operation-name {
-  background-color: #F9F9F9;
+  background-color: #f9f9f9;
 }
 
 .expand-icon {
@@ -407,35 +468,35 @@ const handleRowClick = (event: TableEvent) => {
 
 /* Цвета для состояний скважин */
 .well-state-prod {
-  background-color: #C8E6C9;
-  border-right: 1px solid #4CAF50;
+  background-color: #c8e6c9;
+  border-right: 1px solid #4caf50;
 }
 
 .well-state-inje {
-  background-color: #BBDEFB;
-  border-right: 1px solid #2196F3;
+  background-color: #bbdefb;
+  border-right: 1px solid #2196f3;
 }
 
 .well-state-idle {
-  background-color: #FFCDD2;
-  border-right: 1px solid #F44336;
+  background-color: #ffcdd2;
+  border-right: 1px solid #f44336;
 }
 
 .well-state-intake {
-  background-color: #E1BEE7;
-  border-right: 1px solid #9C27B0;
+  background-color: #e1bee7;
+  border-right: 1px solid #9c27b0;
 }
 
 .well-state-unknown {
-  background-color: #EEEEEE;
-  background-image: radial-gradient(circle at 50% 50%, #9E9E9E 2px, transparent 2px);
+  background-color: #eeeeee;
+  background-image: radial-gradient(circle at 50% 50%, #9e9e9e 2px, transparent 2px);
   background-size: 8px 8px;
-  border-right: 1px solid #9E9E9E;
+  border-right: 1px solid #9e9e9e;
 }
 
 /* Стили для строк */
 .event-row {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -475,7 +536,7 @@ const handleRowClick = (event: TableEvent) => {
 }
 
 .resource-row {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
 }
 

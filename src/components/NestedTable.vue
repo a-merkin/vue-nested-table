@@ -6,8 +6,8 @@
       />
       <label class="expand-all-checkbox">
         <input 
-          type="checkbox" 
           v-model="expandAll" 
+          type="checkbox" 
           @change="handleExpandAllChange"
         />
         Раскрыть все

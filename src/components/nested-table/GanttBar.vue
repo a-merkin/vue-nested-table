@@ -1,6 +1,7 @@
 <template>
   <div class="gantt-bar-container">
-    <div class="gantt-bar"
+    <div
+class="gantt-bar"
          :class="[
            getEventKindClass(kind),
            getEventTypeClass(type),
@@ -10,7 +11,8 @@
          :title="item.name">
       <div class="gantt-bar-label">{{ item.name }}</div>
       <template v-if="styleType === 'resource' && item.operations">
-        <div v-for="operation in item.operations"
+        <div
+v-for="operation in item.operations"
              :key="operation.id"
              class="inner-operation"
              :style="calculateInnerOperationStyle(operation)"

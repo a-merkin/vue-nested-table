@@ -1,6 +1,7 @@
 <template>
   <div class="operating-states-container">
-    <div v-for="state in validOperatingStates"
+    <div
+v-for="state in validOperatingStates"
          :key="state.startDate"
          class="operating-state"
          :class="[getStateClass(state.state), styleType]"

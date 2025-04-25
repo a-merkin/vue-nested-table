@@ -1,10 +1,10 @@
 <template>
   <td
     :class="['date-cell', { 'is-selected': isSelected, 'is-active': isActive }]"
+    tabindex="0"
     @click="handleClick"
     @dblclick="startEditing"
     @paste="handlePaste"
-    tabindex="0"
   >
     <DateCell
       :value="value"
