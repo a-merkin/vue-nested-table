@@ -105,7 +105,6 @@
           type="date"
           class="date-input"
           :min="event.startDate || undefined"
-          :max="getMaxDate(event)"
           :disabled="event.type === 'base_production'"
           @change="
             $emit('event-dates-change', {
@@ -179,7 +178,6 @@
               type="date"
               class="date-input"
               :min="resource.startDate || undefined"
-              :max="event.endDate || undefined"
               disabled
               @change="
                 $emit('resource-dates-change', {
@@ -256,14 +254,6 @@ const getWellTotalRowspan = (well: Well): number => {
 const getWellStateClass = (state: string | null): string => {
   if (!state) return 'well-state-unknown'
   return `well-state-${state.replace('operating_state_', '')}`
-}
-
-const getMaxDate = (event: TableEvent): string => {
-  const well = props.well
-  const eventIndex = well.events.findIndex(e => e.id === event.id)
-  if (eventIndex === well.events.length - 1) return ''
-  const nextEvent = well.events[eventIndex + 1]
-  return nextEvent?.startDate || ''
 }
 
 const handleRowClick = (event: TableEvent) => {
