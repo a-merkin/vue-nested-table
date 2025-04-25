@@ -89,6 +89,7 @@
           type="date"
           class="date-input"
           :max="event.endDate || undefined"
+          :disabled="event.type === 'base_production'"
           @change="
             $emit('event-dates-change', {
               eventId: event.id,
@@ -105,6 +106,7 @@
           class="date-input"
           :min="event.startDate || undefined"
           :max="getMaxDate(event)"
+          :disabled="event.type === 'base_production'"
           @change="
             $emit('event-dates-change', {
               eventId: event.id,
@@ -293,12 +295,12 @@ const handleRowClick = (event: TableEvent) => {
   background-color: #ffffff;
 }
 
-.date-start-cell {
+.date-start-cell,
+.date-end-cell {
   position: sticky;
-  left: 270px;
   z-index: 10;
-  min-width: 120px;
-  max-width: 120px;
+  min-width: 110px;
+  max-width: 110px;
   padding: 0;
   text-align: center;
   font-size: 12px;
@@ -310,21 +312,12 @@ const handleRowClick = (event: TableEvent) => {
   vertical-align: middle;
 }
 
+.date-start-cell {
+  left: 270px;
+}
+
 .date-end-cell {
-  position: sticky;
   left: 370px;
-  z-index: 10;
-  min-width: 120px;
-  max-width: 120px;
-  padding: 0;
-  text-align: center;
-  font-size: 12px;
-  color: #666666;
-  background-color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
 }
 
 .gantt-timeline {
@@ -502,29 +495,6 @@ const handleRowClick = (event: TableEvent) => {
   transition: background-color 0.2s ease;
 }
 
-/* .event-row:hover {
-  background-color: #f5f5f5;
-} */
-
-/* .selected {
-  background-color: #e3f2fd;
-  position: relative;
-} */
-
-/* .selected::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background-color: #2196f3;
-} */
-
-/* .well-name-cell.selected {
-  background-color: #e3f2fd;
-} */
-
 .well-name-cell.selected::after {
   content: '';
   position: absolute;
@@ -547,7 +517,7 @@ const handleRowClick = (event: TableEvent) => {
 
 /* Добавляем бордер только между разными группами */
 .well-group-separator {
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid #bfbfbf;
 }
 
 .well-name-container {
@@ -578,20 +548,28 @@ const handleRowClick = (event: TableEvent) => {
 }
 
 .date-input {
-  width: 100%;
-  padding: 0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: #fff;
-  height: 32px;
+  width: 100px;
+  padding: 1px 2px;
+  border: 1px solid #c0c0c0;
+  border-radius: 3px;
+  font-size: 11px;
+  height: 20px;
   box-sizing: border-box;
+  line-height: 1;
+  margin: 0 auto;
+  display: block;
+}
+
+.date-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .date-input:focus {
   outline: none;
   border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  box-shadow: 0 0 0 1px rgba(74, 144, 226, 0.2);
 }
 
 .timeline-container {

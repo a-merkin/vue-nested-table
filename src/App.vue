@@ -167,6 +167,7 @@ const handleEventDatesChange = (payload: {
   startDate: string
   endDate: string
 }) => {
+  console.log(payload)
   wells.value = wells.value.map(well => {
     const updatedEvents = well.events.map(event =>
       event.id === payload.eventId

@@ -244,7 +244,7 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
 }
 
 .well-group-separator {
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid #bfbfbf;
 }
 
 .table-controls {
