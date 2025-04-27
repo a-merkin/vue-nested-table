@@ -187,7 +187,7 @@ const getEventTypeClass = (type: EventType): string =>
 .gantt-bar.small-bar .gantt-bar-label {
   left: 100%;
   margin-left: 4px;
-  background: rgba(255, 255, 255, 0.9);
+  /* background: rgba(255, 255, 255, 0.9); */
   border-radius: 2px;
   padding: 2px 4px;
   /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
