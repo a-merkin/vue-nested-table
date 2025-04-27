@@ -4,7 +4,7 @@
       v-for="state in validOperatingStates"
       :key="state.startDate"
       class="operating-state"
-      :class="[getStateClass(state.state), styleType]"
+      :class="[getStateClass(state.state_id), styleType]"
       :style="calculateStateStyle(state)"
       :title="getTooltipText(state)"
     ></div>
@@ -65,7 +65,7 @@ const getStateClass = (state: string | null): string => {
 }
 
 const getTooltipText = (state: OperatingStateEntry): string => {
-  const stateName = state.state ? state.state.replace('operating_state_', '') : 'Не определено'
+  const stateName = state.state_name
   const startDate = new Date(state.startDate).toLocaleDateString()
   const endDate = new Date(state.endDate).toLocaleDateString()
   return `${stateName}\n${startDate} - ${endDate}`

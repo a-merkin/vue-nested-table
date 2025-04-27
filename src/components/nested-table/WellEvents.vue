@@ -14,7 +14,7 @@
         :rowspan="getWellTotalRowspan(well)"
         :class="[
           'well-name-cell',
-          getWellStateClass(well.state),
+          getWellStateClass(well.state_id),
           { selected: selectedId === well.id },
         ]"
         @click.stop="handleRowClick(event)"

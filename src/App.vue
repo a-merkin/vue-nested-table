@@ -7,7 +7,8 @@ const wells = ref<Well[]>([
   {
     id: '152',
     name: '60',
-    state: 'operating_state_prod',
+    state_id: 'operating_state_prod',
+    state_name: 'В добыче',
     events: [
       {
         id: '152.base',
@@ -17,13 +18,12 @@ const wells = ref<Well[]>([
         endDate: null,
         well_id: '152',
         well_name: '60',
-        stop_well: false,
-        shut_well: false,
         operating_states: [
           {
             startDate: '2025-01-01',
-            endDate: '2025-04-01',
-            state: 'operating_state_prod',
+            endDate: '2028-04-01',
+            state_id: 'operating_state_prod',
+            state_name: 'В добыче',
           },
         ],
       },
@@ -40,99 +40,21 @@ const wells = ref<Well[]>([
         operating_states: [
           {
             startDate: '2025-01-01',
-            endDate: '2025-04-01',
-            state: null,
+            endDate: '2028-04-01',
+            state_id: 'operating_state_idle',
+            state_name: 'В бездействии',
           },
         ],
         stop_well: false,
         shut_well: false,
-      },
-      {
-        id: 'otm_1',
-        name: 'ЛАР_60_123',
-        kind: 'event_kind_otm',
-        type: 'event_type_lar',
-        well_id: '152',
-        well_name: '60',
-        startDate: '2025-04-01',
-        endDate: '2025-04-24',
-        resources: [],
-        operating_states: [
-          {
-            startDate: '2025-01-01',
-            endDate: '2025-04-01',
-            state: null,
-          },
-        ],
-        stop_well: false,
-        shut_well: false,
-      },
-      {
-        id: 'otm_2',
-        name: 'ППР_60_123',
-        kind: 'event_kind_otm',
-        type: 'event_type_ppr',
-        well_id: '152',
-        well_name: '60',
-        startDate: '2025-04-01',
-        endDate: '2025-04-24',
-        resources: [],
-        operating_states: [
-          {
-            startDate: '2025-01-01',
-            endDate: '2025-04-01',
-            state: null,
-          },
-        ],
-        stop_well: false,
-        shut_well: false,
-      },
-      {
-        id: 'otm_3',
-        name: 'Исследование_60_123',
-        kind: 'event_kind_otm',
-        type: 'event_type_research',
-        well_id: '152',
-        well_name: '60',
-        startDate: '2025-04-01',
-        endDate: '2025-04-24',
-        resources: [],
-        operating_states: [
-          {
-            startDate: '2025-01-01',
-            endDate: '2025-04-01',
-            state: null,
-          },
-        ],
-        stop_well: false,
-        shut_well: false,
-      },
-      {
-        id: 'shut_152',
-        name: 'Консервация_60_645',
-        kind: 'event_kind_shut',
-        type: 'event_type_cons',
-        well_id: '152',
-        well_name: '60',
-        startDate: '2025-04-01',
-        endDate: '2025-04-24',
-        resources: [],
-        operating_states: [
-          {
-            startDate: '2025-01-01',
-            endDate: '2025-04-01',
-            state: null,
-          },
-        ],
-        stop_well: true,
-        shut_well: true,
       },
     ],
   },
   {
     id: 'group_1.gtm_1',
     name: 'ГРП_1',
-    state: 'operating_state_prod',
+    state_id: 'operating_state_prod',
+    state_name: 'В добыче',
     events: [
       {
         id: 'group_1.gtm_1',
@@ -147,8 +69,9 @@ const wells = ref<Well[]>([
         operating_states: [
           {
             startDate: '2025-01-01',
-            endDate: '2025-04-01',
-            state: null,
+            endDate: '2028-04-01',
+            state_id: 'operating_state_idle',
+            state_name: 'В бездействии',
           },
         ],
         stop_well: false,
