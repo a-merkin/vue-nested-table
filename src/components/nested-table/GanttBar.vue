@@ -3,12 +3,17 @@
     <div
       class="gantt-bar"
       :class="
-        [getEventKindClass(kind), getEventTypeClass(type), `${styleType}-bar`].filter(Boolean)
+        [
+          getEventKindClass(kind),
+          getEventTypeClass(type),
+          `${styleType}-bar`,
+          { 'small-bar': isSmallBar },
+        ].filter(Boolean)
       "
       :style="calculateBarStyle()"
       :title="item.name"
     >
-      <div v-if="shouldShowLabel" class="gantt-bar-label">{{ item.name }}</div>
+      <div class="gantt-bar-label">{{ item.name }}</div>
       <template v-if="styleType === 'resource' && item.operations">
         <div
           v-for="operation in item.operations"
@@ -17,9 +22,7 @@
           :style="calculateInnerOperationStyle(operation)"
           :title="operation.name"
         >
-          <span v-if="shouldShowOperationLabel(operation)" class="inner-operation-label">{{
-            operation.name
-          }}</span>
+          <span class="inner-operation-label">{{ operation.name }}</span>
         </div>
       </template>
     </div>
@@ -60,23 +63,12 @@ const props = defineProps<{
 
 const MIN_BAR_WIDTH_FOR_LABEL = 60 // минимальная ширина в пикселях для отображения названия
 
-const shouldShowLabel = computed(() => {
+const isSmallBar = computed(() => {
   const style = calculateBarStyle()
   if (!style.width) return false
-
-  // Конвертируем процент в пиксели (предполагая, что контейнер имеет ширину 100%)
   const widthInPixels = (parseFloat(style.width) / 100) * window.innerWidth
-  return widthInPixels >= MIN_BAR_WIDTH_FOR_LABEL
+  return widthInPixels < MIN_BAR_WIDTH_FOR_LABEL
 })
-
-const shouldShowOperationLabel = (operation: Operation) => {
-  const style = calculateInnerOperationStyle(operation)
-  if (!style.width) return false
-
-  // Конвертируем процент в пиксели
-  const widthInPixels = (parseFloat(style.width) / 100) * window.innerWidth
-  return widthInPixels >= MIN_BAR_WIDTH_FOR_LABEL
-}
 
 const calculateBarStyle = () => {
   if (!props.item.startDate || !props.item.endDate) {
@@ -184,10 +176,24 @@ const getEventTypeClass = (type: EventType): string =>
 .gantt-bar-label {
   padding: 4px 8px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #1a1a1a;
+  position: absolute;
   left: 4px;
   max-width: calc(100% - 8px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gantt-bar.small-bar .gantt-bar-label {
+  left: 100%;
+  margin-left: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  padding: 2px 4px;
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
+  z-index: 2;
+  max-width: none;
+  overflow: visible;
 }
 
 /* События - самый высокий уровень */
@@ -197,12 +203,12 @@ const getEventTypeClass = (type: EventType): string =>
   border-style: solid;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
   font-weight: 600;
+  overflow: visible;
 }
 
 .event-bar .gantt-bar-label {
   font-size: 12px;
   font-weight: 600;
-  color: #1a1a1a;
 }
 
 /* Ресурсы - средний уровень */
@@ -304,11 +310,11 @@ const getEventTypeClass = (type: EventType): string =>
   bottom: 4px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 2px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  /* border: 1px solid rgba(0, 0, 0, 0.2); */
   transition: all 0.2s;
   display: flex;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
   min-width: 20px;
   max-width: 100%;
 }
@@ -321,12 +327,15 @@ const getEventTypeClass = (type: EventType): string =>
 .inner-operation-label {
   font-size: 9px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 4px;
   color: #333;
   user-select: none;
-  width: 100%;
-  min-width: 0;
+  position: absolute;
+  left: 100%;
+  margin-left: 4px;
+  background: transparent;
+  border-radius: 2px;
+  padding: 2px 4px;
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
+  z-index: 2;
 }
 </style>

@@ -190,6 +190,7 @@ th {
 }
 
 .well-header {
+  text-align: center;
   position: sticky;
   left: 0;
   z-index: 3;
@@ -200,6 +201,7 @@ th {
 }
 
 .team-header {
+  text-align: center;
   position: sticky;
   left: 120px;
   z-index: 3;
@@ -210,6 +212,7 @@ th {
 }
 
 .date-start-header {
+  text-align: center;
   position: sticky;
   left: 270px;
   z-index: 3;
@@ -220,6 +223,7 @@ th {
 }
 
 .date-end-header {
+  text-align: center;
   position: sticky;
   left: 370px;
   z-index: 3;
