@@ -119,9 +119,11 @@ const handleSelectRow = (showId: string) => {
 </template>
 
 <style>
+@import './assets/styles/fonts.css';
+
 .app {
   /* padding: 20px; */
-  font-family: Arial, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   /* width: 2000px; */
 }
 

@@ -16,8 +16,8 @@
           <tr>
             <th class="well-header">Скважина</th>
             <th class="team-header">Мероприятие</th>
-            <th class="date-start-header">Дата начала</th>
-            <th class="date-end-header">Дата конца</th>
+            <th class="date-start-header">Начало</th>
+            <th class="date-end-header">Окончание</th>
             <TimelineHeader
               v-if="groupedDates.length > 0"
               :dates="groupedDates"
@@ -171,6 +171,7 @@ watch(
   --table-border-color: #c0c0c0;
   --table-header-bg: #f5f5f5;
   --table-header-color: #333333;
+  font-family: 'Montserrat';
 }
 
 .table-container {
