@@ -1,11 +1,14 @@
 <template>
   <div class="nested-table">
     <div class="table-controls">
-      <GranularitySelector v-model="granularity" />
-      <label class="expand-all-checkbox">
-        <input v-model="expandAll" type="checkbox" @change="handleExpandAllChange" />
-        Раскрыть все
-      </label>
+      <DetailLevelSelector v-model="granularity" />
+      <div class="expand-all-switch">
+        <Switch v-model="expandAll" @switch="handleExpandAllChange">
+          <template #prefix>
+            <span class="expand-all-label">Раскрыть все</span>
+          </template>
+        </Switch>
+      </div>
     </div>
     <div class="table-container">
       <table>
@@ -57,10 +60,11 @@ import type { Well, DateGranularity } from '../types/table'
 import type { DateRange } from '../composables/useDateRanges'
 import { useDateRanges } from '../composables/useDateRanges'
 import { useExpansionState } from '../composables/useExpansionState'
-import GranularitySelector from './nested-table/GranularitySelector.vue'
+import DetailLevelSelector from './nested-table/DetailLevelSelector.vue'
 import TimelineHeader from './nested-table/TimelineHeader.vue'
 import WellEvents from './nested-table/WellEvents.vue'
 import DateGrid from './nested-table/DateGrid.vue'
+import Switch from './nested-table/Switch.vue'
 
 // Пропсы
 const props = defineProps<{
@@ -258,19 +262,15 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
   margin-bottom: 1rem;
 }
 
-.expand-all-checkbox {
+.expand-all-switch {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 12px;
-  color: #333333;
-  white-space: nowrap;
 }
 
-.expand-all-checkbox input[type='checkbox'] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
+.expand-all-label {
+  font-size: 0.875rem;
+  color: #333333;
+  white-space: nowrap;
 }
 
 .date-grid-container {
