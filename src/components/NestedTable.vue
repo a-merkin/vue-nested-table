@@ -167,7 +167,9 @@ watch(
 
 <style scoped>
 .nested-table {
+  position: relative;
   width: 100%;
+  height: 100%;
   --table-border-color: #c0c0c0;
   --table-header-bg: #f5f5f5;
   --table-header-color: #333333;
@@ -175,23 +177,28 @@ watch(
 }
 
 .table-container {
-  position: relative;
-  overflow-x: auto;
   width: 100%;
+  height: 100%;
+  overflow: auto;
 }
 
 table {
+  width: 100%;
   border-collapse: collapse;
-  width: max-content;
-  min-width: 100%;
-  table-layout: fixed;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: white;
 }
 
 th {
-  border: 1px solid var(--table-border-color);
-  padding: 2px 4px;
+  padding: 8px;
   text-align: left;
-  min-width: 45px;
+  border-bottom: 1px solid #ddd;
+  background-color: white;
 }
 
 .well-header {
