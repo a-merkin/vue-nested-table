@@ -24,6 +24,7 @@ export type OperatingState =
   | 'operating_state_inje'
   | 'operating_state_idle'
   | 'operating_state_intake'
+  | 'operating_state_none'
   | null
 
 export type DateGranularity = 'day' | 'month' | 'year'
@@ -62,6 +63,7 @@ export interface Event {
   name: string
   type: EventType
   kind?: EventKind
+  editable_dates: boolean
   startDate: string | null
   endDate: string | null
   resources?: Resource[]

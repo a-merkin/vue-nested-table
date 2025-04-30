@@ -89,7 +89,7 @@
           type="date"
           class="date-input"
           :max="event.endDate || undefined"
-          :disabled="event.type === 'base_production'"
+          :disabled="!event.editable_dates"
           @change="
             $emit('event-dates-change', {
               eventId: event.id,
@@ -105,7 +105,7 @@
           type="date"
           class="date-input"
           :min="event.startDate || undefined"
-          :disabled="event.type === 'base_production'"
+          :disabled="!event.editable_dates"
           @change="
             $emit('event-dates-change', {
               eventId: event.id,

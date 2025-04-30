@@ -110,7 +110,7 @@ const getTooltipText = (state: OperatingStateEntry): string => {
 }
 
 /* Стиль для null состояния */
-.state-null {
+.state-none {
   background-color: rgba(200, 200, 200, 0.05);
   background-image: radial-gradient(
     circle at 50% 50%,

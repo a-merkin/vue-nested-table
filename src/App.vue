@@ -7,6 +7,7 @@ const wells = ref<Well[]>([
   {
     id: '152',
     name: '60',
+    state: 'operating_state_prod',
     state_id: 'operating_state_prod',
     state_name: 'В добыче',
     events: [
@@ -16,12 +17,14 @@ const wells = ref<Well[]>([
         type: 'base_production',
         startDate: null,
         endDate: null,
+        editable_dates: false,
         well_id: '152',
         well_name: '60',
         operating_states: [
           {
             startDate: '2025-01-01',
-            endDate: '2028-04-01',
+            endDate: '2025-04-01',
+            state: 'operating_state_prod',
             state_id: 'operating_state_prod',
             state_name: 'В добыче',
           },
@@ -36,13 +39,15 @@ const wells = ref<Well[]>([
         well_name: '60',
         startDate: null,
         endDate: null,
+        editable_dates: true,
         resources: [],
         operating_states: [
           {
             startDate: '2025-01-01',
-            endDate: '2028-04-01',
-            state_id: 'operating_state_idle',
-            state_name: 'В бездействии',
+            endDate: '2025-04-01',
+            state: 'operating_state_none',
+            state_id: 'operating_state_none',
+            state_name: 'Не введено',
           },
         ],
         stop_well: false,
@@ -53,6 +58,7 @@ const wells = ref<Well[]>([
   {
     id: 'group_1.gtm_1',
     name: 'ГРП_1',
+    state: 'operating_state_prod',
     state_id: 'operating_state_prod',
     state_name: 'В добыче',
     events: [
@@ -65,13 +71,15 @@ const wells = ref<Well[]>([
         well_name: null,
         startDate: null,
         endDate: null,
+        editable_dates: true,
         resources: [],
         operating_states: [
           {
             startDate: '2025-01-01',
-            endDate: '2028-04-01',
-            state_id: 'operating_state_idle',
-            state_name: 'В бездействии',
+            endDate: '2025-04-01',
+            state: 'operating_state_none',
+            state_id: 'operating_state_none',
+            state_name: 'Не введено',
           },
         ],
         stop_well: false,
@@ -123,7 +131,7 @@ const handleSelectRow = (showId: string) => {
 
 .app {
   /* padding: 20px; */
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat';
   /* width: 2000px; */
 }
 
