@@ -1,23 +1,35 @@
 <template>
   <div class="nested-table">
     <div class="table-controls">
-      <DetailLevelSelector v-model="granularity" />
       <div class="expand-all-switch">
         <Switch v-model="expandAll" @switch="handleExpandAllChange">
           <template #prefix>
-            <span class="expand-all-label">Раскрыть все</span>
+            <span class="expand-all-label">Раскрыть:</span>
           </template>
         </Switch>
       </div>
+      <DetailLevelSelector v-model="granularity" />
     </div>
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th class="well-header">Скважина</th>
-            <th class="team-header">Мероприятие</th>
-            <th class="date-start-header">Начало</th>
-            <th class="date-end-header">Окончание</th>
+            <th class="well-header">
+              <div style="width: 100%">Скважина</div>
+              <ColumnResizer @resize="width => updateColumnWidth('well', width)" />
+            </th>
+            <th class="team-header">
+              Мероприятие
+              <ColumnResizer @resize="width => updateColumnWidth('team', width)" />
+            </th>
+            <th class="date-start-header">
+              Начало
+              <ColumnResizer @resize="width => updateColumnWidth('date-start', width)" />
+            </th>
+            <th class="date-end-header">
+              Окончание
+              <ColumnResizer @resize="width => updateColumnWidth('date-end', width)" />
+            </th>
             <TimelineHeader
               v-if="groupedDates.length > 0"
               :dates="groupedDates"
@@ -43,13 +55,6 @@
           </template>
         </tbody>
       </table>
-      <DateGrid
-        v-if="showDateGrid"
-        :rows="dateGridRows"
-        :cols="dateGridCols"
-        :initial-values="dateGridValues"
-        @update:values="handleDateGridUpdate"
-      />
     </div>
   </div>
 </template>
@@ -63,8 +68,8 @@ import { useExpansionState } from '../composables/useExpansionState'
 import DetailLevelSelector from './nested-table/DetailLevelSelector.vue'
 import TimelineHeader from './nested-table/TimelineHeader.vue'
 import WellEvents from './nested-table/WellEvents.vue'
-import DateGrid from './nested-table/DateGrid.vue'
 import Switch from './nested-table/Switch.vue'
+import ColumnResizer from './nested-table/ColumnResizer.vue'
 
 // Пропсы
 const props = defineProps<{
@@ -95,10 +100,20 @@ const { expandedEvents, expandedResources, toggleEvent, toggleResource } = useEx
 const { groupedDates, formatDate } = useDateRanges(props.wells, granularity)
 
 // Date grid state
-const showDateGrid = ref(false)
-const dateGridRows = ref(10)
-const dateGridCols = ref(10)
 const dateGridValues = ref<string[][]>([])
+
+// TODO: сделать реактивные значения ширины колонок, использовать их в :style у колонок хедера и цеплять width и left
+
+// Функция для обновления ширины колонок
+const updateColumnWidth = (column: 'well' | 'team' | 'date-start' | 'date-end', width: number) => {
+  const headerClass = `${column}-header`
+  const header = document.querySelector(`.${headerClass}`) as HTMLElement
+  if (header) {
+    header.style.width = `${width}px`
+    header.style.minWidth = `${width}px`
+    header.style.maxWidth = `${width}px`
+  }
+}
 
 const handleEventAction = (payload: {
   type: 'edit' | 'add'
@@ -188,17 +203,57 @@ table {
 }
 
 thead {
-  position: sticky;
   top: 0;
   z-index: 1;
   background-color: white;
 }
 
 th {
-  padding: 8px;
+  /* padding: 8px; */
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border: 1px solid var(--table-border-color);
   background-color: white;
+  position: sticky;
+  /* position: relative; */
+  user-select: none;
+}
+
+.resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 5px;
+  cursor: col-resize;
+  z-index: 2;
+}
+
+.resizer::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+
+.resizer:hover::after,
+.resizer:active::after {
+  background-color: #c0c0c0;
+}
+
+.well-header,
+.team-header,
+.date-start-header,
+.date-end-header {
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--table-header-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-right: 2px solid var(--table-border-color);
 }
 
 .well-header {
@@ -246,17 +301,6 @@ th {
 }
 th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-header) {
   min-width: 45px;
-}
-
-.well-header,
-.team-header,
-.date-start-header,
-.date-end-header {
-  white-space: nowrap;
-  font-weight: 700;
-  color: var(--table-header-color);
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .well-group-separator {
