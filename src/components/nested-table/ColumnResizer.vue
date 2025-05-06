@@ -52,13 +52,13 @@ const hideResizer = () => {
 <style scoped>
 .column-resizer {
   position: absolute;
-  right: 0;
+  right: 2px;
   top: 0;
   height: 100%;
-  width: 5px;
+  width: 3px;
   cursor: col-resize;
   z-index: 10;
-  background-color: grey;
+  padding: 5px;
 }
 
 .resizer-line {
@@ -69,9 +69,10 @@ const hideResizer = () => {
   width: 2px;
   background-color: transparent;
   transition: background-color 0.2s;
+  background-color: rgb(169, 169, 169);
 }
 
 .resizer-line-visible {
-  background-color: #c0c0c0;
+  background-color: #464646;
 }
 </style>

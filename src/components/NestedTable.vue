@@ -139,7 +139,7 @@ const emit = defineEmits<{
 const granularity = ref<DateGranularity>('month')
 const expandAll = ref(false)
 const selectedId = ref<string | null>(null)
-export type ColumnKey = 'well' | 'team' | 'date-start' | 'date-end'
+type ColumnKey = 'well' | 'team' | 'date-start' | 'date-end'
 const columns = reactive<Record<ColumnKey, number>>({
   well: 200,
   team: 240,
@@ -259,7 +259,8 @@ thead {
 th {
   /* padding: 8px; */
   text-align: left;
-  border: 1px solid var(--table-border-color);
+  border-top: 1px solid var(--table-border-color);
+  border-bottom: 1px solid var(--table-border-color);
   background-color: white;
   position: sticky;
   /* position: relative; */
@@ -301,7 +302,7 @@ th {
   color: var(--table-header-color);
   overflow: hidden;
   text-overflow: ellipsis;
-  border-right: 2px solid var(--table-border-color);
+  /* border-right: 2px solid var(--table-border-color); */
 }
 
 .well-header {
