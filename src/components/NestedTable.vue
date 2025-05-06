@@ -14,19 +14,63 @@
       <table>
         <thead>
           <tr>
-            <th class="well-header">
+            <th
+              class="well-header"
+              :style="{
+                position: 'sticky',
+                left: stickyLefts.well + 'px',
+                zIndex: 3,
+                background: 'white',
+                width: columns.well + 'px',
+                minWidth: columns.well + 'px',
+                maxWidth: columns.well + 'px',
+              }"
+            >
               <div style="width: 100%">Скважина</div>
               <ColumnResizer @resize="width => updateColumnWidth('well', width)" />
             </th>
-            <th class="team-header">
+            <th
+              class="team-header"
+              :style="{
+                position: 'sticky',
+                left: stickyLefts.team + 'px',
+                zIndex: 3,
+                background: 'white',
+                width: columns.team + 'px',
+                minWidth: columns.team + 'px',
+                maxWidth: columns.team + 'px',
+              }"
+            >
               Мероприятие
               <ColumnResizer @resize="width => updateColumnWidth('team', width)" />
             </th>
-            <th class="date-start-header">
+            <th
+              class="date-start-header"
+              :style="{
+                position: 'sticky',
+                left: stickyLefts['date-start'] + 'px',
+                zIndex: 3,
+                background: 'white',
+                width: columns['date-start'] + 'px',
+                minWidth: columns['date-start'] + 'px',
+                maxWidth: columns['date-start'] + 'px',
+              }"
+            >
               Начало
               <ColumnResizer @resize="width => updateColumnWidth('date-start', width)" />
             </th>
-            <th class="date-end-header">
+            <th
+              class="date-end-header"
+              :style="{
+                position: 'sticky',
+                left: stickyLefts['date-end'] + 'px',
+                zIndex: 3,
+                background: 'white',
+                width: columns['date-end'] + 'px',
+                minWidth: columns['date-end'] + 'px',
+                maxWidth: columns['date-end'] + 'px',
+              }"
+            >
               Окончание
               <ColumnResizer @resize="width => updateColumnWidth('date-end', width)" />
             </th>
@@ -45,6 +89,7 @@
               :expanded-events="expandedEvents as unknown as Set<string>"
               :expanded-resources="expandedResources as unknown as Set<string>"
               :is-last-well="wellIndex === wells.length - 1"
+              :sticky-lefts="stickyLefts"
               :selected-id="selectedId"
               @toggle-event="toggleEvent"
               @toggle-resource="toggleResource"
@@ -60,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, reactive, computed } from 'vue'
 import type { Well, DateGranularity } from '../types/table'
 import type { DateRange } from '../composables/useDateRanges'
 import { useDateRanges } from '../composables/useDateRanges'
@@ -94,26 +139,34 @@ const emit = defineEmits<{
 const granularity = ref<DateGranularity>('month')
 const expandAll = ref(false)
 const selectedId = ref<string | null>(null)
+export type ColumnKey = 'well' | 'team' | 'date-start' | 'date-end'
+const columns = reactive<Record<ColumnKey, number>>({
+  well: 200,
+  team: 240,
+  'date-start': 120,
+  'date-end': 120,
+})
 
 // Композиции
 const { expandedEvents, expandedResources, toggleEvent, toggleResource } = useExpansionState()
 const { groupedDates, formatDate } = useDateRanges(props.wells, granularity)
 
-// Date grid state
-const dateGridValues = ref<string[][]>([])
-
 // TODO: сделать реактивные значения ширины колонок, использовать их в :style у колонок хедера и цеплять width и left
 
 // Функция для обновления ширины колонок
-const updateColumnWidth = (column: 'well' | 'team' | 'date-start' | 'date-end', width: number) => {
-  const headerClass = `${column}-header`
-  const header = document.querySelector(`.${headerClass}`) as HTMLElement
-  if (header) {
-    header.style.width = `${width}px`
-    header.style.minWidth = `${width}px`
-    header.style.maxWidth = `${width}px`
-  }
+const updateColumnWidth = (column: keyof typeof columns, width: number) => {
+  columns[column] = width
 }
+
+const stickyLefts = computed<Record<ColumnKey, number>>(() => {
+  const result: Partial<Record<ColumnKey, number>> = {}
+  let offset = 0
+  for (const key of Object.keys(columns) as ColumnKey[]) {
+    result[key] = offset
+    offset += columns[key]
+  }
+  return result as Record<ColumnKey, number>
+})
 
 const handleEventAction = (payload: {
   type: 'edit' | 'add'
@@ -160,11 +213,6 @@ const handleExpandAllChange = () => {
 const handleSelectRow = (showId: string) => {
   selectedId.value = showId
   emit('select-row', showId)
-}
-
-const handleDateGridUpdate = (values: string[][]) => {
-  dateGridValues.value = values
-  // Here you can update your data model with the new values
 }
 
 // Watch for changes in wells to update expandAll state
@@ -259,7 +307,6 @@ th {
 .well-header {
   text-align: center;
   position: sticky;
-  left: 0;
   z-index: 3;
   width: 120px;
   min-width: 120px;
@@ -270,7 +317,6 @@ th {
 .team-header {
   text-align: center;
   position: sticky;
-  left: 120px;
   z-index: 3;
   width: 150px;
   min-width: 150px;
@@ -281,7 +327,6 @@ th {
 .date-start-header {
   text-align: center;
   position: sticky;
-  left: 270px;
   z-index: 3;
   width: 100px;
   min-width: 100px;
@@ -292,7 +337,6 @@ th {
 .date-end-header {
   text-align: center;
   position: sticky;
-  left: 370px;
   z-index: 3;
   width: 100px;
   min-width: 100px;

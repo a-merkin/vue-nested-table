@@ -17,13 +17,21 @@
           getWellStateClass(well.state_id),
           { selected: selectedId === well.id },
         ]"
+        :style="{
+          left: stickyLefts.well + 'px',
+        }"
         @click.stop="handleRowClick(event)"
       >
         <div class="well-name-container" :title="well.name">
           <span class="well-name">{{ well.name }}</span>
         </div>
       </td>
-      <td class="team-cell">
+      <td
+        class="team-cell"
+        :style="{
+          left: stickyLefts.team + 'px',
+        }"
+      >
         <div class="event-name" :title="event.name">
           <div class="event-name-content" @click.stop="$emit('toggle-event', event.id)">
             <span class="expand-icon">{{ isEventExpanded(event.id) ? '▼' : '▶' }}</span>
@@ -83,7 +91,12 @@
           </div>
         </div>
       </td>
-      <td class="date-start-cell">
+      <td
+        class="date-start-cell"
+        :style="{
+          left: stickyLefts['date-start'] + 'px',
+        }"
+      >
         <input
           v-model="event.startDate"
           type="date"
@@ -99,7 +112,12 @@
           "
         />
       </td>
-      <td class="date-end-cell">
+      <td
+        class="date-end-cell"
+        :style="{
+          left: stickyLefts['date-end'] + 'px',
+        }"
+      >
         <input
           v-model="event.endDate"
           type="date"
@@ -215,6 +233,8 @@ type DateRange = {
   key: string
 }
 
+type ColumnKey = 'well' | 'team' | 'date-start' | 'date-end'
+
 const props = defineProps<{
   well: Well
   groupedDates: DateRange[]
@@ -222,6 +242,7 @@ const props = defineProps<{
   expandedResources: Set<string>
   isLastWell: boolean
   selectedId: string | null
+  stickyLefts: Record<ColumnKey, number>
 }>()
 
 const emit = defineEmits<{
@@ -266,19 +287,15 @@ const handleRowClick = (event: TableEvent) => {
 /* Фиксированные ширины для первых трех колонок */
 .well-name-cell {
   position: sticky;
-  left: 0;
+  left: inherit;
   z-index: 10;
-  min-width: 120px;
-  max-width: 120px;
   background-color: #ffffff;
 }
 
 .team-cell {
   position: sticky;
-  left: 120px;
+  left: inherit;
   z-index: 10;
-  min-width: 150px;
-  max-width: 150px;
   overflow: hidden;
   padding: 2px 4px;
   white-space: nowrap;
@@ -288,9 +305,8 @@ const handleRowClick = (event: TableEvent) => {
 .date-start-cell,
 .date-end-cell {
   position: sticky;
+  left: inherit;
   z-index: 10;
-  min-width: 110px;
-  max-width: 110px;
   padding: 0;
   text-align: center;
   font-size: 12px;
@@ -300,14 +316,6 @@ const handleRowClick = (event: TableEvent) => {
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
-}
-
-.date-start-cell {
-  left: 270px;
-}
-
-.date-end-cell {
-  left: 370px;
 }
 
 .gantt-timeline {
