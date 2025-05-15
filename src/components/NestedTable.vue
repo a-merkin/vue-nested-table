@@ -16,6 +16,10 @@
           <tr>
             <th
               class="well-header"
+              :class="{
+                'sort-asc': sortState.well === 'asc',
+                'sort-desc': sortState.well === 'desc',
+              }"
               :style="{
                 position: 'sticky',
                 left: stickyLefts.well + 'px',
@@ -25,12 +29,17 @@
                 minWidth: columns.well + 'px',
                 maxWidth: columns.well + 'px',
               }"
+              @click="handleSort('well')"
             >
-              <div style="width: 100%">Скважина</div>
+              Скважина
               <ColumnResizer @resize="width => updateColumnWidth('well', width)" />
             </th>
             <th
               class="team-header"
+              :class="{
+                'sort-asc': sortState.team === 'asc',
+                'sort-desc': sortState.team === 'desc',
+              }"
               :style="{
                 position: 'sticky',
                 left: stickyLefts.team + 'px',
@@ -40,12 +49,17 @@
                 minWidth: columns.team + 'px',
                 maxWidth: columns.team + 'px',
               }"
+              @click="handleSort('team')"
             >
               Мероприятие
               <ColumnResizer @resize="width => updateColumnWidth('team', width)" />
             </th>
             <th
               class="date-start-header"
+              :class="{
+                'sort-asc': sortState['date-start'] === 'asc',
+                'sort-desc': sortState['date-start'] === 'desc',
+              }"
               :style="{
                 position: 'sticky',
                 left: stickyLefts['date-start'] + 'px',
@@ -55,12 +69,17 @@
                 minWidth: columns['date-start'] + 'px',
                 maxWidth: columns['date-start'] + 'px',
               }"
+              @click="handleSort('date-start')"
             >
               Начало
               <ColumnResizer @resize="width => updateColumnWidth('date-start', width)" />
             </th>
             <th
               class="date-end-header"
+              :class="{
+                'sort-asc': sortState['date-end'] === 'asc',
+                'sort-desc': sortState['date-end'] === 'desc',
+              }"
               :style="{
                 position: 'sticky',
                 left: stickyLefts['date-end'] + 'px',
@@ -70,6 +89,7 @@
                 minWidth: columns['date-end'] + 'px',
                 maxWidth: columns['date-end'] + 'px',
               }"
+              @click="handleSort('date-end')"
             >
               Окончание
               <ColumnResizer @resize="width => updateColumnWidth('date-end', width)" />
@@ -82,13 +102,13 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(well, wellIndex) in wells" :key="well.id">
+          <template v-for="(well, wellIndex) in sortedWells" :key="well.id">
             <WellEvents
               :well="well"
               :grouped-dates="groupedDates as unknown as DateRange[]"
               :expanded-events="expandedEvents as unknown as Set<string>"
               :expanded-resources="expandedResources as unknown as Set<string>"
-              :is-last-well="wellIndex === wells.length - 1"
+              :is-last-well="wellIndex === sortedWells.length - 1"
               :sticky-lefts="stickyLefts"
               :selected-id="selectedId"
               @toggle-event="toggleEvent"
@@ -226,6 +246,81 @@ watch(
   },
   { deep: true }
 )
+
+type SortDirection = 'asc' | 'desc' | null
+type SortableColumn = 'well' | 'team' | 'date-start' | 'date-end'
+
+const sortState = reactive<Record<SortableColumn, SortDirection>>({
+  well: null,
+  team: null,
+  'date-start': null,
+  'date-end': null,
+})
+
+const sortedWells = computed(() => {
+  const activeSort = Object.entries(sortState).find(([_, direction]) => direction !== null)
+  if (!activeSort) return props.wells
+
+  const [column, direction] = activeSort
+  return [...props.wells].sort((a, b) => {
+    if (column === 'well') {
+      return direction === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+    }
+    if (column === 'team') {
+      const aTeam = a.events[0]?.name || ''
+      const bTeam = b.events[0]?.name || ''
+      return direction === 'asc' ? aTeam.localeCompare(bTeam) : bTeam.localeCompare(aTeam)
+    }
+    if (column === 'date-start') {
+      // Get the earliest start date from all events
+      const aDates = a.events
+        .map(e => e.startDate)
+        .filter((date): date is string => typeof date === 'string')
+      const bDates = b.events
+        .map(e => e.startDate)
+        .filter((date): date is string => typeof date === 'string')
+
+      if (aDates.length === 0 || bDates.length === 0) return 0
+
+      const aDate = aDates.sort()[0]
+      const bDate = bDates.sort()[0]
+
+      return direction === 'asc' ? aDate.localeCompare(bDate) : bDate.localeCompare(aDate)
+    }
+    if (column === 'date-end') {
+      // Get the latest end date from all events
+      const aDates = a.events
+        .map(e => e.endDate)
+        .filter((date): date is string => typeof date === 'string')
+      const bDates = b.events
+        .map(e => e.endDate)
+        .filter((date): date is string => typeof date === 'string')
+
+      if (aDates.length === 0 || bDates.length === 0) return 0
+
+      const aDate = aDates.sort().reverse()[0]
+      const bDate = bDates.sort().reverse()[0]
+
+      return direction === 'asc' ? aDate.localeCompare(bDate) : bDate.localeCompare(aDate)
+    }
+    return 0
+  })
+})
+
+const handleSort = (column: SortableColumn) => {
+  const currentDirection = sortState[column]
+  const newDirection: SortDirection =
+    currentDirection === null ? 'asc' : currentDirection === 'asc' ? 'desc' : null
+
+  // Reset all other columns
+  Object.keys(sortState).forEach(key => {
+    if (key !== column) {
+      sortState[key as SortableColumn] = null
+    }
+  })
+
+  sortState[column] = newDirection
+}
 </script>
 
 <style scoped>
@@ -265,6 +360,9 @@ th {
   position: sticky;
   /* position: relative; */
   user-select: none;
+  cursor: pointer;
+  position: relative;
+  padding-right: 20px;
 }
 
 .resizer {
@@ -375,5 +473,22 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
   border: 1px solid var(--table-border-color);
   border-radius: 4px;
   overflow: hidden;
+}
+
+th::after {
+  content: '↕';
+  position: absolute;
+  right: 10px;
+  opacity: 0.3;
+}
+
+th.sort-asc::after {
+  content: '↑';
+  opacity: 1;
+}
+
+th.sort-desc::after {
+  content: '↓';
+  opacity: 1;
 }
 </style>
