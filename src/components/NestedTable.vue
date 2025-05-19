@@ -111,6 +111,7 @@
               :is-last-well="wellIndex === sortedWells.length - 1"
               :sticky-lefts="stickyLefts"
               :selected-id="selectedId"
+              :team-column-width="columns.team"
               @toggle-event="toggleEvent"
               @toggle-resource="toggleResource"
               @event-action="handleEventAction"

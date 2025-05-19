@@ -243,6 +243,7 @@ const props = defineProps<{
   isLastWell: boolean
   selectedId: string | null
   stickyLefts: Record<ColumnKey, number>
+  teamColumnWidth: number
 }>()
 
 const emit = defineEmits<{
@@ -446,7 +447,7 @@ const handleRowClick = (event: TableEvent) => {
 }
 
 .event-name-text {
-  max-width: 90px;
+  max-width: v-bind('teamColumnWidth - 40 + "px"');
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -532,6 +533,8 @@ const handleRowClick = (event: TableEvent) => {
   text-overflow: ellipsis;
   white-space: nowrap;
   margin-right: 8px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .well-actions {
