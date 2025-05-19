@@ -339,6 +339,7 @@ const handleSort = (column: SortableColumn) => {
   width: 100%;
   height: 100%;
   overflow: auto;
+  position: relative;
 }
 
 table {
@@ -347,19 +348,18 @@ table {
 }
 
 thead {
+  position: sticky;
   top: 0;
-  z-index: 1;
-  background-color: white;
+  z-index: 10;
+  background-color: var(--table-header-bg);
 }
 
 th {
-  /* padding: 8px; */
   text-align: left;
   border-top: 1px solid var(--table-border-color);
   border-bottom: 1px solid var(--table-border-color);
-  background-color: white;
+  background-color: var(--table-header-bg);
   position: sticky;
-  /* position: relative; */
   user-select: none;
   cursor: pointer;
   position: relative;
@@ -392,6 +392,7 @@ th {
   background-color: #c0c0c0;
 }
 
+/* Фиксированные колонки */
 .well-header,
 .team-header,
 .date-start-header,
@@ -401,48 +402,67 @@ th {
   color: var(--table-header-color);
   overflow: hidden;
   text-overflow: ellipsis;
-  /* border-right: 2px solid var(--table-border-color); */
+  z-index: 11;
+  background-color: var(--table-header-bg);
 }
 
+/* Фиксированные колонки в хедере */
+thead .well-header,
+thead .team-header,
+thead .date-start-header,
+thead .date-end-header {
+  z-index: 12;
+  background-color: var(--table-header-bg);
+}
+
+/* Стили для ячеек фиксированных колонок */
+.well-name-cell,
+.team-cell,
+.date-start-cell,
+.date-end-cell {
+  background-color: white;
+  position: sticky;
+  z-index: 2;
+}
+
+/* Стили для ячеек фиксированных колонок в хедере */
+thead .well-name-cell,
+thead .team-cell,
+thead .date-start-cell,
+thead .date-end-cell {
+  z-index: 1200;
+  background-color: var(--table-header-bg);
+}
+
+/* Убираем дублирующиеся стили */
 .well-header {
   text-align: center;
-  position: sticky;
-  z-index: 3;
   width: 120px;
   min-width: 120px;
   max-width: 120px;
-  background-color: var(--table-header-bg);
 }
 
 .team-header {
   text-align: center;
-  position: sticky;
-  z-index: 3;
   width: 150px;
   min-width: 150px;
   max-width: 150px;
-  background-color: var(--table-header-bg);
 }
 
 .date-start-header {
   text-align: center;
-  position: sticky;
-  z-index: 3;
   width: 100px;
   min-width: 100px;
   max-width: 100px;
-  background-color: var(--table-header-bg);
 }
 
 .date-end-header {
   text-align: center;
-  position: sticky;
-  z-index: 3;
   width: 100px;
   min-width: 100px;
   max-width: 100px;
-  background-color: var(--table-header-bg);
 }
+
 th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-header) {
   min-width: 45px;
 }

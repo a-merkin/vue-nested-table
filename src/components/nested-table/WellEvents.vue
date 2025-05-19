@@ -289,14 +289,14 @@ const handleRowClick = (event: TableEvent) => {
 .well-name-cell {
   position: sticky;
   left: inherit;
-  z-index: 10;
+  /* z-index: 10; */
   background-color: #ffffff;
 }
 
 .team-cell {
   position: sticky;
   left: inherit;
-  z-index: 10;
+  /* z-index: 10; */
   overflow: hidden;
   padding: 2px 4px;
   white-space: nowrap;
@@ -307,7 +307,7 @@ const handleRowClick = (event: TableEvent) => {
 .date-end-cell {
   position: sticky;
   left: inherit;
-  z-index: 10;
+  /* z-index: 10; */
   padding: 0;
   text-align: center;
   font-size: 12px;
