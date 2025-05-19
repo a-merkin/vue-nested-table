@@ -1,5 +1,5 @@
 <template>
-  <div class="nested-table">
+  <div class="nested-table" :style="{ height: `${props.maxHeight}px` }">
     <div class="table-controls">
       <div class="expand-all-switch">
         <Switch v-model="expandAll" @switch="handleExpandAllChange">
@@ -140,6 +140,7 @@ import ColumnResizer from './nested-table/ColumnResizer.vue'
 // Пропсы
 const props = defineProps<{
   wells: Well[]
+  maxHeight?: number
 }>()
 
 // Эмиты
@@ -162,7 +163,7 @@ const expandAll = ref(false)
 const selectedId = ref<string | null>(null)
 type ColumnKey = 'well' | 'team' | 'date-start' | 'date-end'
 const columns = reactive<Record<ColumnKey, number>>({
-  well: 200,
+  well: 220,
   team: 240,
   'date-start': 120,
   'date-end': 120,
@@ -350,7 +351,7 @@ table {
 thead {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 120;
   background-color: var(--table-header-bg);
 }
 
@@ -402,8 +403,9 @@ th {
   color: var(--table-header-color);
   overflow: hidden;
   text-overflow: ellipsis;
-  z-index: 11;
+  z-index: 120;
   background-color: var(--table-header-bg);
+  box-sizing: border-box;
 }
 
 /* Фиксированные колонки в хедере */
@@ -411,7 +413,7 @@ thead .well-header,
 thead .team-header,
 thead .date-start-header,
 thead .date-end-header {
-  z-index: 12;
+  z-index: 120;
   background-color: var(--table-header-bg);
 }
 
@@ -499,8 +501,9 @@ th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-hea
 th::after {
   content: '↕';
   position: absolute;
-  right: 10px;
+  right: 15px;
   opacity: 0.3;
+  padding: 0 5px;
 }
 
 th.sort-asc::after {
