@@ -6,15 +6,15 @@
 
 <script setup lang="ts">
 type DateRange = {
-  start: Date;
-  end: Date;
-  key: string;
-};
+  start: Date
+  end: Date
+  key: string
+}
 
 defineProps<{
-  dates: DateRange[];
-  formatDate: (start: Date, end: Date) => string;
-}>();
+  dates: DateRange[]
+  formatDate: (start: Date, end: Date) => string
+}>()
 </script>
 
 <style scoped>
@@ -24,11 +24,11 @@ defineProps<{
   font-size: 12px;
   color: #333333;
   text-align: center;
-  min-width: 45px;
-  border: 1px solid #C0C0C0;
+  min-width: 22.5px;
+  border: 1px solid #c0c0c0;
   padding: 2px 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-</style> 
+</style>

@@ -61,7 +61,7 @@ const props = defineProps<{
   styleType: 'event' | 'resource' | 'operation'
 }>()
 
-const MIN_BAR_WIDTH_FOR_LABEL = 60 // минимальная ширина в пикселях для отображения названия
+const MIN_BAR_WIDTH_FOR_LABEL = 30 // уменьшаем минимальную ширину для отображения названия
 
 const isSmallBar = computed(() => {
   const style = calculateBarStyle()
@@ -149,16 +149,16 @@ const getEventTypeClass = (type: EventType): string =>
   position: relative;
   margin: 2px 0;
   width: 100%;
-  padding: 0 2px;
+  padding: 0 1px;
   box-sizing: border-box;
 }
 
 .gantt-bar {
   position: absolute;
-  border-radius: 4px;
+  border-radius: 2px;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -174,23 +174,21 @@ const getEventTypeClass = (type: EventType): string =>
 }
 
 .gantt-bar-label {
-  padding: 4px 8px;
+  padding: 2px 4px;
   white-space: nowrap;
   color: #1a1a1a;
   position: absolute;
-  left: 4px;
-  max-width: calc(100% - 8px);
+  left: 2px;
+  max-width: calc(100% - 4px);
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .gantt-bar.small-bar .gantt-bar-label {
   left: 100%;
-  margin-left: 4px;
-  /* background: rgba(255, 255, 255, 0.9); */
-  border-radius: 2px;
-  padding: 2px 4px;
-  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
+  margin-left: 2px;
+  border-radius: 1px;
+  padding: 1px 2px;
   z-index: 2;
   max-width: none;
   overflow: visible;
@@ -199,7 +197,7 @@ const getEventTypeClass = (type: EventType): string =>
 /* События - самый высокий уровень */
 .event-bar {
   height: 40px;
-  border-width: 2px;
+  border-width: 1px;
   border-style: solid;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
   font-weight: 600;
@@ -207,7 +205,7 @@ const getEventTypeClass = (type: EventType): string =>
 }
 
 .event-bar .gantt-bar-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -224,10 +222,10 @@ const getEventTypeClass = (type: EventType): string =>
 }
 
 .resource-bar .gantt-bar-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   color: #333333;
-  padding: 6px 8px;
+  padding: 3px 4px;
   height: 20px;
   display: flex;
   align-items: center;
@@ -242,7 +240,7 @@ const getEventTypeClass = (type: EventType): string =>
 }
 
 .operation-bar .gantt-bar-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 400;
   color: #666666;
 }
@@ -306,16 +304,15 @@ const getEventTypeClass = (type: EventType): string =>
 /* Стили для внутренних операций */
 .inner-operation {
   position: absolute;
-  height: 16px;
+  height: 14px;
   bottom: 4px;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 2px;
-  /* border: 1px solid rgba(0, 0, 0, 0.2); */
+  border-radius: 1px;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   overflow: visible;
-  min-width: 20px;
+  min-width: 10px;
   max-width: 100%;
 }
 
@@ -325,17 +322,16 @@ const getEventTypeClass = (type: EventType): string =>
 }
 
 .inner-operation-label {
-  font-size: 9px;
+  font-size: 8px;
   white-space: nowrap;
   color: #333;
   user-select: none;
   position: absolute;
   left: 100%;
-  margin-left: 4px;
+  margin-left: 2px;
   background: transparent;
-  border-radius: 2px;
-  padding: 2px 4px;
-  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
+  border-radius: 1px;
+  padding: 1px 2px;
   z-index: 2;
 }
 </style>
