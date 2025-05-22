@@ -103,7 +103,7 @@
           class="date-input"
           :max="event.endDate || undefined"
           :disabled="!event.editable_dates"
-          @change="
+          @blur="
             $emit('event-dates-change', {
               eventId: event.id,
               startDate: event.startDate || '',
@@ -124,7 +124,7 @@
           class="date-input"
           :min="event.startDate || undefined"
           :disabled="!event.editable_dates"
-          @change="
+          @blur="
             $emit('event-dates-change', {
               eventId: event.id,
               startDate: event.startDate || '',
@@ -181,7 +181,7 @@
               :min="event.startDate || undefined"
               :max="resource.endDate || undefined"
               disabled
-              @change="
+              @blur="
                 $emit('resource-dates-change', {
                   resourceId: resource.id,
                   startDate: resource.startDate || '',
@@ -197,7 +197,7 @@
               class="date-input"
               :min="resource.startDate || undefined"
               disabled
-              @change="
+              @blur="
                 $emit('resource-dates-change', {
                   resourceId: resource.id,
                   startDate: resource.startDate || '',
