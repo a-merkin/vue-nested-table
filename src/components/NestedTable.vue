@@ -1,5 +1,5 @@
 <template>
-  <div class="nested-table" :style="{ height: `${props.maxHeight}px` }">
+  <div class="nested-table">
     <div class="table-controls">
       <div class="expand-all-switch">
         <Switch v-model="expandAll" @switch="handleExpandAllChange">
@@ -10,7 +10,7 @@
       </div>
       <DetailLevelSelector v-model="granularity" />
     </div>
-    <div class="table-container">
+    <div class="table-container" :style="{ height: `${props.maxHeight}px` }">
       <table>
         <thead>
           <tr>

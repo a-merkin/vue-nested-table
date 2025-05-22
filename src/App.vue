@@ -35,10 +35,12 @@ const handleSelectRow = (showId: string) => {
     <!-- <h1>Планирование работ на скважинах</h1> -->
     <NestedTable
       :wells="wells"
+      :max-height="200"
       @event-action="handleEventAction"
       @event-dates-change="handleEventDatesChange"
       @select-row="handleSelectRow"
     />
+    <p>paspdp</p>
   </div>
 </template>
 
