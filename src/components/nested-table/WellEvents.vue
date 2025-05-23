@@ -101,7 +101,6 @@
           v-model="event.startDate"
           type="date"
           class="date-input"
-          :max="event.endDate || undefined"
           :disabled="!event.editable_dates"
           @blur="
             $emit('event-dates-change', {
@@ -122,7 +121,6 @@
           v-model="event.endDate"
           type="date"
           class="date-input"
-          :min="event.startDate || undefined"
           :disabled="!event.editable_dates"
           @blur="
             $emit('event-dates-change', {
