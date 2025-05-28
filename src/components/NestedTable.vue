@@ -29,9 +29,8 @@
                 minWidth: columns.well + 'px',
                 maxWidth: columns.well + 'px',
               }"
-              @click="handleSort('well')"
             >
-              Скважина
+              <span @click="handleSort('well')">Скважина</span>
               <ColumnResizer @resize="width => updateColumnWidth('well', width)" />
             </th>
             <th
@@ -49,9 +48,8 @@
                 minWidth: columns.team + 'px',
                 maxWidth: columns.team + 'px',
               }"
-              @click="handleSort('team')"
             >
-              Мероприятие
+              <span @click="handleSort('team')">Мероприятие</span>
               <ColumnResizer @resize="width => updateColumnWidth('team', width)" />
             </th>
             <th
@@ -69,9 +67,8 @@
                 minWidth: columns['date-start'] + 'px',
                 maxWidth: columns['date-start'] + 'px',
               }"
-              @click="handleSort('date-start')"
             >
-              Начало
+              <span @click="handleSort('date-start')">Начало</span>
               <ColumnResizer @resize="width => updateColumnWidth('date-start', width)" />
             </th>
             <th
@@ -89,9 +86,8 @@
                 minWidth: columns['date-end'] + 'px',
                 maxWidth: columns['date-end'] + 'px',
               }"
-              @click="handleSort('date-end')"
             >
-              Окончание
+              <span @click="handleSort('date-end')">Окончание</span>
               <ColumnResizer @resize="width => updateColumnWidth('date-end', width)" />
             </th>
             <TimelineHeader
@@ -147,7 +143,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (
     e: 'event-action',
-    payload: { type: 'edit' | 'add'; eventId: string; wellId: string; wellName: string }
+    payload: { type: 'edit' | 'add' | 'delete'; eventId: string; wellId: string; wellName: string }
   ): void
   (
     e: 'resource-dates-change',
@@ -191,7 +187,7 @@ const stickyLefts = computed<Record<ColumnKey, number>>(() => {
 })
 
 const handleEventAction = (payload: {
-  type: 'edit' | 'add'
+  type: 'edit' | 'add' | 'delete'
   eventId: string
   wellId: string
   wellName: string
@@ -453,16 +449,10 @@ thead .date-end-cell {
 
 .date-start-header {
   text-align: center;
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
 }
 
 .date-end-header {
   text-align: center;
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
 }
 
 th:not(.well-header):not(.team-header):not(.date-start-header):not(.date-end-header) {
@@ -503,7 +493,6 @@ th::after {
   position: absolute;
   right: 15px;
   opacity: 0.3;
-  padding: 0 5px;
 }
 
 th.sort-asc::after {

@@ -5,7 +5,12 @@ import type { Well } from './types/table'
 
 const wells = ref<Well[]>([])
 
-const handleEventAction = (payload: { type: 'edit' | 'add'; eventId: string }) => {
+const handleEventAction = (payload: {
+  type: 'edit' | 'add' | 'delete'
+  eventId: string
+  wellId: string
+  wellName: string
+}) => {
   console.log(payload)
 }
 
