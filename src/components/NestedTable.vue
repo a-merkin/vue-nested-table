@@ -10,7 +10,7 @@
       </div>
       <DetailLevelSelector v-model="granularity" />
     </div>
-    <div class="table-container" :style="{ height: `${props.maxHeight}px` }">
+    <div class="table-container" :style="{ maxHeight: `${props.maxHeight}px` }">
       <table>
         <thead>
           <tr>
