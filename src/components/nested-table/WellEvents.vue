@@ -316,6 +316,7 @@ const handleRowClick = (event: TableEvent) => {
   left: inherit;
   z-index: 10;
   background-color: #ffffff;
+  text-align: center;
 }
 
 .team-cell {
@@ -553,21 +554,17 @@ const handleRowClick = (event: TableEvent) => {
 }
 
 .well-name-container {
+  padding: 0 2px;
+  min-height: 18px;
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  padding: 4px 8px;
-  min-height: 32px;
 }
 
 .well-name {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-right: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  margin-right: 2px;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .well-actions {
@@ -583,11 +580,11 @@ const handleRowClick = (event: TableEvent) => {
 
 .date-input {
   width: 95%;
-  padding: 1px 2px;
+  padding: 0 2px;
   border: 1px solid #c0c0c0;
   border-radius: 3px;
-  font-size: 11px;
-  height: 20px;
+  font-size: 10px;
+  height: 18px;
   box-sizing: border-box;
   line-height: 1;
   margin: 0 auto;
@@ -608,7 +605,7 @@ const handleRowClick = (event: TableEvent) => {
 
 .timeline-container {
   position: relative;
-  height: 40px;
+  height: 22px;
   width: 100%;
 }
 
@@ -618,5 +615,29 @@ const handleRowClick = (event: TableEvent) => {
 
 .timeline-container :deep(.operating-states-container) {
   z-index: 1;
+}
+
+.event-row,
+.resource-row {
+  min-height: 22px;
+  height: 26px;
+}
+
+.team-cell,
+.date-start-cell,
+.date-end-cell {
+  padding: 1px 4px;
+  font-size: 12px;
+  height: 22px;
+}
+
+.event-name {
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+.resource-title {
+  font-size: 11px;
+  padding: 2px 4px 2px 16px;
 }
 </style>

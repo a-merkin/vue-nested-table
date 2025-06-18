@@ -21,14 +21,15 @@ defineProps<{
 .date-header {
   background-color: #f5f5f5;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
   color: #333333;
   text-align: center;
-  min-width: 22.5px;
+  min-width: 18px;
   border: 1px solid #c0c0c0;
-  padding: 2px 4px;
+  padding: 1px 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  height: 22px;
 }
 </style>

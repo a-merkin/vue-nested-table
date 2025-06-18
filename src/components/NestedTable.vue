@@ -360,7 +360,9 @@ th {
   user-select: none;
   cursor: pointer;
   position: relative;
-  padding-right: 20px;
+  padding: 2px 8px 2px 8px;
+  height: 28px;
+  font-size: 13px;
 }
 
 .resizer {

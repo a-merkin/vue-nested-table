@@ -61,7 +61,7 @@ const props = defineProps<{
   styleType: 'event' | 'resource' | 'operation'
 }>()
 
-const MIN_BAR_WIDTH_FOR_LABEL = 30 // уменьшаем минимальную ширину для отображения названия
+const MIN_BAR_WIDTH_FOR_LABEL = 80 // уменьшаем минимальную ширину для отображения названия
 
 const isSmallBar = computed(() => {
   const style = calculateBarStyle()
@@ -145,12 +145,11 @@ const getEventTypeClass = (type: EventType): string =>
 
 <style scoped>
 .gantt-bar-container {
-  height: 40px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
   position: relative;
-  margin: 2px 0;
   width: 100%;
-  padding: 0 1px;
-  box-sizing: border-box;
 }
 
 .gantt-bar {
@@ -174,7 +173,7 @@ const getEventTypeClass = (type: EventType): string =>
 }
 
 .gantt-bar-label {
-  padding: 2px 4px;
+  padding: 1px 2px;
   white-space: nowrap;
   color: #1a1a1a;
   position: absolute;
@@ -182,6 +181,8 @@ const getEventTypeClass = (type: EventType): string =>
   max-width: calc(100% - 4px);
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 10px;
+  height: 16px;
 }
 
 .gantt-bar.small-bar .gantt-bar-label {
@@ -196,7 +197,7 @@ const getEventTypeClass = (type: EventType): string =>
 
 /* События - самый высокий уровень */
 .event-bar {
-  height: 40px;
+  height: 20px;
   border-width: 1px;
   border-style: solid;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
@@ -211,7 +212,7 @@ const getEventTypeClass = (type: EventType): string =>
 
 /* Ресурсы - средний уровень */
 .resource-bar {
-  height: 40px;
+  height: 20px;
   border-width: 1px;
   border-style: solid;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
@@ -227,13 +228,12 @@ const getEventTypeClass = (type: EventType): string =>
   color: #333333;
   padding: 3px 4px;
   height: 20px;
-  display: flex;
-  align-items: center;
+  /* display и align-items убраны, чтобы работала общая логика small-bar */
 }
 
 /* Операции - нижний уровень */
 .operation-bar {
-  height: 40px;
+  height: 20px;
   border-width: 1px;
   border-style: dashed;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3));
@@ -304,8 +304,8 @@ const getEventTypeClass = (type: EventType): string =>
 /* Стили для внутренних операций */
 .inner-operation {
   position: absolute;
-  height: 14px;
-  bottom: 4px;
+  height: 10px;
+  bottom: 2px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 1px;
   transition: all 0.2s;
