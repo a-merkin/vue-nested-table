@@ -150,106 +150,108 @@ const wells = ref<Well[]>([
     ],
   },
   // Дополнительные скважины для теста
-  ...Array.from({ length: 5 }).map((_, i) => ({
-    id: `well_${i + 2}`,
-    name: `Скважина ${i + 2}`,
-    state_id: 'operating_state_idle',
-    state_name: 'Ожидание',
-    events: [
-      {
-        id: `well_${i + 2}.base`,
-        name: `База ${i + 2}`,
-        type: 'base_production',
-        startDate: null,
-        endDate: null,
-        editable_dates: false,
-        well_id: `well_${i + 2}`,
-        well_name: `Скважина ${i + 2}`,
-        operating_states: [
-          {
-            startDate: `2025-03-0${i + 1}`,
-            endDate: `2025-03-1${i + 1}`,
-            state_id: 'operating_state_idle',
-            state_name: 'Ожидание',
-          },
-        ],
-      },
-      {
-        id: `well_${i + 2}.gtm`,
-        name: `ГТМ_${i + 2}`,
-        kind: 'event_kind_gtm',
-        type: 'event_type_grp',
-        well_id: `well_${i + 2}`,
-        well_name: `Скважина ${i + 2}`,
-        startDate: `2025-03-1${i + 1}`,
-        endDate: `2025-03-2${i + 1}`,
-        editable_dates: true,
-        resources: [
-          {
-            id: `resource_${i + 4}`,
-            name: `Бригада ${i + 4}`,
-            type: 'team',
-            startDate: `2025-03-1${i + 1}`,
-            endDate: `2025-03-1${i + 2}`,
-            stages: [
-              {
-                id: `stage_${i + 4}`,
-                name: 'Работы',
-                startDate: `2025-03-1${i + 1}`,
-              },
-            ],
-          },
-        ],
-        operating_states: [
-          {
-            startDate: `2025-03-1${i + 1}`,
-            endDate: `2025-03-2${i + 1}`,
-            state_id: 'operating_state_none',
-            state_name: 'Не введено',
-          },
-        ],
-        stop_well: false,
-        shut_well: false,
-      },
-      {
-        id: `well_${i + 2}.otm`,
-        name: `ОТМ_${i + 2}`,
-        kind: 'event_kind_otm',
-        type: 'event_type_opz',
-        well_id: `well_${i + 2}`,
-        well_name: `Скважина ${i + 2}`,
-        startDate: `2025-03-2${i + 1}`,
-        endDate: `2025-03-3${i + 1}`,
-        editable_dates: true,
-        resources: [
-          {
-            id: `resource_${i + 9}`,
-            name: `Бригада ${i + 9}`,
-            type: 'team',
-            startDate: `2025-03-2${i + 1}`,
-            endDate: `2025-03-2${i + 2}`,
-            stages: [
-              {
-                id: `stage_${i + 9}`,
-                name: 'Завершение',
-                startDate: `2025-03-2${i + 1}`,
-              },
-            ],
-          },
-        ],
-        operating_states: [
-          {
-            startDate: `2025-03-2${i + 1}`,
-            endDate: `2025-03-3${i + 1}`,
-            state_id: 'operating_state_none',
-            state_name: 'Не введено',
-          },
-        ],
-        stop_well: false,
-        shut_well: false,
-      },
-    ],
-  })),
+  ...Array.from({ length: 5 }).map(
+    (_, i): Well => ({
+      id: `well_${i + 2}`,
+      name: `Скважина ${i + 2}`,
+      state_id: 'operating_state_idle',
+      state_name: 'Ожидание',
+      events: [
+        {
+          id: `well_${i + 2}.base`,
+          name: `База ${i + 2}`,
+          type: 'base_production',
+          startDate: null,
+          endDate: null,
+          editable_dates: false,
+          well_id: `well_${i + 2}`,
+          well_name: `Скважина ${i + 2}`,
+          operating_states: [
+            {
+              startDate: `2025-03-0${i + 1}`,
+              endDate: `2025-03-1${i + 1}`,
+              state_id: 'operating_state_idle',
+              state_name: 'Ожидание',
+            },
+          ],
+        },
+        {
+          id: `well_${i + 2}.gtm`,
+          name: `ГТМ_${i + 2}`,
+          kind: 'event_kind_gtm',
+          type: 'event_type_grp',
+          well_id: `well_${i + 2}`,
+          well_name: `Скважина ${i + 2}`,
+          startDate: `2025-03-1${i + 1}`,
+          endDate: `2025-03-2${i + 1}`,
+          editable_dates: true,
+          resources: [
+            {
+              id: `resource_${i + 4}`,
+              name: `Бригада ${i + 4}`,
+              type: 'team',
+              startDate: `2025-03-1${i + 1}`,
+              endDate: `2025-03-1${i + 2}`,
+              stages: [
+                {
+                  id: `stage_${i + 4}`,
+                  name: 'Работы',
+                  startDate: `2025-03-1${i + 1}`,
+                },
+              ],
+            },
+          ],
+          operating_states: [
+            {
+              startDate: `2025-03-1${i + 1}`,
+              endDate: `2025-03-2${i + 1}`,
+              state_id: 'operating_state_none',
+              state_name: 'Не введено',
+            },
+          ],
+          stop_well: false,
+          shut_well: false,
+        },
+        {
+          id: `well_${i + 2}.otm`,
+          name: `ОТМ_${i + 2}`,
+          kind: 'event_kind_otm',
+          type: 'event_type_opz',
+          well_id: `well_${i + 2}`,
+          well_name: `Скважина ${i + 2}`,
+          startDate: `2025-03-2${i + 1}`,
+          endDate: `2025-03-${Math.min(31, 2 + i + 1)}`,
+          editable_dates: true,
+          resources: [
+            {
+              id: `resource_${i + 9}`,
+              name: `Бригада ${i + 9}`,
+              type: 'team',
+              startDate: `2025-03-2${i + 1}`,
+              endDate: `2025-03-${Math.min(31, 2 + i + 2)}`,
+              stages: [
+                {
+                  id: `stage_${i + 9}`,
+                  name: 'Завершение',
+                  startDate: `2025-03-2${i + 1}`,
+                },
+              ],
+            },
+          ],
+          operating_states: [
+            {
+              startDate: `2025-03-2${i + 1}`,
+              endDate: `2025-03-${Math.min(31, 2 + i + 1)}`,
+              state_id: 'operating_state_none',
+              state_name: 'Не введено',
+            },
+          ],
+          stop_well: false,
+          shut_well: false,
+        },
+      ],
+    })
+  ),
 ])
 
 const handleEventAction = (payload: {

@@ -126,7 +126,9 @@
       >
         <input
           v-model="event.startDate"
-          type="date"
+          v-maska
+          data-maska="####-##-##"
+          placeholder="гггг-мм-дд"
           class="date-input"
           :disabled="!event.editable_dates"
           @blur="
@@ -146,7 +148,9 @@
       >
         <input
           v-model="event.endDate"
-          type="date"
+          v-maska
+          data-maska="####-##-##"
+          placeholder="гггг-мм-дд"
           class="date-input"
           :disabled="!event.editable_dates"
           @blur="
@@ -198,39 +202,6 @@
               </div>
             </div>
           </td>
-          <td class="date-start-cell">
-            <input
-              v-model="resource.startDate"
-              type="date"
-              class="date-input"
-              :min="event.startDate || undefined"
-              :max="resource.endDate || undefined"
-              disabled
-              @blur="
-                $emit('resource-dates-change', {
-                  resourceId: resource.id,
-                  startDate: resource.startDate || '',
-                  endDate: resource.endDate || '',
-                })
-              "
-            />
-          </td>
-          <td class="date-end-cell">
-            <input
-              v-model="resource.endDate"
-              type="date"
-              class="date-input"
-              :min="resource.startDate || undefined"
-              disabled
-              @blur="
-                $emit('resource-dates-change', {
-                  resourceId: resource.id,
-                  startDate: resource.startDate || '',
-                  endDate: resource.endDate || '',
-                })
-              "
-            />
-          </td>
           <td :colspan="groupedDates.length" class="gantt-timeline">
             <GanttBar
               v-if="resource.startDate && resource.endDate"
@@ -251,6 +222,7 @@
 import type { Well, Event as TableEvent } from '../../types/table'
 import GanttBar from './GanttBar.vue'
 import OperatingStatesBar from './OperatingStatesBar.vue'
+import { vMaska } from 'maska/vue'
 
 type DateRange = {
   start: Date

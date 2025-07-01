@@ -69,6 +69,7 @@
     "access": "public"
   },
   "dependencies": {
-    "date-fns": "^4.1.0"
+    "date-fns": "^4.1.0",
+    "maska": "^3.1.1"
   }
 }
